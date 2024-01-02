@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d60e1b52-9902-4cfd-91ff-04d932e2b516" name="Changes" comment="architecture commit">
-      <change beforePath="$PROJECT_DIR$/api/users_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/users_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/postgres.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/postgres.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +89,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1704211296024</updated>
-      <workItem from="1704211305092" duration="2057000" />
+      <workItem from="1704211305092" duration="2161000" />
     </task>
     <task id="LOCAL-00001" summary="architecture commit">
       <option name="closed" value="true" />
@@ -100,7 +99,23 @@
       <option name="project" value="LOCAL" />
       <updated>1704213074441</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="architecture commit">
+      <option name="closed" value="true" />
+      <created>1704213442287</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1704213442287</updated>
+    </task>
+    <task id="LOCAL-00003" summary="architecture commit">
+      <option name="closed" value="true" />
+      <created>1704213457990</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1704213457990</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
