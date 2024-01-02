@@ -23,13 +23,13 @@ def register():
     cur.execute(f"SELECT * FROM users WHERE email = {request.form["email"]}")
     users = cur.fetchall()
     if len(users) != 0:
-        return 'This email has been registered!', 200
+        return jsonify({'message': 'This email has been registered!'}), 200
     else:
         cur.execute(f"INSERT INTO users (email, username, password) VALUES ({request.form["email"]},"
                     f"{request.form["username"]},"
                     f"{request.form["password"]})")
 
-    return 'Successful registration', 200
+    return jsonify({'message': 'Successful registration'}) , 200
 
 
 @app.post('/api/users/login')
@@ -53,7 +53,7 @@ def login():
     #                        app.secret_key)
     token = jwt.encode({'id': user["id"], 'exp': datetime.now() + timedelta(days=30)},
                            app.secret_key)
-    session["jwt"] = token
+    session['jwt'] = token
     #session['user_id'] = user[0]["id"]
     session['user_id'] = user["id"]
     return redirect(url_for('index'))
@@ -72,16 +72,16 @@ def logout():
 def auth_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = request.headers.get("Authorisation")
+        token = session.get('jwt')
 
         if not token:
             return jsonify({'message': 'Token is missing'}), 401
-        token = token.split(" ")[1]
+
         try:
-            data = jwt.decode(token, app.secret_key)
+            data = jwt.decode(token, app.secret_key, ["HS256",])
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired'}), 401
-        except jwt.InvalidTokenError:
+        except jwt:
             return jsonify({'message': 'Invalid token'}), 401
 
         return f(*args, **kwargs)
@@ -90,7 +90,7 @@ def auth_required(f):
 
 
 # Protected route requiring a valid token
-@app.route('/protected', methods=['GET'])
+@app.get('/protected')
 @auth_required
 def protected():
     return jsonify({'message': 'This is a protected route'})
