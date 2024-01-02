@@ -20,7 +20,7 @@ def index():
 
 @app.post('/api/users/register')
 def register():
-    cur.execute(f"SELECT * FROM users WHERE email = '{request.form["email"]}'")
+    cur.execute(f"SELECT * FROM users WHERE email = {request.form["email"]}")
     users = cur.fetchall()
     if len(users) != 0:
         return 'This email has been registered!', 200
@@ -34,11 +34,11 @@ def register():
 
 @app.post('/api/users/login')
 def login():
-    cur.execute(
-        f"SELECT * FROM users WHERE email = {request.form["email"]} "
-        f"OR username = {request.form["username"]} "
-        f"AND password = {request.form["password"]}")
-    user = cur.fetchall()
+    # cur.execute(
+    #     f"SELECT * FROM users WHERE email = {request.form["email"]} "
+    #     f"OR username = {request.form["username"]} "
+    #     f"AND password = {request.form["password"]}")
+    # user = cur.fetchall()
     if len(user) == 0:
         return "Incorrect data", 400
 

@@ -5,15 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d60e1b52-9902-4cfd-91ff-04d932e2b516" name="Changes" comment="small">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/__init__.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/sessions.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/sessions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/configs/configs.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/postgres.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/postgres.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scr/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/scr/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/settings.ini" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -127,7 +120,7 @@
       <option name="presentableId" value="Default" />
       <updated>1704211296024</updated>
       <workItem from="1704211305092" duration="2354000" />
-      <workItem from="1704213672586" duration="7845000" />
+      <workItem from="1704213672586" duration="8454000" />
     </task>
     <task id="LOCAL-00001" summary="architecture commit">
       <option name="closed" value="true" />
@@ -177,7 +170,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704215329046</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="small">
+      <option name="closed" value="true" />
+      <created>1704222581458</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1704222581458</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
