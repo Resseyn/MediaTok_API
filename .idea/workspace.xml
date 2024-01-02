@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d60e1b52-9902-4cfd-91ff-04d932e2b516" name="Changes" comment="gitigonre">
-      <change afterPath="$PROJECT_DIR$/configs/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/configs/configs.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/api/sessions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/api/users_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/users_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/configs/configs.py" beforeDir="false" afterPath="$PROJECT_DIR$/configs/configs.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/database/postgres.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/postgres.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/settings.ini" beforeDir="false" />
     </list>
@@ -94,7 +95,7 @@
       <option name="presentableId" value="Default" />
       <updated>1704211296024</updated>
       <workItem from="1704211305092" duration="2354000" />
-      <workItem from="1704213672586" duration="129000" />
+      <workItem from="1704213672586" duration="1417000" />
     </task>
     <task id="LOCAL-00001" summary="architecture commit">
       <option name="closed" value="true" />
@@ -128,7 +129,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704213481445</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="gitigonre">
+      <option name="closed" value="true" />
+      <created>1704213824262</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1704213824262</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

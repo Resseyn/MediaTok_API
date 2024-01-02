@@ -4,5 +4,7 @@ from database.postgres import cur
 def show_users():
     cur.execute("SELECT * FROM users")
 
-    records = cur.fetchall()
+    users = cur.fetchall()
+
+    return [user.to_json() for user in users]
 
