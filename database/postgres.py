@@ -1,7 +1,7 @@
 import psycopg2
-
+from configs.configs import postgres_query
 # Connect to your postgres DB
-conn = psycopg2.connect("dbname=mediatok_db ")
+conn = psycopg2.connect(postgres_query)
 
 # Open a cursor to perform database operations
 cur = conn.cursor()
