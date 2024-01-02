@@ -1,11 +1,11 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 
 import jwt
 from flask import session, request, redirect, url_for, jsonify
 
 from database.postgres import cur
-from scr.loader import app
+from src.loader import app
 from config import api_secret_key
 
 app.secret_key = api_secret_key
@@ -39,21 +39,32 @@ def login():
     #     f"OR username = {request.form["username"]} "
     #     f"AND password = {request.form["password"]}")
     # user = cur.fetchall()
-    if len(user) == 0:
-        return "Incorrect data", 400
+    user = {
+        "id":1,
+        "email": "massib796@gmail.com",
+        "username": "Resseyn",
+        "password": 12345678
+    }
 
-    token = jwt.encode({'user': user[0].username, 'exp': datetime.now() + datetime.timedelta(day=30)},
-                           app.config['SECRET_KEY'])
-    headers = request.headers
-    headers.add_header("Authorisation", f"Bearer {token}")
-    session['user_id'] = user[0]["id"]
+    # if len(user) == 0:
+    #     return "Incorrect data", 400
+
+    # token = jwt.encode({'user': user[0].username, 'exp': datetime.now() + datetime.timedelta(day=30)},
+    #                        app.secret_key)
+    token = jwt.encode({'id': user["id"], 'exp': datetime.now() + timedelta(days=30)},
+                           app.secret_key)
+    session["jwt"] = token
+    #session['user_id'] = user[0]["id"]
+    session['user_id'] = user["id"]
     return redirect(url_for('index'))
 
 
-@app.route('/logout')
+@app.get('/api/users/logout')
 def logout():
     # remove the username from the session if it's there
-    session.pop('user_id', None)
+    # session.pop('user_id', None)
+    # session.pop('jwt', None)
+    session.clear()
     return redirect(url_for('index'))
 
 
