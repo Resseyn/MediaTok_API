@@ -4,12 +4,13 @@ from database import postgres
 
 
 class Link:
-    def __init__(self, link_id, link, spec_links, time, traffic, created_at, creator_id):
+    def __init__(self, link_id, link, spec_links, time, traffic,  activity, created_at, creator_id):
         self.link_id = link_id
         self.link = link
         self.spec_links = spec_links
         self.time = time
         self.traffic = traffic
+        self.activity =  activity
         self.created_at = created_at
         self.creator_id = creator_id
 
@@ -30,8 +31,9 @@ class LinksDB():
             spec_links TEXT [] NOT NULL,
             time VARCHAR(255) NOT NULL,
             traffic INTEGER NOT NULL,
-            created_at VARCHAR(255) NOT NULL,
-            creator_id BIGINT NOT NULL,
+            activity BOOLEAN NOT NULL,
+            created_at BIGINT NOT NULL,
+            creator_id INTEGER NOT NULL,
         );
         """
         cls.cursor.execute(create_table_query)
@@ -39,7 +41,7 @@ class LinksDB():
 
     @classmethod
     def add_link(cls, login, password):
-        insert_query = ("INSERT INTO links (login, password) "
+        insert_query = ("INSERT INTO links (link, spec_links, time, traffic, created_at, creator_id) "
                         "VALUES (%s, %s) RETURNING user_id")
         cls.cursor.execute(insert_query, (login, password))
         user_id = cls.cursor.fetchone()[0]
@@ -63,4 +65,4 @@ class LinksDB():
         cls.connection.close()
 
 # Пример использования
-ClientsDB.create_client_table()
+LinksDB.create_link_table()

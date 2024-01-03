@@ -1,3 +1,4 @@
+import time
 from datetime import datetime
 import json
 
@@ -6,7 +7,7 @@ from scripts.date import get_month_name
 
 
 class User:
-    def __init__(self, user_id, login, password, name, surname, created_at, creator_id, activity=True):
+    def __init__(self, user_id, login, password, name, surname, activity, created_at, creator_id):
         self.user_id = user_id
         self.login = login
         self.password = password
@@ -33,7 +34,7 @@ class UserDB():
             surname VARCHAR(255) NOT NULL,
             password VARCHAR(255) NOT NULL,
             activity BOOLEAN NOT NULL,
-            created_at VARCHAR(255) NOT NULL,
+            created_at BIGINT NOT NULL,
             creator_id INTEGER NOT NULL
         );
         """
@@ -45,7 +46,7 @@ class UserDB():
         insert_query = ("INSERT INTO users (login, password, name, surname, activity, created_at, creator_id) "
                         "VALUES (%s, %s, %s, %s, True, %s, %s) RETURNING user_id")
         cls.cursor.execute(insert_query, (login, password, name, surname,
-                                          f"{get_month_name(datetime.now().month)} {datetime.now().day}, {datetime.now().year}",
+                                          time.time(),
                                           creator_id,))
         user_id = cls.cursor.fetchone()[0]
         cls.connection.commit()
