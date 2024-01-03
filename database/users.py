@@ -1,16 +1,19 @@
+from datetime import datetime
 import json
 
 from database import postgres
+from scripts.date import get_month_name
 
 
 class User:
-    def __init__(self, user_id, login, password, name, surname,  creator_id, activity=True):
+    def __init__(self, user_id, login, password, name, surname, created_at, creator_id, activity=True):
         self.user_id = user_id
         self.login = login
         self.password = password
         self.name = name
         self.surname = surname
         self.activity = activity
+        self.created_at = created_at
         self.creator_id = creator_id
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
@@ -30,6 +33,7 @@ class UserDB():
             surname VARCHAR(255) NOT NULL,
             password VARCHAR(255) NOT NULL,
             activity BOOLEAN NOT NULL,
+            created_at VARCHAR(255) NOT NULL,
             creator_id INTEGER NOT NULL
         );
         """
@@ -38,9 +42,11 @@ class UserDB():
 
     @classmethod
     def add_user(cls, login, password, name, surname, creator_id):
-        insert_query = ("INSERT INTO users (login, password, name, surname, activity, creator_id) "
-                        "VALUES (%s, %s, %s, %s, True, %s) RETURNING user_id")
-        cls.cursor.execute(insert_query, (login, password, name, surname, creator_id,))
+        insert_query = ("INSERT INTO users (login, password, name, surname, activity, created_at, creator_id) "
+                        "VALUES (%s, %s, %s, %s, True, %s, %s) RETURNING user_id")
+        cls.cursor.execute(insert_query, (login, password, name, surname,
+                                          f"{get_month_name(datetime.now().month)} {datetime.now().day}, {datetime.now().year}",
+                                          creator_id,))
         user_id = cls.cursor.fetchone()[0]
         cls.connection.commit()
         return user_id
@@ -79,15 +85,4 @@ class UserDB():
         cls.connection.close()
 
 # Пример использования
-# user_db.create_user_table()
-# # Добавление пользователя
-# new_user_id = user_db.add_user('login', 'password123', "John", "Doe", "1")
-#
-# # Получение пользователя по ID
-# user = user_db.get_user_by_id(new_user_id)
-# if user:
-#     print(f"User found: {user}")
-# else:
-#     print("User not found")
-#
-# #user_db.close_connection()
+UserDB.create_user_table()

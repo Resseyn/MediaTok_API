@@ -1,10 +1,12 @@
 import json
+from datetime import datetime
 
 from database import postgres
+from scripts.date import get_month_name
 
 
 class Server:
-    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, creator_id, activity=True):
+    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip,created_at, creator_id, activity=True):
         self.server_id = server_id
         self.name = name
         self.login_anyd = login_anyd
@@ -14,6 +16,7 @@ class Server:
         self.storage = storage
         self.ip = ip
         self.activity = activity
+        self.created_at = created_at
         self.creator_id = creator_id
 
     def toJSON(self):
@@ -37,6 +40,7 @@ class ServersDB():
             storage VARCHAR(255) NOT NULL,
             ip VARCHAR(255) NOT NULL,
             activity BOOLEAN NOT NULL,
+            created_at VARCHAR(255) NOT NULL,
             creator_id INTEGER NOT NULL
         );
         """
@@ -45,9 +49,11 @@ class ServersDB():
 
     @classmethod
     def add_server(cls, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, creator_id):
-        insert_query = ("INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, creator_id) "
-                        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
-        cls.cursor.execute(insert_query, (name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, creator_id,))
+        insert_query = ("INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, created_at, creator_id) "
+                        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
+        cls.cursor.execute(insert_query, (name, login_anyd, password_anyd, cpu, ram, storage, ip, activity,
+                                          f"{get_month_name(datetime.now().month)} {datetime.now().day}, {datetime.now().year}",
+                                          creator_id,))
         server_id = cls.cursor.fetchone()[0]
         cls.connection.commit()
         return server_id
