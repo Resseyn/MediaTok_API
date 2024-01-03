@@ -37,7 +37,7 @@ def auth_required(f):
 def index():
     if 'client_id' in session:
         return jsonify({'user': f'{session["client_id"]}'}), 200
-    return 'You are not logged in'
+    return 'You are not logged in', 403
 
 
 @app.post('/api/auth/login')
