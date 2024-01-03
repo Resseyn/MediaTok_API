@@ -2,7 +2,7 @@ import json
 
 from database import postgres
 
-
+#TODO: не сделаны методы(ну или все я не помню)
 class Link:
     def __init__(self, link_id, link, spec_links, time, traffic,  activity, created_at, creator_id):
         self.link_id = link_id
@@ -40,13 +40,13 @@ class LinksDB():
         cls.connection.commit()
 
     @classmethod
-    def add_link(cls, login, password):
+    def add_link(cls, link, spec_links, time, traffic, created_at, creator_id):
         insert_query = ("INSERT INTO links (link, spec_links, time, traffic, created_at, creator_id) "
-                        "VALUES (%s, %s) RETURNING user_id")
-        cls.cursor.execute(insert_query, (login, password))
-        user_id = cls.cursor.fetchone()[0]
+                        "VALUES (%s, %s,%s, %s,%s, %s) RETURNING link_id")
+        cls.cursor.execute(insert_query, (link, spec_links, time, traffic, created_at, creator_id,))
+        link_id = cls.cursor.fetchone()[0]
         cls.connection.commit()
-        return user_id
+        return link_id
 
     @classmethod
     def show_links(cls, client_id):
