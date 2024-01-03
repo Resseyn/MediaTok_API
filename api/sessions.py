@@ -5,7 +5,7 @@ from functools import wraps
 import jwt
 from flask import session, request, redirect, url_for, jsonify
 
-from database.clients import ClientsDB, clients_db
+from database.clients import ClientsDB
 from src.loader import app
 from config import api_secret_key
 
@@ -40,23 +40,9 @@ def index():
     return 'You are not logged in'
 
 
-# @app.post('/api/auth/register')
-# def register():
-#     cur.execute(f"SELECT * FROM users WHERE email = {request.form["email"]}")
-#     users = cur.fetchall()
-#     if len(users) != 0:
-#         return jsonify({'message': 'This email has been registered!'}), 200
-#     else:
-#         cur.execute(f"INSERT INTO users (email, username, password) VALUES ({request.form["email"]},"
-#                     f"{request.form["username"]},"
-#                     f"{request.form["password"]})")
-#
-#     return jsonify({'message': 'Successful registration'}) , 200
-
-
 @app.post('/api/auth/login')
 def login():
-    client = clients_db.get_user_by_auth(request.form["login"], request.form["password"])
+    client = ClientsDB.get_user_by_auth(request.form["login"], request.form["password"])
     if client == None:
         return "Wrong auth data", 400
 

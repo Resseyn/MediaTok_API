@@ -3,20 +3,20 @@ import json
 from flask import request, session
 
 from api.sessions import auth_required
-from database.users import user_db
+from database.users import UserDB
 from src.loader import app
 
 
 @app.get("/api/users/show")
 @auth_required
 def show_users():
-    users = user_db.show_users(session["client_id"])
+    users = UserDB.show_users(session["client_id"])
     return json.dumps(users, indent=2), 200
 
 @app.post("/api/users/add")
 @auth_required
 def add_user():
-    user_id = user_db.add_user(request.form["login"],
+    user_id = UserDB.add_user(request.form["login"],
                     request.form["password"],
                     request.form["name"],
                     request.form["surname"],
@@ -28,7 +28,7 @@ def add_user():
 @auth_required
 def set_user_activity():
     args = request.args
-    user_db.change_user_activity(args.get("user_id"))
-    return "Success", 200
+    act = UserDB.change_user_activity(args.get("user_id"))
+    return f"Success: changed to {act}", 200
 
 

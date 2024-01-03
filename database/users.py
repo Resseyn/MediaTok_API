@@ -1,7 +1,6 @@
 import json
 
 from database import postgres
-from database.postgres import SingletonMeta
 
 
 class User:
@@ -17,12 +16,12 @@ class User:
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
 
-class UserDB(metaclass=SingletonMeta):
-    def __init__(self):
-        self.connection = postgres.conn
-        self.cursor = self.connection.cursor()
+class UserDB():
+    connection = postgres.conn
+    cursor = connection.cursor()
 
-    def create_user_table(self):
+    @classmethod
+    def create_user_table(cls):
         create_table_query = """
         CREATE TABLE IF NOT EXISTS users (
             user_id SERIAL PRIMARY KEY,
@@ -34,47 +33,52 @@ class UserDB(metaclass=SingletonMeta):
             creator_id INTEGER NOT NULL
         );
         """
-        self.cursor.execute(create_table_query)
-        self.connection.commit()
+        cls.cursor.execute(create_table_query)
+        cls.connection.commit()
 
-    def add_user(self, login, password, name, surname, creator_id):
+    @classmethod
+    def add_user(cls, login, password, name, surname, creator_id):
         insert_query = ("INSERT INTO users (login, password, name, surname, activity, creator_id) "
                         "VALUES (%s, %s, %s, %s, True, %s) RETURNING user_id")
-        self.cursor.execute(insert_query, (login, password, name, surname, creator_id,))
-        user_id = self.cursor.fetchone()[0]
-        self.connection.commit()
+        cls.cursor.execute(insert_query, (login, password, name, surname, creator_id,))
+        user_id = cls.cursor.fetchone()[0]
+        cls.connection.commit()
         return user_id
 
-    def get_user_by_id(self, user_id):
+    @classmethod
+    def get_user_by_id(cls, user_id):
         select_query = "SELECT * FROM users WHERE user_id = %s"
-        self.cursor.execute(select_query, (user_id,))
-        user_data = self.cursor.fetchone()
+        cls.cursor.execute(select_query, (user_id,))
+        user_data = cls.cursor.fetchone()
         user = User(*user_data)
         return user
 
-    def show_users(self, client_id):
+    @classmethod
+    def show_users(cls, client_id):
         select_query = "SELECT * FROM users WHERE creator_id = %s"
-        self.cursor.execute(select_query, (client_id,))
-        users_data = self.cursor.fetchall()
+        cls.cursor.execute(select_query, (client_id,))
+        users_data = cls.cursor.fetchall()
         users = []
         for user_data in users_data:
             users.append(User(*user_data).__dict__)
         return users
 
-    def change_user_activity(self, user_id):
+    @classmethod
+    def change_user_activity(cls, user_id):
         select_query = "SELECT * FROM users WHERE user_id = %s"
-        self.cursor.execute(select_query, (user_id,))
-        user_data = self.cursor.fetchone()
+        cls.cursor.execute(select_query, (user_id,))
+        user_data = cls.cursor.fetchone()
         update_query = "UPDATE users SET activity = %s WHERE user_id = %s"
-        self.cursor.execute(update_query, (not(user_data[5]), (user_id,)))
-        self.connection.commit()
+        cls.cursor.execute(update_query, (not(user_data[5]), (user_id,)))
+        cls.connection.commit()
+        return not(user_data[5])
 
-    def close_connection(self):
-        self.cursor.close()
-        self.connection.close()
+    @classmethod
+    def close_connection(cls):
+        cls.cursor.close()
+        cls.connection.close()
 
 # Пример использования
-user_db = UserDB()
 # user_db.create_user_table()
 # # Добавление пользователя
 # new_user_id = user_db.add_user('login', 'password123', "John", "Doe", "1")
