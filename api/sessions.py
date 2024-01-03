@@ -1,9 +1,11 @@
+import time
 from datetime import datetime, timedelta
 from functools import wraps
 
 import jwt
 from flask import session, request, redirect, url_for, jsonify
 
+from database.clients import ClientsDB, clients_db
 from src.loader import app
 from config import api_secret_key
 
@@ -33,8 +35,8 @@ def auth_required(f):
 @app.get('/api/showCurrentUser')
 @auth_required
 def index():
-    if 'user_id' in session:
-        return jsonify({'user': f'{session["user_id"]}'}), 200
+    if 'client_id' in session:
+        return jsonify({'user': f'{session["client_id"]}'}), 200
     return 'You are not logged in'
 
 
@@ -54,36 +56,19 @@ def index():
 
 @app.post('/api/auth/login')
 def login():
-    # cur.execute(
-    #     f"SELECT * FROM users WHERE email = {request.form["login"]} "
-    #     f"OR username = {request.form["login"]} "
-    #     f"AND password = {request.form["password"]};")
-    # user = cur.fetchall()
-    user = {
-        "id":1,
-        "email": "massib796@gmail.com",
-        "username": "Resseyn",
-        "password": 12345678
-    }
+    client = clients_db.get_user_by_auth(request.form["login"], request.form["password"])
+    if client == None:
+        return "Wrong auth data", 400
 
-    # if len(user) == 0:
-    #     return "Incorrect data", 400
-
-    # token = jwt.encode({'user': user[0].username, 'exp': datetime.now() + datetime.timedelta(day=30)},
-    #                        app.secret_key)
-    token = jwt.encode({'id': user["id"], 'exp': datetime.now() + timedelta(days=30)},
+    token = jwt.encode({'id': client.client_id, 'exp': datetime.now() + timedelta(days=30)},
                            app.secret_key)
     session['jwt'] = token
-    #session['user_id'] = user[0]["id"]
-    session['user_id'] = user["id"]
+    session['client_id'] = client.client_id
     return redirect(url_for('index'))
 
 @app.get('/api/auth/logout')
 @auth_required
 def logout():
-    # remove the username from the session if it's there
-    # session.pop('user_id', None)
-    # session.pop('jwt', None)
     session.clear()
     return redirect(url_for('index'))
 

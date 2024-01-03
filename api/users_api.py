@@ -10,7 +10,7 @@ from src.loader import app
 @app.get("/api/users/show")
 @auth_required
 def show_users():
-    users = user_db.show_users(session["user_id"])
+    users = user_db.show_users(session["client_id"])
     return json.dumps(users, indent=2), 200
 
 @app.post("/api/users/add")
@@ -20,7 +20,7 @@ def add_user():
                     request.form["password"],
                     request.form["name"],
                     request.form["surname"],
-                    session["user_id"])
+                    session["client_id"])
 
     return json.dumps(user_id), 200
 
