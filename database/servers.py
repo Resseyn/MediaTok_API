@@ -7,7 +7,7 @@ from scripts.date import get_month_name
 
 
 class Server:
-    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, created_at,
+    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity,to_a_specific_proxy, created_at,
                  creator_id, ):
         self.server_id = server_id
         self.name = name
@@ -18,6 +18,7 @@ class Server:
         self.storage = storage
         self.ip = ip
         self.activity = activity
+        self.to_a_specific_proxy = to_a_specific_proxy
         self.created_at = created_at
         self.creator_id = creator_id
 
@@ -43,6 +44,7 @@ class ServersDB:
             storage VARCHAR(255) NOT NULL,
             ip VARCHAR(255) NOT NULL,
             activity BOOLEAN NOT NULL,
+            to_a_specific_proxy BOOLEAN NOT NULL,
             created_at BIGINT NOT NULL,
             creator_id INTEGER NOT NULL
         );
@@ -53,9 +55,9 @@ class ServersDB:
     @classmethod
     def add_server(cls, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, creator_id):
         insert_query = (
-            "INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, created_at, creator_id) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
-        cls.cursor.execute(insert_query, (name, login_anyd, password_anyd, cpu, ram, storage, ip, activity,
+            "INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, to_a_specific_proxy, created_at, creator_id) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
+        cls.cursor.execute(insert_query, (name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, False,
                                           time.time(),
                                           creator_id,))
         server_id = cls.cursor.fetchone()[0]
