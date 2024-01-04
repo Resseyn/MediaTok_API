@@ -17,11 +17,14 @@ def show_links():
 @auth_required
 def add_link():
     format_link = request.form["link"]
+    parsed_link = format_link.split(";")
     link_id = LinksDB.add_link(
-                    request.form["link"],
-                    request.form["login"],
-                    request.form["password"],
-                    request.form["cpu"],session.get("client_id"))
+                    parsed_link[0],
+                    parsed_link[1],
+                    parsed_link[3],
+                    parsed_link[4],
+                    parsed_link[5],
+                    session.get("client_id"))
     return json.dumps(link_id), 200
 
 @app.get("/api/links/changeActivity")
