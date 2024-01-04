@@ -85,7 +85,7 @@ class ProxyDB:
                 cursor.execute(select_query, (server_id,))
                 proxy_data = cursor.fetchone()
                 if proxy_data:
-                    return Proxy(*proxy_data)
+                    return Proxy(*proxy_data).__dict__
                 return None
         except psycopg2.Error as e:
             print("Error getting proxy by ID(proxy.py):", e)

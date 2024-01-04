@@ -131,5 +131,5 @@ class ServersDB:
     def close_connection(cls):
         cls.connection.close()
 
-# Пример использования
+# Пример использования.
 ServersDB.create_server_table()

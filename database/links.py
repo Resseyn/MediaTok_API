@@ -96,5 +96,5 @@ class LinksDB:
     def close_connection(cls):
         cls.connection.close()
 
-# Пример использования
+# Пример использования.
 LinksDB.create_link_table()

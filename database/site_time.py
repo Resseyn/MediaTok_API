@@ -99,5 +99,5 @@ class SiteTimeDB:
         cls.connection.close()
 
 
-# Пример использования
+# Пример использования.
 SiteTimeDB.create_link_table()

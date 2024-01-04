@@ -22,25 +22,22 @@ class UserDB:
     @classmethod
     def create_user_table(cls):
         try:
-            cursor = cls.connection.cursor()
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS users (
-                user_id SERIAL PRIMARY KEY,
-                login VARCHAR(255) NOT NULL UNIQUE,
-                name VARCHAR(255) NOT NULL,
-                surname VARCHAR(255) NOT NULL,
-                password VARCHAR(255) NOT NULL,
-                activity BOOLEAN NOT NULL,
-                created_at BIGINT NOT NULL
-            );
-            """
-            cursor.execute(create_table_query)
-            cls.connection.commit()
+            with cls.connection.cursor() as cursor:
+                create_table_query = """
+                CREATE TABLE IF NOT EXISTS users (
+                    user_id SERIAL PRIMARY KEY,
+                    login VARCHAR(255) NOT NULL UNIQUE,
+                    name VARCHAR(255) NOT NULL,
+                    surname VARCHAR(255) NOT NULL,
+                    password VARCHAR(255) NOT NULL,
+                    activity BOOLEAN NOT NULL,
+                    created_at BIGINT NOT NULL
+                );
+                """
+                cursor.execute(create_table_query)
+                cls.connection.commit()
         except psycopg2.Error as e:
             print("Error creating user table:", e)
-        finally:
-            if cursor:
-                cursor.close()
 
     @classmethod
     def add_user(cls, login, password, name, surname):

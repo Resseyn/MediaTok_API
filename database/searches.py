@@ -98,5 +98,5 @@ class SearchesDB:
         cls.connection.close()
 
 
-# Пример использования
+# Пример использования.
 SearchesDB.create_searches_table()
