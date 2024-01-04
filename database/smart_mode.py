@@ -39,7 +39,7 @@ class SmartModeDB:
                 cursor.execute(create_table_query)
                 cls.connection.commit()
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"Error creating smart_mode table: {e}")
                 cls.connection.rollback()
 
     @classmethod
@@ -49,11 +49,11 @@ class SmartModeDB:
                 "INSERT INTO smart_mode (server_id,toggle,sleep_time,promotion_time_and_percentage,created_at,creator_id) "
                 "VALUES (%s, %s, %s, %s, %s, %s) RETURNING server_id")
             try:
-                cursor.execute(insert_query, (toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id,))
+                cursor.execute(insert_query, (server_id, toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id,))
                 server_id = cursor.fetchone()[0]
                 cls.connection.commit()
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"Error adding property: {e}")
                 cls.connection.rollback()
 
     @classmethod
@@ -65,7 +65,7 @@ class SmartModeDB:
                 server_data = cursor.fetchone()
                 smart_mode = SmartMode(*server_data)
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"Error getting smart_mode by server_id: {e}")
                 cls.connection.rollback()
 
     @classmethod
@@ -79,7 +79,7 @@ class SmartModeDB:
                 for smart_mode in smart_modes_data:
                     smart_modes.append(SmartMode(*smart_mode).__dict__)
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"Error showing smart_modes: {e}")
                 cls.connection.rollback()
 
     @classmethod
@@ -104,7 +104,7 @@ class SmartModeDB:
                 smart_mode = SmartMode(server_id, sleep_time, promotion_time_and_percentage, created_at, creator_id)
                 return smart_mode
             except Exception as e:
-                print(f"An error occurred: {e}")
+                print(f"Error changing smart_mode property: {e}")
                 cls.connection.rollback()
 
     @classmethod
