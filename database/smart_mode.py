@@ -62,16 +62,16 @@ class SmartModeDB:
         return smart_mode
 
     @classmethod
-    def show_servers(cls, creator_id):
+    def show_smart_modes(cls, creator_id):
         cursor = cls.connection.cursor()
         select_query = "SELECT * FROM smart_mode WHERE creator_id = %s"
         cursor.execute(select_query, (creator_id,))
-        servers_data = cursor.fetchall()
-        servers = []
-        for server_data in servers_data:
-            servers.append(SmartMode(*server_data).__dict__)
+        smart_modes_data = cursor.fetchall()
+        smart_modes = []
+        for smart_mode in smart_modes_data:
+            smart_modes.append(SmartMode(*smart_mode).__dict__)
         cursor.close()
-        return servers
+        return smart_modes
 
     @classmethod
     def change_smart_mode(cls, server_id, toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id):

@@ -7,7 +7,7 @@ from scripts.date import get_month_name
 
 
 class Search:
-    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity,to_a_specific_proxy, created_at,
+    def __init__(self, search_id, search_for, link, , password_anyd, cpu, ram, storage, ip, activity,to_a_specific_proxy, created_at,
                  creator_id, ):
         self.server_id = server_id
         self.name = name
