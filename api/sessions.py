@@ -11,6 +11,7 @@ from config import api_secret_key
 
 app.secret_key = api_secret_key
 
+
 # Decorator for protecting routes with JWT
 def auth_required(f):
     @wraps(f)
@@ -21,7 +22,7 @@ def auth_required(f):
             return jsonify({'message': 'Token is missing'}), 401
 
         try:
-            data = jwt.decode(token, app.secret_key, ["HS256",])
+            data = jwt.decode(token, app.secret_key, ["HS256", ])
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired'}), 401
         except jwt:
@@ -47,14 +48,14 @@ def login():
         return "Wrong auth data", 400
 
     token = jwt.encode({'id': client.user_id, 'exp': datetime.now() + timedelta(days=30)},
-                           app.secret_key)
+                       app.secret_key)
     session['jwt'] = token
     session['client_id'] = client.user_id
     return redirect(url_for('index'))
+
 
 @app.get('/api/auth/logout')
 @auth_required
 def logout():
     session.clear()
     return redirect(url_for('index'))
-

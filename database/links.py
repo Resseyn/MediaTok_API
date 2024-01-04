@@ -5,14 +5,14 @@ from database import postgres
 
 
 class Link:
-    def __init__(self, link_id, link, leads_to_post, to_a_specific_link, spec_links, time, traffic, activity,
+    def __init__(self, link_id, link, leads_to_post, to_a_specific_link, spec_links, curr_time, traffic, activity,
                  created_at, creator_id):
         self.link_id = link_id
         self.link = link
         self.leads_to_post = leads_to_post
         self.to_a_specific_link = to_a_specific_link
         self.spec_links = spec_links
-        self.time = time
+        self.time = curr_time
         self.traffic = traffic
         self.activity = activity
         self.created_at = created_at
@@ -22,7 +22,7 @@ class Link:
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
 
-class LinksDB():
+class LinksDB:
     connection = postgres.conn
 
     @classmethod

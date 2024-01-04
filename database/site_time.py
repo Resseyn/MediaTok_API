@@ -5,11 +5,12 @@ import json
 from database import postgres
 from scripts.date import get_month_name
 
+
 class SiteTime:
     def __init__(self, time_id, emulation_of_inactivity_min, emulation_of_inactivity_max,
                  make_transitions,
                  emulation_of_inactivity_between_articles_min, emulation_of_inactivity_between_articles_max,
-                 number_of_transitions_min,number_of_transitions_max,
+                 number_of_transitions_min, number_of_transitions_max,
                  creator_id):
         self.time_id = time_id
         self.emulation_of_inactivity_min = emulation_of_inactivity_min
@@ -20,9 +21,11 @@ class SiteTime:
         self.number_of_transitions_min = number_of_transitions_min
         self.number_of_transitions_max = number_of_transitions_max
         self.creator_id = creator_id
+
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
+
 
 class SiteTimeDB:
     connection = postgres.conn
@@ -55,7 +58,7 @@ class SiteTimeDB:
             "INSERT INTO links (link, leads_to_post, to_a_specific_link, spec_links, time, traffic, activity, created_at,creator_id) "
             "VALUES (%s, %s, %s, %s,%s, %s,%s, %s, %s) RETURNING link_id")
         cursor.execute(insert_query, (link, leads_to_post, (False if spec_links == "" else True),
-                                          spec_links, link_time, traffic, True, time.time(), creator_id,))
+                                      spec_links, link_time, traffic, True, time.time(), creator_id,))
         link_id = cursor.fetchone()[0]
         cls.connection.commit()
         cursor.close()
@@ -88,6 +91,7 @@ class SiteTimeDB:
     @classmethod
     def close_connection(cls):
         cls.connection.close()
+
 
 # Пример использования
 SiteTime.create_user_table()
