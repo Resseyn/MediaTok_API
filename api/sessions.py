@@ -5,7 +5,7 @@ from functools import wraps
 import jwt
 from flask import session, request, redirect, url_for, jsonify
 
-from database.clients import ClientsDB
+from database.users import UserDB
 from src.loader import app
 from config import api_secret_key
 
@@ -42,14 +42,14 @@ def index():
 
 @app.post('/api/auth/login')
 def login():
-    client = ClientsDB.get_user_by_auth(request.form["login"], request.form["password"])
-    if client == None:
+    client = UserDB.get_user_by_auth(request.form["login"], request.form["password"])
+    if client is None:
         return "Wrong auth data", 400
 
-    token = jwt.encode({'id': client.client_id, 'exp': datetime.now() + timedelta(days=30)},
+    token = jwt.encode({'id': client.user_id, 'exp': datetime.now() + timedelta(days=30)},
                            app.secret_key)
     session['jwt'] = token
-    session['client_id'] = client.client_id
+    session['client_id'] = client.user_id
     return redirect(url_for('index'))
 
 @app.get('/api/auth/logout')

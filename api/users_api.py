@@ -10,7 +10,7 @@ from src.loader import app
 @app.get("/api/users/show")
 @auth_required
 def show_users():
-    users = UserDB.show_users(session["client_id"])
+    users = UserDB.show_users()
     return json.dumps(users, indent=2), 200
 
 @app.post("/api/users/add")
@@ -19,9 +19,9 @@ def add_user():
     user_id = UserDB.add_user(request.form["login"],
                     request.form["password"],
                     request.form["name"],
-                    request.form["surname"],
-                    session["client_id"])
-
+                    request.form["surname"])
+    if user_id == None:
+        return "This login is present!"
     return json.dumps(user_id), 200
 
 @app.get("/api/users/changeActivity")

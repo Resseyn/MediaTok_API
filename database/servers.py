@@ -7,7 +7,8 @@ from scripts.date import get_month_name
 
 
 class Server:
-    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip,  activity, created_at, creator_id,):
+    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, created_at,
+                 creator_id, ):
         self.server_id = server_id
         self.name = name
         self.login_anyd = login_anyd
@@ -23,6 +24,7 @@ class Server:
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
+
 
 class ServersDB:
     connection = postgres.conn
@@ -50,8 +52,9 @@ class ServersDB:
 
     @classmethod
     def add_server(cls, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, creator_id):
-        insert_query = ("INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, created_at, creator_id) "
-                        "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
+        insert_query = (
+            "INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, created_at, creator_id) "
+            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
         cls.cursor.execute(insert_query, (name, login_anyd, password_anyd, cpu, ram, storage, ip, activity,
                                           time.time(),
                                           creator_id,))
@@ -83,15 +86,15 @@ class ServersDB:
         cls.cursor.execute(select_query, (server_id,))
         server_data = cls.cursor.fetchone()
         update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
-        cls.cursor.execute(update_query, (not(server_data[8]), (server_id,)))
+        cls.cursor.execute(update_query, (not (server_data[8]), (server_id,)))
         cls.connection.commit()
-        return not(server_data[8])
+        return not (server_data[8])
 
     @classmethod
     def close_connection(cls):
         cls.cursor.close()
         cls.connection.close()
 
+
 # Пример использования
 ServersDB.create_server_table()
-
