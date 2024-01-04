@@ -7,10 +7,10 @@ from scripts.date import get_month_name
 
 
 class SmartMode:
-    def __init__(self, toggle, sleep_time, promotion_time_and_precentage, created_at, creator_id):
+    def __init__(self, toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id):
         self.toggle = toggle
         self.sleep_time = sleep_time
-        self.promotion_time_and_precentage = promotion_time_and_precentage
+        self.promotion_time_and_precentage = promotion_time_and_percentage
         self.created_at = created_at
         self.creator_id = creator_id
 
@@ -30,7 +30,7 @@ class SmartModeDB:
             server_id INTEGER NOT NULL PRIMARY KEY,
             smart_mode BOOLEAN NOT NULL,
             sleep_time INTEGER NOT NULL,
-            promotion_time_and_precentage TEXT,
+            promotion_time_and_percentage TEXT,
             created_at BIGINT NOT NULL,
             creator_id INTEGER NOT NULL
         );
@@ -40,12 +40,12 @@ class SmartModeDB:
         cls.connection.commit()
 
     @classmethod
-    def add_operation(cls, server_id, toggle, sleep_time, promotion_time_and_precentage, creator_id):
+    def add_operation(cls, server_id, toggle, sleep_time, promotion_time_and_percentage, creator_id):
         cursor = cls.connection.cursor()
         insert_query = (
-            "INSERT INTO smart_mode (server_id,toggle,sleep_time,promotion_time_and_precentage,created_at,creator_id) "
+            "INSERT INTO smart_mode (server_id,toggle,sleep_time,promotion_time_and_percentage,created_at,creator_id) "
             "VALUES (%s, %s, %s, %s, %s, %s) RETURNING server_id")
-        cursor.execute(insert_query, (toggle, sleep_time, promotion_time_and_precentage, time.time(), creator_id,))
+        cursor.execute(insert_query, (toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id,))
         server_id = cursor.fetchone()[0]
         cls.connection.commit()
         cursor.close()
@@ -74,7 +74,7 @@ class SmartModeDB:
         return servers
 
     @classmethod
-    def change_smart_mode(cls, server_id, toggle, sleep_time, promotion_time_and_precentage, created_at, creator_id):
+    def change_smart_mode(cls, server_id, toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id):
         cursor = cls.connection.cursor()
         select_query = "SELECT * FROM smart_mode WHERE server_id = %s"
         cursor.execute(select_query, (server_id,))
@@ -89,10 +89,10 @@ class SmartModeDB:
         WHERE server_id = %s
         """
         cursor.execute(update_query,
-                       (toggle, sleep_time, promotion_time_and_precentage, created_at, creator_id, server_id))
+                       (toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id, server_id))
         cls.connection.commit()
         cursor.close()
-        smart_mode = SmartMode(server_id, sleep_time, promotion_time_and_precentage, created_at, creator_id)
+        smart_mode = SmartMode(server_id, sleep_time, promotion_time_and_percentage, created_at, creator_id)
         return smart_mode   # извините надеюсь тебе не придется ебаться с тем что это отличается от всех остальных
         # таких штук
 
