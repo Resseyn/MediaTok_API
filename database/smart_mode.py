@@ -80,7 +80,7 @@ class SmartModeDB:
                 smart_modes = []
                 for smart_mode in smart_modes_data:
                     smart_modes.append(SmartMode(*smart_mode).__dict__)
-                return smart_modes
+                return smart_modes[0]
             except Exception as e:
                 print(f"Error showing smart_modes: {e}")
                 cls.connection.rollback()
