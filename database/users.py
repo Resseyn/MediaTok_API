@@ -51,6 +51,7 @@ class UserDB:
         except:
             cls.connection.commit()
             return None
+        #TODO: пайтон эксепшен
         user_id = cls.cursor.fetchone()[0]
         cls.connection.commit()
         return user_id
