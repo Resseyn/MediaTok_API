@@ -21,10 +21,10 @@ class User:
 
 class UserDB:
     connection = postgres.conn
-    cursor = connection.cursor()
 
     @classmethod
     def create_user_table(cls):
+        cursor = cls.connection.cursor()
         create_table_query = """
         CREATE TABLE IF NOT EXISTS users (
             user_id SERIAL PRIMARY KEY,
@@ -36,65 +36,75 @@ class UserDB:
             created_at BIGINT NOT NULL
         );
         """
-        cls.cursor.execute(create_table_query)
+        cursor.execute(create_table_query)
         cls.connection.commit()
+        cursor.close()
 
     @classmethod
     def add_user(cls, login, password, name, surname):
+        cursor = cls.connection.cursor()
         insert_query = ("INSERT INTO users (login, password, name, surname, activity, created_at) "
                         "VALUES (%s, %s, %s, %s, True, %s) RETURNING user_id")
         try:
-            cls.cursor.execute(insert_query, (login, password, name, surname,
+            cursor.execute(insert_query, (login, password, name, surname,
                                               time.time(),))
         except:
             cls.connection.commit()
             return None
         #TODO: пайтон эксепшен
-        user_id = cls.cursor.fetchone()[0]
+        user_id = cursor.fetchone()[0]
         cls.connection.commit()
+        cursor.close()
         return user_id
 
     @classmethod
     def get_user_by_id(cls, user_id):
+        cursor = cls.connection.cursor()
         select_query = "SELECT * FROM users WHERE user_id = %s"
-        cls.cursor.execute(select_query, (user_id,))
-        user_data = cls.cursor.fetchone()
+        cursor.execute(select_query, (user_id,))
+        user_data = cursor.fetchone()
         user = User(*user_data)
+        cursor.close()
         return user
 
     @classmethod
     def get_user_by_auth(cls, login, password):
+        cursor = cls.connection.cursor()
         select_query = "SELECT * FROM users WHERE login = %s AND password = %s"
-        cls.cursor.execute(select_query, (login, password))
-        user_data = cls.cursor.fetchone()
+        cursor.execute(select_query, (login, password))
+        user_data = cursor.fetchone()
         if user_data is None:
             return None
         user = User(*user_data)
+        cursor.close()
         return user
 
     @classmethod
     def show_users(cls):
+        cursor = cls.connection.cursor()
         select_query = "SELECT * FROM users"
-        cls.cursor.execute(select_query)
-        users_data = cls.cursor.fetchall()
+        cursor.execute(select_query)
+        users_data = cursor.fetchall()
         users = []
         for user_data in users_data:
             users.append(User(*user_data).__dict__)
+        cursor.close()
         return users
 
     @classmethod
     def change_user_activity(cls, user_id):
+        cursor = cls.connection.cursor()
         select_query = "SELECT * FROM users WHERE user_id = %s"
-        cls.cursor.execute(select_query, (user_id,))
-        user_data = cls.cursor.fetchone()
+        cursor.execute(select_query, (user_id,))
+        user_data = cursor.fetchone()
         update_query = "UPDATE users SET activity = %s WHERE user_id = %s"
-        cls.cursor.execute(update_query, (not (user_data[5]), (user_id,)))
+        cursor.execute(update_query, (not (user_data[5]), (user_id,)))
         cls.connection.commit()
+        cursor.close()
         return not (user_data[5])
 
     @classmethod
     def close_connection(cls):
-        cls.cursor.close()
         cls.connection.close()
 
 

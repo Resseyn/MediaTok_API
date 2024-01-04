@@ -6,7 +6,7 @@ from database import postgres
 from scripts.date import get_month_name
 
 
-class Server:
+class Search:
     def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity,to_a_specific_proxy, created_at,
                  creator_id, ):
         self.server_id = server_id
@@ -27,8 +27,9 @@ class Server:
                           sort_keys=True, indent=4)
 
 
-class ServersDB:
+class SearchesDB:
     connection = postgres.conn
+
     @classmethod
     def create_server_table(cls):
         cursor = cls.connection.cursor()
@@ -49,8 +50,8 @@ class ServersDB:
         );
         """
         cursor.execute(create_table_query)
-        cursor.close()
         cls.connection.commit()
+        cursor.close()
 
     @classmethod
     def add_server(cls, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, creator_id):
@@ -93,7 +94,7 @@ class ServersDB:
         cursor = cls.connection.cursor()
         select_query = "SELECT * FROM servers WHERE server_id = %s"
         cursor.execute(select_query, (server_id,))
-        server_data = cursor.fetchone()
+        server_data = cls.cursor.fetchone()
         update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
         cursor.execute(update_query, (not (server_data[8]), (server_id,)))
         cls.connection.commit()

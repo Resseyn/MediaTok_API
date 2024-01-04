@@ -21,10 +21,10 @@ class Proxy:
 
 class ProxyDB:
     connection = postgres.conn
-    cursor = connection.cursor()
 
     @classmethod
     def create_proxy_table(cls):
+        cursor = cls.connection.cursor()
         create_table_query = """
         CREATE TABLE IF NOT EXISTS proxy (
             server_id INT PRIMARY KEY,
@@ -32,41 +32,47 @@ class ProxyDB:
             creator_id INTEGER NOT NULL
         );
         """
-        cls.cursor.execute(create_table_query)
+        cursor.execute(create_table_query)
         cls.connection.commit()
+        cursor.close()
 
     @classmethod
     def add_proxy(cls, server_id, proxies, creator_id):
+        cursor = cls.connection.cursor()
         insert_query = (
             "INSERT INTO proxy (server_id,proxies, creator_id) "
             "VALUES (%s, %s, %s) RETURNING server_id")
-        cls.cursor.execute(insert_query, (server_id, proxies, creator_id))
-        server_id = cls.cursor.fetchone()[0]
+        cursor.execute(insert_query, (server_id, proxies, creator_id))
+        server_id = cursor.fetchone()[0]
         cls.connection.commit()
+        cursor.close()
         return server_id
 
     @classmethod
     def get_proxy_by_id(cls, server_id):
+        cursor = cls.connection.cursor()
         select_query = "SELECT * FROM proxy WHERE server_id = %s"
-        cls.cursor.execute(select_query, (server_id,))
-        proxy_data = cls.cursor.fetchone()
+        cursor.execute(select_query, (server_id,))
+        proxy_data = cursor.fetchone()
         proxy = Proxy(*proxy_data)
+        cursor.close()
         return proxy
 
     @classmethod
     def show_proxies(cls, creator_id):
+        cursor = cls.connection.cursor()
         select_query = "SELECT * FROM proxy WHERE creator_id = %s"
-        cls.cursor.execute(select_query, (creator_id,))
-        servers_data = cls.cursor.fetchall()
-        cls.cursor.close()
+        cursor.execute(select_query, (creator_id,))
+        servers_data = cursor.fetchall()
+        cursor.close()
         servers = []
         for server_data in servers_data:
             servers.append(Server(*server_data).__dict__)
+        cursor.close()
         return servers
 
     @classmethod
     def close_connection(cls):
-        cls.cursor.close()
         cls.connection.close()
 
 
