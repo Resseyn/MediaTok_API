@@ -20,7 +20,7 @@ class User:
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
 
-class UserDB():
+class UserDB:
     connection = postgres.conn
     cursor = connection.cursor()
 

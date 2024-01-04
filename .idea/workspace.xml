@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d60e1b52-9902-4cfd-91ff-04d932e2b516" name="Changes" comment="added created_at (refactor)">
-      <change afterPath="$PROJECT_DIR$/database/site_time.py" afterDir="false" />
+    <list default="true" id="d60e1b52-9902-4cfd-91ff-04d932e2b516" name="Changes" comment="тестовые бд link и site_time СУКА ЕБАНАТИЩЕ ПИСАЛ ТЗ БЛЯТЬ МНЕ ПРИДЕТСЯ ВСЕ ПЕРЕСПРАШИВАТЬ НАСЧЕТ НИХ">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/links.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/links.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/servers.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/servers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/site_time.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/site_time.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/users.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -50,24 +52,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.app (1).executor": "Run",
-    "Python.app.executor": "Run",
-    "Python.clients.executor": "Run",
-    "Python.servers.executor": "Run",
-    "Python.users.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "dev",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.app (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.app.executor&quot;: &quot;Run&quot;,
+    &quot;Python.clients.executor&quot;: &quot;Run&quot;,
+    &quot;Python.servers.executor&quot;: &quot;Run&quot;,
+    &quot;Python.users.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;dev&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/api" />
@@ -234,7 +236,8 @@
       <workItem from="1704211305092" duration="2354000" />
       <workItem from="1704213672586" duration="15942000" />
       <workItem from="1704272943932" duration="1670000" />
-      <workItem from="1704300410301" duration="11955000" />
+      <workItem from="1704300410301" duration="12764000" />
+      <workItem from="1704360091954" duration="1496000" />
     </task>
     <task id="LOCAL-00001" summary="architecture commit">
       <option name="closed" value="true" />
@@ -380,11 +383,30 @@
       <option name="project" value="LOCAL" />
       <updated>1704311096305</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="тестовые бд link и site_time СУКА ЕБАНАТИЩЕ ПИСАЛ ТЗ БЛЯТЬ МНЕ ПРИДЕТСЯ ВСЕ ПЕРЕСПРАШИВАТЬ НАСЧЕТ НИХ">
+      <option name="closed" value="true" />
+      <created>1704320274481</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1704320274481</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="architecture commit" />
@@ -397,7 +419,8 @@
     <MESSAGE value="refactored to abstract classes" />
     <MESSAGE value="2 task done" />
     <MESSAGE value="added created_at (refactor)" />
-    <option name="LAST_COMMIT_MESSAGE" value="added created_at (refactor)" />
+    <MESSAGE value="тестовые бд link и site_time СУКА ЕБАНАТИЩЕ ПИСАЛ ТЗ БЛЯТЬ МНЕ ПРИДЕТСЯ ВСЕ ПЕРЕСПРАШИВАТЬ НАСЧЕТ НИХ" />
+    <option name="LAST_COMMIT_MESSAGE" value="тестовые бд link и site_time СУКА ЕБАНАТИЩЕ ПИСАЛ ТЗ БЛЯТЬ МНЕ ПРИДЕТСЯ ВСЕ ПЕРЕСПРАШИВАТЬ НАСЧЕТ НИХ" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MediaTok_API$app.coverage" NAME="app Coverage Results" MODIFIED="1704222166884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scr" />

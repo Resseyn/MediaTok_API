@@ -25,7 +25,7 @@ class SiteTime:
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
 
-class SiteTimeDB():
+class SiteTimeDB:
     connection = postgres.conn
     cursor = connection.cursor()
 
@@ -38,7 +38,7 @@ class SiteTimeDB():
             emulation_of_inactivity_max INTEGER NOT NULL,
             make_transitions BOOLEAN NOT NULL,
             emulation_of_inactivity_between_articles_min INTEGER NOT NULL,
-            emulation_of_inactivity_between_articles_min INTEGER NOT NULL,
+            emulation_of_inactivity_between_articles_max INTEGER NOT NULL,
             number_of_transitions_min INTEGER NOT NULL,
             number_of_transitions_max INTEGER NOT NULL,
             creator_id INTEGER NOT NULL
