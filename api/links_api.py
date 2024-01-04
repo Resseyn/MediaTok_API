@@ -11,16 +11,14 @@ from src.loader import app
 @auth_required
 def show_links():
     links = LinksDB.show_links(session.get("client_id"))
-    format_links = [";".join([link["link"],
+    result_map = [
+        dict(link_id=link["link_id"], link=";".join([link["link"],
                               str(link["leads_to_post"]),
                               str(link["to_a_specific_link"]),
                               link["spec_links"],
                               str(link["time"]),
-                              str(link["traffic"]),]) for link in links]
-    print(format_links)
-    result_map = [
-        dict(link_id=link["link_id"], link=format_links[i], activity=link["activity"], created_at=link["created_at"])
-        for i, link in enumerate(links)
+                              str(link["traffic"]),]), activity=link["activity"], created_at=link["created_at"])
+        for link in links
     ]
     return json.dumps(result_map, indent=2), 200
 

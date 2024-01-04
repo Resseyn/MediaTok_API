@@ -67,10 +67,10 @@ class LinksDB():
 
     @classmethod
     def change_link_activity(cls, link_id):
-        select_query = "SELECT * FROM users WHERE link_id = %s"
+        select_query = "SELECT * FROM links WHERE link_id = %s"
         cls.cursor.execute(select_query, (link_id,))
         link_data = cls.cursor.fetchone()
-        update_query = "UPDATE users SET activity = %s WHERE link_id = %s"
+        update_query = "UPDATE links SET activity = %s WHERE link_id = %s"
         cls.cursor.execute(update_query, (not (link_data[6]), (link_id,)))
         cls.connection.commit()
         return not (link_data[6])
