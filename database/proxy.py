@@ -40,11 +40,11 @@ class ProxyDB:
     def add_proxy(cls, server_id, address, creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                count_query = "SELECT COUNT(*) FROM proxy WHERE server_id = %s"
+                count_query = "SELECT * FROM proxy WHERE server_id = %s"
                 cursor.execute(count_query, (server_id,))
-                count = cursor.fetchone()[0]
-
-                if count > 3:
+                count = cursor.fetchall()
+                #TODO: проверить работает ли
+                if len(count) >= 3:
                     print("Too many proxies for this server_id")
                     return None
 

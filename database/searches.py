@@ -6,7 +6,7 @@ from database import postgres
 from database.servers import ServersDB
 from scripts.date import get_month_name
 
-
+#TODO: erorr exceptions
 class Search:
     def __init__(self, search_id, search_for, link, properties, list_seti, activity, created_at,creator_id, ):
         self.search_id = search_id
