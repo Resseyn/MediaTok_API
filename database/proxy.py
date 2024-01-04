@@ -114,7 +114,7 @@ class ProxyDB:
         cursor.close()
         servers = []
         for server_data in servers_data:
-            servers.append(Server(*server_data).__dict__)
+            servers.append(Proxy(*server_data).__dict__)
         cursor.close()
         return servers
 
