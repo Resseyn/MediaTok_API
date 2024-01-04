@@ -49,9 +49,9 @@ class SearchesDB:
     def add_search(cls, search_for, link, properties, creator_id):
         cursor = cls.connection.cursor()
         insert_query = (
-            "INSERT INTO searches (search_for, link, properties, activity, created_at,creator_id) "
-            "VALUES (%s, %s, %s, %s,%s) RETURNING server_id")
-        cls.cursor.execute(insert_query, (search_for, link, properties, True,
+            "INSERT INTO searches (search_for, link, properties, list_seti, activity, created_at,creator_id) "
+            "VALUES (%s, %s, %s, %s,%s, %s, %s) RETURNING search_id")
+        cursor.execute(insert_query, (search_for, link, properties, (False if properties == "" else True), True,
                                           time.time(),
                                           creator_id,))
         server_id = cursor.fetchone()[0]
@@ -60,38 +60,38 @@ class SearchesDB:
         return server_id
 
     @classmethod
-    def get_server_by_id(cls, server_id):
+    def get_search_by_id(cls, search_id):
         cursor = cls.connection.cursor()
-        select_query = "SELECT * FROM servers WHERE server_id = %s"
-        cursor.execute(select_query, (server_id,))
-        server_data = cursor.fetchone()
-        server = Server(*server_data)
+        select_query = "SELECT * FROM searches WHERE search_id = %s"
+        cursor.execute(select_query, (search_id,))
+        search_data = cursor.fetchone()
+        search = Search(*search_data).__dict__
         cursor.close()
-        return server
+        return search
 
     @classmethod
-    def show_servers(cls, creator_id):
+    def show_searches(cls, creator_id):
         cursor = cls.connection.cursor()
-        select_query = "SELECT * FROM servers WHERE creator_id = %s"
+        select_query = "SELECT * FROM searches WHERE creator_id = %s"
         cursor.execute(select_query, (creator_id,))
-        servers_data = cursor.fetchall()
-        servers = []
-        for server_data in servers_data:
-            servers.append(Server(*server_data).__dict__)
+        searches_data = cursor.fetchall()
+        searches = []
+        for search_data in searches_data:
+            searches.append(Search(*search_data).__dict__)
         cursor.close()
-        return servers
+        return searches
 
     @classmethod
-    def change_server_activity(cls, server_id):
+    def change_search_activity(cls, search_id):
         cursor = cls.connection.cursor()
-        select_query = "SELECT * FROM servers WHERE server_id = %s"
-        cursor.execute(select_query, (server_id,))
-        server_data = cls.cursor.fetchone()
-        update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
-        cursor.execute(update_query, (not (server_data[8]), (server_id,)))
+        select_query = "SELECT * FROM searches WHERE search_id = %s"
+        cursor.execute(select_query, (search_id,))
+        search_data = cursor.fetchone()
+        update_query = "UPDATE searches SET activity = %s WHERE search_id = %s"
+        cursor.execute(update_query, (not (search_data[5]), (search_id,)))
         cls.connection.commit()
         cursor.close()
-        return not (server_data[8])
+        return not (search_data[5])
 
     @classmethod
     def close_connection(cls):
@@ -99,4 +99,4 @@ class SearchesDB:
 
 
 # Пример использования
-ServersDB.create_server_table()
+SearchesDB.create_searches_table()

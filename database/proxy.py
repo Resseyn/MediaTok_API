@@ -107,16 +107,16 @@ class ProxyDB:
 
     @classmethod
     def show_proxies(cls, creator_id):
-        try:
-            with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM proxy WHERE creator_id = %s"
-                cursor.execute(select_query, (creator_id,))
-                proxies_data = cursor.fetchall()
-                proxies = [Proxy(*proxy_data).__dict__ for proxy_data in proxies_data]
-                return proxies
-        except psycopg2.Error as e:
-            print("Error showing proxies(proxy.py):", e)
-            return []
+        cursor = cls.connection.cursor()
+        select_query = "SELECT * FROM proxy WHERE creator_id = %s"
+        cursor.execute(select_query, (creator_id,))
+        servers_data = cursor.fetchall()
+        cursor.close()
+        servers = []
+        for server_data in servers_data:
+            servers.append(Server(*server_data).__dict__)
+        cursor.close()
+        return servers
 
     @classmethod
     def close_connection(cls):

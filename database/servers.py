@@ -78,7 +78,7 @@ class ServersDB:
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
                 if server_data:
-                    return Server(*server_data)
+                    return Server(*server_data).__dict__
                 return None
         except psycopg2.Error as e:
             print("Error getting server by ID(servers.py):", e)

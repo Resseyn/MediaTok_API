@@ -77,7 +77,7 @@ class UserDB:
                 cursor.execute(select_query, (login, password))
                 user_data = cursor.fetchone()
                 if user_data:
-                    return User(*user_data)
+                    return User(*user_data).__dict__
                 return None
         except psycopg2.Error as e:
             print("Error getting user by authentication:", e)

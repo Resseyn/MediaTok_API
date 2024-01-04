@@ -27,14 +27,22 @@ def show_links():
 @app.post("/api/links/add")
 @auth_required
 def add_link():
-    format_link = request.form["link"]
-    parsed_link = format_link.split(";")
+    # format_link = request.form["link"]
+    # parsed_link = format_link.split(";")
+    # link_id = LinksDB.add_link(
+    #     parsed_link[0],
+    #     parsed_link[1],
+    #     parsed_link[3],
+    #     parsed_link[4],
+    #     parsed_link[5],
+    #     session.get("client_id"))
+    # return json.dumps(link_id), 200
     link_id = LinksDB.add_link(
-        parsed_link[0],
-        parsed_link[1],
-        parsed_link[3],
-        parsed_link[4],
-        parsed_link[5],
+        request.form["link"],
+        request.form["leads_to_post"],
+        request.form["spec_links"],
+        request.form["link_time"],
+        request.form["traffic"],
         session.get("client_id"))
     return json.dumps(link_id), 200
 
