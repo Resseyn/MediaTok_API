@@ -24,7 +24,8 @@ def add_server():
                     request.form["ram"],
                     request.form["storage"],
                     request.form["ip"],
-                    request.form["activity"])
+                    request.form["activity"],
+                    session.get("client_id"))
     return json.dumps(server_id), 200
 
 @app.get("/api/servers/changeActivity")

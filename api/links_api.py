@@ -21,7 +21,7 @@ def add_link():
                     request.form["link"],
                     request.form["login"],
                     request.form["password"],
-                    request.form["cpu"],)
+                    request.form["cpu"],session.get("client_id"))
     return json.dumps(link_id), 200
 
 @app.get("/api/links/changeActivity")

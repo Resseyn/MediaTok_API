@@ -12,6 +12,7 @@ class Link:
         self.traffic = traffic
         self.activity = activity
         self.created_at = created_at
+        self.creator_id = creator_id
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
@@ -32,24 +33,25 @@ class LinksDB():
             traffic INTEGER NOT NULL,
             activity BOOLEAN NOT NULL,
             created_at BIGINT NOT NULL,
+            creator_id INTEGER NOT NULL
         );
         """
         cls.cursor.execute(create_table_query)
         cls.connection.commit()
 
     @classmethod
-    def add_link(cls, link, spec_links, time, traffic):
-        insert_query = ("INSERT INTO links (link, spec_links, time, traffic, created_at) "
-                        "VALUES (%s, %s,%s, %s,%s) RETURNING link_id")
-        cls.cursor.execute(insert_query, (link, spec_links, time, traffic, time.time(),))
+    def add_link(cls, link, spec_links, time, traffic, creator_id):
+        insert_query = ("INSERT INTO links (link, spec_links, time, traffic, created_at,creator_id) "
+                        "VALUES (%s, %s,%s, %s,%s, %s) RETURNING link_id")
+        cls.cursor.execute(insert_query, (link, spec_links, time, traffic, time.time(),creator_id,))
         link_id = cls.cursor.fetchone()[0]
         cls.connection.commit()
         return link_id
 
     @classmethod
-    def show_links(cls):
-        select_query = "SELECT * FROM links"
-        cls.cursor.execute(select_query,)
+    def show_links(cls, creator_id):
+        select_query = "SELECT * FROM links WHERE creator_id = %s"
+        cls.cursor.execute(select_query, (creator_id,))
         links_data = cls.cursor.fetchall()
         links = []
         for link_data in links_data:

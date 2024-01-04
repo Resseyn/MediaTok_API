@@ -19,7 +19,8 @@ def add_user():
     user_id = UserDB.add_user(request.form["login"],
                     request.form["password"],
                     request.form["name"],
-                    request.form["surname"])
+                    request.form["surname"],
+                              session.get("client_id"))
     if user_id == None:
         return "This login is present!"
     return json.dumps(user_id), 200

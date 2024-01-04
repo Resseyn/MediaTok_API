@@ -71,9 +71,9 @@ class ServersDB:
         return server
 
     @classmethod
-    def show_servers(cls, client_id):
+    def show_servers(cls, creator_id):
         select_query = "SELECT * FROM servers WHERE creator_id = %s"
-        cls.cursor.execute(select_query, (client_id,))
+        cls.cursor.execute(select_query, (creator_id,))
         servers_data = cls.cursor.fetchall()
         servers = []
         for server_data in servers_data:
