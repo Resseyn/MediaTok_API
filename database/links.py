@@ -3,8 +3,10 @@ import time
 
 from database import postgres
 
+
 class Link:
-    def __init__(self, link_id, link, leads_to_post, to_a_specific_link, spec_links, time, traffic,  activity, created_at, creator_id):
+    def __init__(self, link_id, link, leads_to_post, to_a_specific_link, spec_links, time, traffic, activity,
+                 created_at, creator_id):
         self.link_id = link_id
         self.link = link
         self.leads_to_post = leads_to_post
@@ -47,10 +49,11 @@ class LinksDB():
     @classmethod
     def add_link(cls, link, leads_to_post, spec_links, link_time, traffic, creator_id):
         cursor = cls.connection.cursor()
-        insert_query = ("INSERT INTO links (link, leads_to_post, to_a_specific_link, spec_links, time, traffic, activity, created_at,creator_id) "
-                        "VALUES (%s, %s, %s, %s,%s, %s,%s, %s, %s) RETURNING link_id")
+        insert_query = (
+            "INSERT INTO links (link, leads_to_post, to_a_specific_link, spec_links, time, traffic, activity, created_at,creator_id) "
+            "VALUES (%s, %s, %s, %s,%s, %s,%s, %s, %s) RETURNING link_id")
         cursor.execute(insert_query, (link, leads_to_post, (False if spec_links == "" else True),
-                                          spec_links, link_time, traffic, True, time.time(), creator_id,))
+                                      spec_links, link_time, traffic, True, time.time(), creator_id,))
         link_id = cursor.fetchone()[0]
         cls.connection.commit()
         cursor.close()
@@ -64,7 +67,6 @@ class LinksDB():
         links_data = cursor.fetchall()
         links = []
         for link_data in links_data:
-
             links.append(Link(*link_data).__dict__)
         cursor.close()
         return links
@@ -80,9 +82,11 @@ class LinksDB():
         cls.connection.commit()
         cursor.close()
         return not (link_data[6])
+
     @classmethod
     def close_connection(cls):
         cls.connection.close()
+
 
 # Пример использования
 LinksDB.create_link_table()
