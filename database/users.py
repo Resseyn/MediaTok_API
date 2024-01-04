@@ -7,7 +7,7 @@ from scripts.date import get_month_name
 
 
 class User:
-    def __init__(self, user_id, login, password, name, surname, activity, created_at, creator_id):
+    def __init__(self, user_id, login, password, name, surname, activity, created_at):
         self.user_id = user_id
         self.login = login
         self.password = password

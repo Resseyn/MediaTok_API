@@ -10,7 +10,7 @@ from src.loader import app
 @app.get("/api/links/show")
 @auth_required
 def show_links():
-    links = LinksDB.show_links()
+    links = LinksDB.show_links(session.get("client_id"))
     return json.dumps(links, indent=2), 200
 
 @app.post("/api/links/add")

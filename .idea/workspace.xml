@@ -8,9 +8,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/links_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/links_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/api/servers_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/servers_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/users_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/api/users_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/links.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/links.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/database/servers.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/servers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database/users.py" beforeDir="false" afterPath="$PROJECT_DIR$/database/users.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -238,7 +236,7 @@
       <workItem from="1704213672586" duration="15942000" />
       <workItem from="1704272943932" duration="1670000" />
       <workItem from="1704300410301" duration="12764000" />
-      <workItem from="1704360091954" duration="6453000" />
+      <workItem from="1704360091954" duration="6536000" />
     </task>
     <task id="LOCAL-00001" summary="architecture commit">
       <option name="closed" value="true" />
@@ -408,7 +406,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704388746115</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="рефактор">
+      <option name="closed" value="true" />
+      <created>1704389254143</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1704389254143</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -443,7 +449,7 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/MediaTok_API$app.coverage" NAME="app Coverage Results" MODIFIED="1704222166884" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scr" />
     <SUITE FILE_PATH="coverage/MediaTok_API$users.coverage" NAME="users Coverage Results" MODIFIED="1704310800304" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/database" />
-    <SUITE FILE_PATH="coverage/MediaTok_API$app__1_.coverage" NAME="app (1) Coverage Results" MODIFIED="1704387532556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/MediaTok_API$app__1_.coverage" NAME="app (1) Coverage Results" MODIFIED="1704389279425" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
     <SUITE FILE_PATH="coverage/MediaTok_API$clients.coverage" NAME="clients Coverage Results" MODIFIED="1704304599621" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/database" />
     <SUITE FILE_PATH="coverage/MediaTok_API$servers.coverage" NAME="servers Coverage Results" MODIFIED="1704310798695" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/database" />
   </component>

@@ -10,7 +10,7 @@ from src.loader import app
 @app.get("/api/servers/show")
 @auth_required
 def show_servers():
-    servers = ServersDB.show_servers()
+    servers = ServersDB.show_servers(session.get("client_id"))
     return json.dumps(servers, indent=2), 200
 
 @app.post("/api/servers/add")
