@@ -131,5 +131,5 @@ class ProxyDB:
     def close_connection(cls):
         cls.connection.close()
 
-# Пример использования
+# Пример использования/
 ProxyDB.create_proxy_table()
