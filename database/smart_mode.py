@@ -30,6 +30,7 @@ class SmartModeDB:
             server_id INTEGER NOT NULL PRIMARY KEY,
             smart_mode BOOLEAN NOT NULL,
             sleep_time INTEGER NOT NULL,
+            promotion_time_and_precentage TEXT,
             created_at BIGINT NOT NULL,
             creator_id INTEGER NOT NULL
         );
