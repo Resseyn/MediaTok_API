@@ -47,11 +47,11 @@ class UserDB:
                         "VALUES (%s, %s, %s, %s, True, %s) RETURNING user_id")
         try:
             cursor.execute(insert_query, (login, password, name, surname,
-                                              time.time(),))
+                                          time.time(),))
         except:
             cls.connection.commit()
             return None
-        #TODO: пайтон эксепшен
+        # TODO: пайтон эксепшен
         user_id = cursor.fetchone()[0]
         cls.connection.commit()
         cursor.close()

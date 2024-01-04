@@ -7,7 +7,8 @@ from scripts.date import get_month_name
 
 
 class Server:
-    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity,to_a_specific_proxy, created_at,
+    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, to_a_specific_proxy,
+                 created_at,
                  creator_id, ):
         self.server_id = server_id
         self.name = name
@@ -29,6 +30,7 @@ class Server:
 
 class ServersDB:
     connection = postgres.conn
+
     @classmethod
     def create_server_table(cls):
         cursor = cls.connection.cursor()
@@ -59,8 +61,8 @@ class ServersDB:
             "INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, to_a_specific_proxy, created_at, creator_id) "
             "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
         cursor.execute(insert_query, (name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, False,
-                                          time.time(),
-                                          creator_id,))
+                                      time.time(),
+                                      creator_id,))
         server_id = cursor.fetchone()[0]
         cls.connection.commit()
         cursor.close()
