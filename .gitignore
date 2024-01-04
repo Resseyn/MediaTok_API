@@ -2,6 +2,8 @@
 .idea
 .gitignore
 .git
+.gitignore
+.git
 
 < home = C:\software\python3121
 implementation = CPython

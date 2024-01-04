@@ -1,9 +1,7 @@
 import time
-from datetime import datetime
 import json
 
 from database import postgres
-from scripts.date import get_month_name
 
 
 class User:

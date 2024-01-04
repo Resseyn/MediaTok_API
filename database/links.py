@@ -3,7 +3,6 @@ import time
 
 from database import postgres
 
-#TODO: не сделаны методы(ну или все я не помню)
 class Link:
     def __init__(self, link_id, link, leads_to_post, to_a_specific_link, spec_links, time, traffic,  activity, created_at, creator_id):
         self.link_id = link_id

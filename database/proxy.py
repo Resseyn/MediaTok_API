@@ -8,9 +8,10 @@ from scripts.date import get_month_name
 
 
 class Proxy:
-    def __init__(self, server_id, proxies):
+    def __init__(self, server_id, proxies, creator_id):
         self.server_id = server_id
         self.proxies = proxies
+        self.creator_id = creator_id
 
 
     def toJSON(self):
@@ -27,18 +28,19 @@ class ProxyDB:
         create_table_query = """
         CREATE TABLE IF NOT EXISTS proxy (
             server_id INT PRIMARY KEY,
-            proxy_list TEXT NOT NULL
+            proxy_list TEXT NOT NULL,
+            creator_id INTEGER NOT NULL
         );
         """
         cls.cursor.execute(create_table_query)
         cls.connection.commit()
 
     @classmethod
-    def add_server(cls, server_id, proxies):
+    def add_proxy(cls, server_id, proxies, creator_id):
         insert_query = (
-            "INSERT INTO proxy (server_id,proxies) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
-        cls.cursor.execute(insert_query, (server_id, proxies))
+            "INSERT INTO proxy (server_id,proxies, creator_id) "
+            "VALUES (%s, %s, %s) RETURNING server_id")
+        cls.cursor.execute(insert_query, (server_id, proxies, creator_id))
         server_id = cls.cursor.fetchone()[0]
         cls.connection.commit()
         return server_id
@@ -52,9 +54,9 @@ class ProxyDB:
         return proxy
 
     @classmethod
-    def show_servers(cls):
-        select_query = "SELECT * FROM proxy"
-        cls.cursor.execute(select_query)
+    def show_proxies(cls, creator_id):
+        select_query = "SELECT * FROM proxy WHERE creator_id = %s"
+        cls.cursor.execute(select_query, (creator_id,))
         servers_data = cls.cursor.fetchall()
         cls.cursor.close()
         servers = []
