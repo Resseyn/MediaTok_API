@@ -1,4 +1,5 @@
 import json
+import time
 
 from database import postgres
 
@@ -44,11 +45,11 @@ class LinksDB():
         cls.connection.commit()
 
     @classmethod
-    def add_link(cls, link, leads_to_post, spec_links, time, traffic, creator_id):
-        insert_query = ("INSERT INTO links (link, leads_to_post, to_a_specific_link, spec_links, time, traffic, activity,created_at,creator_id) "
+    def add_link(cls, link, leads_to_post, spec_links, link_time, traffic, creator_id):
+        insert_query = ("INSERT INTO links (link, leads_to_post, to_a_specific_link, spec_links, time, traffic, activity, created_at,creator_id) "
                         "VALUES (%s, %s, %s, %s,%s, %s,%s, %s, %s) RETURNING link_id")
         cls.cursor.execute(insert_query, (link, leads_to_post, (False if spec_links == "" else True),
-                                          spec_links, time, traffic, True, time.time(),creator_id,))
+                                          spec_links, link_time, traffic, True, time.time(), creator_id,))
         link_id = cls.cursor.fetchone()[0]
         cls.connection.commit()
         return link_id
