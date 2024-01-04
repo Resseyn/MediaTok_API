@@ -48,9 +48,9 @@ class SearchesDB:
     def add_search(cls, search_for, link, properties, creator_id):
         cursor = cls.connection.cursor()
         insert_query = (
-            "INSERT INTO searches (search_for, link, properties, activity, created_at,creator_id) "
-            "VALUES (%s, %s, %s, %s,%s) RETURNING server_id")
-        cls.cursor.execute(insert_query, (search_for, link, properties, True,
+            "INSERT INTO searches (search_for, link, properties, list_seti, activity, created_at,creator_id) "
+            "VALUES (%s, %s, %s, %s,%s, %s, %s) RETURNING search_id")
+        cursor.execute(insert_query, (search_for, link, properties, (False if properties == "" else True), True,
                                           time.time(),
                                           creator_id,))
         server_id = cursor.fetchone()[0]

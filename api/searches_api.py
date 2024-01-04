@@ -12,7 +12,15 @@ from src.loader import app
 @auth_required
 def show_searches():
     searches = SearchesDB.show_searches(session.get("client_id"))
-    return json.dumps(searches, indent=2), 200
+    result_map = [
+        dict(search_id=search["search_id"], search=";".join([search["link"],
+                                                     str(search["list_seti"]),
+                                                     str(search["properties"]),
+                                                     ]), activity=search["activity"],
+             created_at=search["created_at"])
+        for search in searches
+    ]
+    return json.dumps(result_map, indent=2), 200
 
 
 @app.post("/api/searches/add")
