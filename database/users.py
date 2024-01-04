@@ -75,7 +75,7 @@ class UserDB:
         user_data = cursor.fetchone()
         if user_data is None:
             return None
-        user = User(*user_data)
+        user = User(*user_data).__dict__
         cursor.close()
         return user
 

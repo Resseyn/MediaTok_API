@@ -63,7 +63,7 @@ class SmartModeDB:
             try:
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
-                smart_mode = SmartMode(*server_data)
+                smart_mode = SmartMode(*server_data).__dict__
             except Exception as e:
                 print(f"An error occurred: {e}")
                 cls.connection.rollback()

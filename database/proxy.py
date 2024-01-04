@@ -53,7 +53,7 @@ class ProxyDB:
         select_query = "SELECT * FROM proxy WHERE server_id = %s"
         cursor.execute(select_query, (server_id,))
         proxy_data = cursor.fetchone()
-        proxy = Proxy(*proxy_data)
+        proxy = Proxy(*proxy_data).__dict__
         cursor.close()
         return proxy
 

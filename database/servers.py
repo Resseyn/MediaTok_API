@@ -74,7 +74,7 @@ class ServersDB:
         select_query = "SELECT * FROM servers WHERE server_id = %s"
         cursor.execute(select_query, (server_id,))
         server_data = cursor.fetchone()
-        server = Server(*server_data)
+        server = Server(*server_data).__dict__
         cursor.close()
         return server
 
