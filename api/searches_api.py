@@ -14,7 +14,7 @@ def show_searches():
     searches = SearchesDB.show_searches(session.get("client_id"))
     result_map = [
         dict(search_id=search["search_id"], search=";".join([search["link"],
-                                                     str(search["list_seti"]),
+                                                     str(True),
                                                      str(search["properties"]),
                                                      ]), activity=search["activity"],
              created_at=search["created_at"])
