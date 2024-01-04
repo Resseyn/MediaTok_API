@@ -45,7 +45,7 @@ class SmartModeDB:
         insert_query = (
             "INSERT INTO smart_mode (server_id,toggle,sleep_time,promotion_time_and_percentage,created_at,creator_id) "
             "VALUES (%s, %s, %s, %s, %s, %s) RETURNING server_id")
-        cursor.execute(insert_query, (toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id,))
+        cursor.execute(insert_query, (server_id, toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id,))
         server_id = cursor.fetchone()[0]
         cls.connection.commit()
         cursor.close()

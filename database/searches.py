@@ -7,18 +7,13 @@ from scripts.date import get_month_name
 
 
 class Search:
-    def __init__(self, search_id, search_for, link, , password_anyd, cpu, ram, storage, ip, activity,to_a_specific_proxy, created_at,
-                 creator_id, ):
-        self.server_id = server_id
-        self.name = name
-        self.login_anyd = login_anyd
-        self.password_anyd = password_anyd
-        self.cpu = cpu
-        self.ram = ram
-        self.storage = storage
-        self.ip = ip
+    def __init__(self, search_id, search_for, link, properties, list_seti, activity, created_at,creator_id, ):
+        self.search_id = search_id
+        self.search_for = search_for
+        self.link = link
+        self.properties = properties
+        self.list_seti = list_seti
         self.activity = activity
-        self.to_a_specific_proxy = to_a_specific_proxy
         self.created_at = created_at
         self.creator_id = creator_id
 
@@ -31,20 +26,16 @@ class SearchesDB:
     connection = postgres.conn
 
     @classmethod
-    def create_server_table(cls):
+    def create_searches_table(cls):
         cursor = cls.connection.cursor()
         create_table_query = """
-        CREATE TABLE IF NOT EXISTS servers (
-            server_id SERIAL PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            login_anyd VARCHAR(255) NOT NULL,
-            password_anyd VARCHAR(255) NOT NULL,
-            cpu VARCHAR(255) NOT NULL,
-            ram VARCHAR(255) NOT NULL,
-            storage VARCHAR(255) NOT NULL,
-            ip VARCHAR(255) NOT NULL,
+        CREATE TABLE IF NOT EXISTS searches (
+            search_id SERIAL PRIMARY KEY,
+            search_for VARCHAR(255) NOT NULL,
+            link TEXT NOT NULL,
+            properties TEXT NOT NULL,
+            list_seti BOOLEAN NOT NULL,
             activity BOOLEAN NOT NULL,
-            to_a_specific_proxy BOOLEAN NOT NULL,
             created_at BIGINT NOT NULL,
             creator_id INTEGER NOT NULL
         );
@@ -54,12 +45,12 @@ class SearchesDB:
         cursor.close()
 
     @classmethod
-    def add_server(cls, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, creator_id):
+    def add_search(cls, search_for, link, properties, creator_id):
         cursor = cls.connection.cursor()
         insert_query = (
-            "INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, to_a_specific_proxy, created_at, creator_id) "
-            "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
-        cls.cursor.execute(insert_query, (name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, False,
+            "INSERT INTO searches (search_for, link, properties, activity, created_at,creator_id) "
+            "VALUES (%s, %s, %s, %s,%s) RETURNING server_id")
+        cls.cursor.execute(insert_query, (search_for, link, properties, True,
                                           time.time(),
                                           creator_id,))
         server_id = cursor.fetchone()[0]
