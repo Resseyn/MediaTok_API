@@ -33,8 +33,8 @@ class SiteTimeDB:
     @classmethod
     def create_link_table(cls):
         try:
-            cursor = cls.connection.cursor()
-            create_table_query = """
+            with cls.connection.cursor() as cursor:
+                create_table_query = """
                 CREATE TABLE IF NOT EXISTS site_times (
                     time_id SERIAL PRIMARY KEY,
                     emulation_of_inactivity_min INTEGER NOT NULL,
@@ -50,10 +50,8 @@ class SiteTimeDB:
             cursor.execute(create_table_query)
             cls.connection.commit()
         except psycopg2.Error as e:
+            cls.connection.rollback()
             print(f"Error creating site_times table: {e}")
-        finally:
-            if cursor:
-                cursor.close()
 
     @classmethod
     def add_time(cls, emulation_of_inactivity_min, emulation_of_inactivity_max,
@@ -77,10 +75,48 @@ class SiteTimeDB:
                                )
                 time_id = cursor.fetchone()[0]
                 cls.connection.commit()
-                return time_id
+                return SiteTime(time_id,emulation_of_inactivity_min,emulation_of_inactivity_max, make_transitions,
+                                emulation_of_inactivity_between_articles_min,emulation_of_inactivity_between_articles_max,
+                                number_of_transitions_min, number_of_transitions_max,creator_id).__dict__
         except psycopg2.Error as e:
             print(f"Error adding time: {e}")
             return None
+
+    @classmethod
+    def change_times(cls,time_id, emulation_of_inactivity_min, emulation_of_inactivity_max,
+                 make_transitions,
+                 emulation_of_inactivity_between_articles_min, emulation_of_inactivity_between_articles_max,
+                 number_of_transitions_min, number_of_transitions_max,):
+        try:
+            with cls.connection.cursor() as cursor:
+                select_query = "SELECT * FROM site_times WHERE time_id = %s"
+                cursor.execute(select_query, (time_id))
+                user_data = cursor.fetchone()
+                if user_data:
+                    update_query = '''UPDATE site_times 
+                SET emulation_of_inactivity_min = %s, 
+                    emulation_of_inactivity_max = %s, 
+                    make_transitions = %s, 
+                    emulation_of_inactivity_between_articles_min = %s,
+                    emulation_of_inactivity_between_articles_max = %s,
+                    number_of_transitions_min = %s,
+                    number_of_transitions_max = %s
+                WHERE time_id = %s'''
+                    cursor.execute(update_query, (emulation_of_inactivity_min,emulation_of_inactivity_max,
+                                                  make_transitions,emulation_of_inactivity_between_articles_min,
+                                                  emulation_of_inactivity_between_articles_max,
+                                                  number_of_transitions_min,number_of_transitions_max,time_id))
+                    creator_id = cursor.fetchone()[0]
+                    cls.connection.commit()
+                    cursor.close()
+                    return SiteTime(time_id, emulation_of_inactivity_min, emulation_of_inactivity_max, make_transitions,
+                                    emulation_of_inactivity_between_articles_min,emulation_of_inactivity_between_articles_max,
+                                    number_of_transitions_min, number_of_transitions_max,creator_id).__dict__
+                cursor.close()
+                return None
+        except psycopg2.Error as e:
+            cls.connection.rollback()
+            print(f"Error changing site_times:",e)
 
     @classmethod
     def show_times(cls, creator_id):
@@ -92,6 +128,7 @@ class SiteTimeDB:
                 times = [SiteTime(*time_data).__dict__ for time_data in times_data]
                 return times
         except psycopg2.Error as e:
+            cls.connection.rollback()
             print(f"Error showing times: {e}")
 
     @classmethod

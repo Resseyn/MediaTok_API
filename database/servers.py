@@ -1,9 +1,8 @@
 import json
 import time
-from datetime import datetime
 import psycopg2
 from database import postgres
-from scripts.date import get_month_name
+
 
 class Server:
     def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, to_a_specific_proxy,
@@ -25,6 +24,7 @@ class Server:
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
                           sort_keys=True, indent=4)
+
 
 class ServersDB:
     connection = postgres.conn
@@ -51,7 +51,6 @@ class ServersDB:
                 """
                 cursor.execute(create_table_query)
                 cls.connection.commit()
-                cursor.close()
         except psycopg2.Error as e:
             print("Error creating server table(servers.py):", e)
             cls.connection.rollback()
@@ -69,7 +68,6 @@ class ServersDB:
                                               creator_id,))
                 server_id = cursor.fetchone()[0]
                 cls.connection.commit()
-                cursor.close()
                 return server_id
         except psycopg2.Error as e:
             print("Ошибка add server(servers.py):", e)
@@ -84,9 +82,7 @@ class ServersDB:
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
                 if server_data:
-                    cursor.close()
                     return Server(*server_data).__dict__
-                cursor.close()
                 return None
         except psycopg2.Error as e:
             cursor.close()
@@ -101,7 +97,6 @@ class ServersDB:
                 cursor.execute(select_query, (creator_id,))
                 servers_data = cursor.fetchall()
                 servers = [Server(*server_data).__dict__ for server_data in servers_data]
-                cursor.close()
                 return servers
         except psycopg2.Error as e:
             cursor.close()
@@ -119,7 +114,6 @@ class ServersDB:
                     update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
                     cursor.execute(update_query, (not server_data[8], server_id,))
                     cls.connection.commit()
-                    cursor.close()
                     return not server_data[8]
                 return None
         except psycopg2.Error as e:
@@ -128,7 +122,7 @@ class ServersDB:
             cursor.close()
 
     @classmethod
-    def change_proxy_flag(cls,server_id,flag):
+    def change_proxy_flag(cls, server_id, flag):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM servers WHERE server_id = %s"
@@ -138,17 +132,16 @@ class ServersDB:
                     update_query = "UPDATE servers SET to_a_specific_proxy = %s WHERE server_id = %s"
                     cursor.execute(update_query, (flag, server_id,))
                     cls.connection.commit()
-                    cursor.close()
                     return True
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing proxy flag (servers.py):",e)
             cursor.close()
 
-
     @classmethod
     def close_connection(cls):
         cls.connection.close()
+
 
 # Пример использования.
 ServersDB.create_server_table()
