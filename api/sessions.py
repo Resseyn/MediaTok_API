@@ -47,10 +47,10 @@ def login():
     if client is None:
         return "Wrong auth data", 400
 
-    token = jwt.encode({'id': client.user_id, 'exp': datetime.now() + timedelta(days=30)},
+    token = jwt.encode({'id': client["user_id"], 'exp': datetime.now() + timedelta(days=30)},
                        app.secret_key)
     session['jwt'] = token
-    session['client_id'] = client.user_id
+    session['client_id'] = client["user_id"]
     return redirect(url_for('index'))
 
 

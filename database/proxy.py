@@ -24,10 +24,10 @@ class ProxyDB:
             with cls.connection.cursor() as cursor:
                 create_table_query = """
                 CREATE TABLE IF NOT EXISTS proxy (
-                    proxy_id INT PRIMARY KEY,
+                    proxy_id SERIAL PRIMARY KEY,
                     server_id INT NOT NULL,
                     address TEXT NOT NULL,
-                    status BOOLEAN NOT NULL,
+                    activity BOOLEAN NOT NULL,
                     creator_id INTEGER NOT NULL
                 );
                 """
@@ -48,15 +48,15 @@ class ProxyDB:
                 count = cursor.fetchone()[0]
                 #TODO: проверить работает ли
                 if count >= 3:
-                    print("Too many proxies for this server_id")
                     return None
 
                 insert_query = (
-                    "INSERT INTO proxy (server_id, address, status, creator_id) "
+                    "INSERT INTO proxy (server_id, address, activity, creator_id) "
                     "VALUES (%s, %s, %s, %s) RETURNING proxy_id"
                 )
                 cursor.execute(insert_query, (server_id, address, True, creator_id))
                 proxy_id = cursor.fetchone()[0]
+                ServersDB.change_proxy_flag(server_id, True)
                 cls.connection.commit()
                 return proxy_id
         except psycopg2.Error as e:
@@ -123,18 +123,38 @@ class ProxyDB:
             print("Error showing proxies:", e)
             return []
 
-    def change_proxy(cls, proxy_id, address, status):
+    def change_proxy(cls, proxy_id, address, activity):
         try:
             with cls.connection.cursor() as cursor:
-                update_query = "UPDATE proxy SET address = %s, status = %s WHERE proxy_id = %s RETURNING server_id,creator_id"
-                cursor.execute(update_query, (address, status, proxy_id))
+                update_query = "UPDATE proxy SET address = %s, activity = %s WHERE proxy_id = %s RETURNING server_id,creator_id"
+                cursor.execute(update_query, (address, activity, proxy_id))
                 proxy_data = cursor.fetchone()
-                return Proxy(proxy_id, proxy_data[0], address, status, proxy_data[1]).__dict__
+                return Proxy(proxy_id, proxy_data[0], address, activity, proxy_data[1]).__dict__
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing proxy:", e)
             return None
 
+    @classmethod
+    def change_proxy_activity(cls, proxy_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                select_query = "SELECT * FROM proxy WHERE proxy_id = %s"
+                cursor.execute(select_query, (proxy_id,))
+                user_data = cursor.fetchone()
+                if user_data:
+                    update_query = "UPDATE proxy SET activity = %s WHERE proxy_id = %s"
+                    cursor.execute(update_query, (not user_data[3], proxy_id,))
+                    cls.connection.commit()
+                    cursor.close()
+                    return not user_data[3]
+                cursor.close()
+                return None
+        except psycopg2.Error as e:
+            cls.connection.rollback()
+            cursor.close()
+            print("Error changing user activity:", e)
+            return None
 
     @classmethod
     def close_connection(cls):

@@ -136,7 +136,7 @@ class ServersDB:
                 server_data = cursor.fetchone()
                 if server_data:
                     update_query = "UPDATE servers SET to_a_specific_proxy = %s WHERE server_id = %s"
-                    cursor.execute(update_query, flag,server_id)
+                    cursor.execute(update_query, (flag, server_id,))
                     cls.connection.commit()
                     cursor.close()
                     return True
