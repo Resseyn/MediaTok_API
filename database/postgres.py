@@ -1,4 +1,5 @@
 import psycopg2
+
 from config import postgres_query
 
 # Connect to your postgres DB
