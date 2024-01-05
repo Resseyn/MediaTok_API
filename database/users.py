@@ -36,7 +36,10 @@ class UserDB:
                 """
                 cursor.execute(create_table_query)
                 cls.connection.commit()
+                cursor.close()
         except psycopg2.Error as e:
+            cls.connection.rollback()
+            cursor.close()
             print("Error creating user table:", e)
 
     @classmethod
@@ -48,9 +51,12 @@ class UserDB:
                 cursor.execute(insert_query, (login, password, name, surname, time.time()))
                 user_id = cursor.fetchone()[0]
                 cls.connection.commit()
+                cursor.close()
                 return user_id
         except psycopg2.Error as e:
             print("Error adding user:", e)
+            cls.connection.rollback()
+            cursor.close()
             return None
 
     @classmethod
@@ -61,9 +67,13 @@ class UserDB:
                 cursor.execute(select_query, (user_id,))
                 user_data = cursor.fetchone()
                 if user_data:
+                    cursor.close()
                     return User(*user_data)
+                cursor.close()
                 return None
         except psycopg2.Error as e:
+            cls.connection.rollback()
+            cursor.close()
             print("Error getting user by ID:", e)
 
     @classmethod
@@ -74,9 +84,13 @@ class UserDB:
                 cursor.execute(select_query, (login, password))
                 user_data = cursor.fetchone()
                 if user_data:
+                    cursor.close()
                     return User(*user_data).__dict__
+                cursor.close()
                 return None
         except psycopg2.Error as e:
+            cls.connection.rollback()
+            cursor.close()
             print("Error getting user by authentication:", e)
 
     @classmethod
@@ -87,8 +101,11 @@ class UserDB:
                 cursor.execute(select_query)
                 users_data = cursor.fetchall()
                 users = [User(*user_data).__dict__ for user_data in users_data]
+                cursor.close()
                 return users
         except psycopg2.Error as e:
+            cls.connection.rollback()
+            cursor.close()
             print("Error showing users:", e)
 
     @classmethod
@@ -102,9 +119,13 @@ class UserDB:
                     update_query = "UPDATE users SET activity = %s WHERE user_id = %s"
                     cursor.execute(update_query, (not user_data[5], user_id,))
                     cls.connection.commit()
+                    cursor.close()
                     return not user_data[5]
+                cursor.close()
                 return None
         except psycopg2.Error as e:
+            cls.connection.rollback()
+            cursor.close()
             print("Error changing user activity:", e)
 
     @classmethod

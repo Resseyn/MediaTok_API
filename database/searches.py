@@ -41,8 +41,12 @@ class SearchesDB:
             creator_id INTEGER NOT NULL
         );
         """
-        cursor.execute(create_table_query)
-        cls.connection.commit()
+        try:
+            cursor.execute(create_table_query)
+            cls.connection.commit()
+        except Exception as e:
+            print(f"Error creating searches table: {e}")
+            cls.connection.rollback()
         cursor.close()
 
     @classmethod

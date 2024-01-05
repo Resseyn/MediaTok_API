@@ -44,6 +44,7 @@ class LinksDB:
             cursor.execute(create_table_query)
             cls.connection.commit()
         except psycopg2.Error as e:
+            cls.connection.rollback()
             print("Error creating link table:", e)
         finally:
             if cursor:
@@ -62,6 +63,7 @@ class LinksDB:
                 cls.connection.commit()
                 return link_id
         except psycopg2.Error as e:
+            cls.connection.rollback()
             print("Error adding link:", e)
 
     @classmethod
@@ -74,6 +76,7 @@ class LinksDB:
                 links = [Link(*link_data).__dict__ for link_data in links_data]
                 return links
         except psycopg2.Error as e:
+            cls.connection.rollback()
             print("Error showing links:", e)
 
     @classmethod
@@ -90,6 +93,7 @@ class LinksDB:
                     return not link_data[7]
                 return None
         except psycopg2.Error as e:
+            cls.connection.rollback()
             print("Error changing link activity:", e)
 
     @classmethod

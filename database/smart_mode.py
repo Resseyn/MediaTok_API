@@ -41,7 +41,7 @@ class SmartModeDB:
             except Exception as e:
                 print(f"Error creating smart_mode table: {e}")
                 cls.connection.rollback()
-
+            cursor.close()
     @classmethod
     def add_property(cls, honorable_mention, toggle, sleep_time, promotion_time_and_percentage, creator_id):
         with cls.connection.cursor() as cursor:
@@ -52,10 +52,12 @@ class SmartModeDB:
                 cursor.execute(insert_query, (honorable_mention, toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id,))
                 honorable_mention = cursor.fetchone()[0]
                 cls.connection.commit()
+                cursor.close()
                 return SmartMode(honorable_mention, toggle, sleep_time,promotion_time_and_percentage, creator_id).__dict__
             except Exception as e:
                 print(f"Error adding property: {e}")
                 cls.connection.rollback()
+                cursor.close()
 
     @classmethod
     def get_smart_mode_by_server_id(cls, server_id):
@@ -65,9 +67,11 @@ class SmartModeDB:
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
                 smart_mode = SmartMode(*server_data).__dict__
+                cursor.close()
                 return smart_mode
             except Exception as e:
                 print(f"Error getting smart_mode by server_id: {e}")
+                cursor.close()
                 cls.connection.rollback()
 
     @classmethod
@@ -80,10 +84,12 @@ class SmartModeDB:
                 smart_modes = []
                 for smart_mode in smart_modes_data:
                     smart_modes.append(SmartMode(*smart_mode).__dict__)
+                cursor.close()
                 return smart_modes[0]
             except Exception as e:
                 print(f"Error showing smart_modes: {e}")
                 cls.connection.rollback()
+                cursor.close()
 
     @classmethod
     def change_smart_mode_property(cls, server_id, toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id):
@@ -105,9 +111,11 @@ class SmartModeDB:
                                (toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id, server_id))
                 cls.connection.commit()
                 smart_mode = SmartMode(server_id, sleep_time, promotion_time_and_percentage, created_at, creator_id)
+                cursor.close()
                 return smart_mode.__dict__
             except Exception as e:
                 print(f"Error changing smart_mode property: {e}")
+                cursor.close()
                 cls.connection.rollback()
 
     @classmethod

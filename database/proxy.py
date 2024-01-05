@@ -33,8 +33,11 @@ class ProxyDB:
                 """
                 cursor.execute(create_table_query)
                 cls.connection.commit()
+                cursor.close()
         except psycopg2.Error as e:
+            cls.connection.rollback()
             print("Error creating proxy table(proxy.py):", e)
+            cursor.close()
 
     @classmethod
     def add_proxy(cls, server_id, address, creator_id):
@@ -44,7 +47,7 @@ class ProxyDB:
                 cursor.execute(count_query, (server_id,))
                 count = cursor.fetchone()[0]
                 #TODO: проверить работает ли
-                if count > 3:
+                if count >= 3:
                     print("Too many proxies for this server_id")
                     return None
 
@@ -58,6 +61,7 @@ class ProxyDB:
                 return proxy_id
         except psycopg2.Error as e:
             print("Error adding proxy(proxy.py):", e)
+            cls.connection.rollback()
             return None
 
     @classmethod
@@ -76,6 +80,7 @@ class ProxyDB:
                 return True
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
+            cls.connection.rollback()
             return False
 
     @classmethod
@@ -88,6 +93,7 @@ class ProxyDB:
                 return Proxy(*proxy_data).__dict__ if proxy_data else None
         except psycopg2.Error as e:
             print("Error getting proxy by ID(proxy.py):", e)
+            cls.connection.rollback()
             return None
 
     @classmethod
@@ -100,6 +106,7 @@ class ProxyDB:
                 return Proxy(*proxy_data).__dict__ if proxy_data else None
         except psycopg2.Error as e:
             print("Error getting proxy by ID(proxy.py):", e)
+            cls.connection.rollback()
             return None
 
     @classmethod
@@ -112,6 +119,7 @@ class ProxyDB:
                 proxies = [Proxy(*proxy_data).__dict__ for proxy_data in proxies_data]
                 return proxies
         except psycopg2.Error as e:
+            cls.connection.rollback()
             print("Error showing proxies:", e)
             return []
 
@@ -123,6 +131,7 @@ class ProxyDB:
                 proxy_data = cursor.fetchone()
                 return Proxy(proxy_id, proxy_data[0], address, status, proxy_data[1]).__dict__
         except psycopg2.Error as e:
+            cls.connection.rollback()
             print("Error changing proxy:", e)
             return None
 
