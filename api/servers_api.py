@@ -16,8 +16,8 @@ def add_server():
     data = json.loads(request.data)
     server_id = ServersDB.add_server(
         data.get("name"),
-        data.get("login"),
-        data.get("password"),
+        data.get("login_anyd"),
+        data.get("password_anyd"),
         data.get("cpu"),
         data.get("ram"),
         data.get("storage"),
@@ -43,3 +43,19 @@ def delete_server():
     if changed is None:
         return "Wrong data", 400
     return json.dumps(changed), 200
+
+@app.post("/api/servers/change")
+@auth_required
+def change_server():
+    data = json.loads(request.data)
+    server_id = ServersDB.change_server(
+        data.get("server_id"),
+        data.get("name"),
+        data.get("login_anyd"),
+        data.get("password_anyd"),
+        data.get("cpu"),
+        data.get("ram"),
+        data.get("storage"),
+        data.get("ip"),
+        session.get("client_id"))
+    return json.dumps(server_id), 200

@@ -30,6 +30,5 @@ def change_mode():
         data["toggle"],
         data["sleep_time"],
         data["promotion_time_and_percentage"],
-        time.time(),
         session.get("client_id"))
     return json.dumps(server_id), 200
