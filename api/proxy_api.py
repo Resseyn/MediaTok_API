@@ -13,7 +13,6 @@ def show_proxies():
 @app.post("/api/proxy/add")
 @auth_required
 def add_proxy():
-    args = request.args
     data = json.loads(request.data)
     server_id = ProxyDB.add_proxy(
         data.get("server_id"),

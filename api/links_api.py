@@ -54,11 +54,10 @@ def delete_link():
 @app.post("/api/links/change")
 @auth_required
 def change_link():
-    args = request.args
     try:
         data = json.loads(request.data)
         link_id = LinksDB.change_link(
-            args.get("link_id"),
+            data.get("link_id"),
             data.get("link"),
             data.get("leads_to_post"),
             data.get("spec_links"),

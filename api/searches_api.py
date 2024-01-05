@@ -21,10 +21,9 @@ def show_searches():
 @app.post("/api/searches/add")
 @auth_required
 def add_search():
-    args = request.args
     data = json.loads(request.data)
     search_id = SearchesDB.add_search(
-        args.get("type"),
+        data.get("type"),
         data.get("link"),
         data.get("props"),
         session.get("client_id"))

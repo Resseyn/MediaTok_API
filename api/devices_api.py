@@ -37,10 +37,9 @@ def delete_device():
 @app.post("/api/devices/change")
 @auth_required
 def change_device():
-    args = request.args
     data = json.loads(request.data)
     changed_device = DevicesDB.change_device(
-        args.get("record_id"),
+        data.get("record_id"),
         data.get("phone"),
         data.get("desktop"),
         data.get("tablet"),)

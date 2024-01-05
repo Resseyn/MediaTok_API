@@ -34,14 +34,13 @@ def add_time():
 @app.get("/api/site_time/change")
 @auth_required
 def change_times():
-    args = request.args
     data = json.loads(request.data)
     emul = data["emulation_of_inactivity"].split("-")
     emul_between_art = data["emulation_of_inactivity"].split("-")
     number_of_transactions = data["emulation_of_inactivity"].split("-")
     try:
         changed_time = SiteTimeDB.change_times(
-            args.get("time_id"),
+            data.get("time_id"),
             emul[0],
             emul[1],
             data["make_transitions"],
