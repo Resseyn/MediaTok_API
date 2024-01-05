@@ -62,13 +62,13 @@ class ServersDB:
             with cls.connection.cursor() as cursor:
                 insert_query = (
                     "INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, to_a_specific_proxy, created_at, creator_id) "
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id")
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id, name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, to_a_specific_proxy, created_at, creator_id")
                 cursor.execute(insert_query, (name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, False,
                                               time.time(),
                                               creator_id,))
-                server_id = cursor.fetchone()[0]
+                server_data = cursor.fetchone()
                 cls.connection.commit()
-                return server_id
+                return Server(*server_data).__dict__
         except psycopg2.Error as e:
             print("Ошибка add server(servers.py):", e)
             cls.connection.rollback()
@@ -150,6 +150,36 @@ class ServersDB:
             print("Error deleting proxy:", e)
             cls.connection.rollback()
             return False
+
+    @classmethod
+    def change_server(cls, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, creator_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                select_query = "SELECT * FROM servers WHERE server_id = %s"
+                cursor.execute(select_query, (server_id,))
+                server_data = cursor.fetchone()
+                if server_data:
+                    update_query = """
+                    UPDATE servers SET 
+                    name = %s, 
+                    login_anyd = %s, 
+                    password_anyd = %s, 
+                    cpu = %s, 
+                    ram = %s, 
+                    storage = %s,
+                    ip = %s, 
+                    activity = %s
+                    WHERE server_id = %s;"""
+                    cursor.execute(update_query, (
+                    name, login_anyd, password_anyd, cpu, ram, storage, ip, server_data[8], server_id
+                    ))
+                    cls.connection.commit()
+                    return Server(server_id, name, login_anyd, password_anyd,  cpu, ram, storage, ip,
+                                  server_data[8], server_data[9], server_data[10], creator_id).__dict__
+                return None
+        except psycopg2.Error as e:
+            print(f"Error changing link:", e)
+            cls.connection.rollback()
     @classmethod
     def close_connection(cls):
         cls.connection.close()

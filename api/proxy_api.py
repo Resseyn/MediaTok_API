@@ -46,7 +46,7 @@ def change_proxy_address():
     return json.dumps(new_proxy), 200
 
 
-@app.get("/api/links/delete")
+@app.get("/api/proxy/delete")
 @auth_required
 def delete_proxy():
     args = request.args

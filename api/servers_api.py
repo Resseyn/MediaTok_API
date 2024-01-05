@@ -48,3 +48,24 @@ def delete_server():
     if changed is None:
         return "Wrong data", 400
     return json.dumps(changed), 200
+
+@app.post("/api/servers/change")
+@auth_required
+def change_server():
+    request_data = json.loads(request.data)
+    try:
+        server_id = ServersDB.change_server(
+            request_data["server_id"],
+            request_data["name"],
+            request_data["login_anyd"],
+            request_data["password_anyd"],
+            request_data["cpu"],
+            request_data["ram"],
+            request_data["storage"],
+            request_data["ip"],
+            session.get("client_id"))
+        if server_id is None:
+            return "Wrong data", 400
+    except:
+        return "Wrong data", 400
+    return json.dumps(server_id), 200
