@@ -1,11 +1,8 @@
 import json
-
 from flask import request, session
-
 from api.sessions import auth_required
 from database.links import LinksDB
 from src.loader import app
-
 
 @app.get("/api/links/show")
 @auth_required
@@ -23,29 +20,18 @@ def show_links():
     ]
     return json.dumps(result_map, indent=2), 200
 
-
 @app.post("/api/links/add")
 @auth_required
 def add_link():
-    # format_link = request.form["link"]
-    # parsed_link = format_link.split(";")
-    # link_id = LinksDB.add_link(
-    #     parsed_link[0],
-    #     parsed_link[1],
-    #     parsed_link[3],
-    #     parsed_link[4],
-    #     parsed_link[5],
-    #     session.get("client_id"))
-    # return json.dumps(link_id), 200
+    data = json.loads(request.data)
     link_id = LinksDB.add_link(
-        request.form["link"],
-        request.form["leads_to_post"],
-        request.form["spec_links"],
-        request.form["link_time"],
-        request.form["traffic"],
+        data.get("link"),
+        data.get("leads_to_post"),
+        data.get("spec_links"),
+        data.get("link_time"),
+        data.get("traffic"),
         session.get("client_id"))
     return json.dumps(link_id), 200
-
 
 @app.get("/api/links/changeActivity")
 @auth_required
@@ -64,18 +50,20 @@ def delete_link():
     if changed is None:
         return "Wrong data", 400
     return json.dumps(changed), 200
+
 @app.post("/api/links/change")
 @auth_required
 def change_link():
     args = request.args
     try:
+        data = json.loads(request.data)
         link_id = LinksDB.change_link(
             args.get("link_id"),
-            request.form["link"],
-            request.form["leads_to_post"],
-            request.form["spec_links"],
-            request.form["link_time"],
-            request.form["traffic"],
+            data.get("link"),
+            data.get("leads_to_post"),
+            data.get("spec_links"),
+            data.get("link_time"),
+            data.get("traffic"),
             session.get("client_id"))
         if link_id is None:
             return "Wrong data", 400
