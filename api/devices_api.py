@@ -9,10 +9,9 @@ from src.loader import app
 
 @app.get("/api/devices/show")
 @auth_required
-def show_times():
+def show_devices():
     servers = DevicesDB.show_devices(session.get("client_id"))
     return json.dumps(servers, indent=2), 200
-# TODO:необработанные ошибка апи
 
 
 @app.post("/api/devices/add")
@@ -23,17 +22,21 @@ def add_device():
         request.form["desktop"],
         request.form["tablet"],
         session.get("client_id"))
-    return json.dumps(device)
+    if device is None:
+        return "Wrong data", 400
+    return json.dumps(device), 200
 
 
 @app.get("/api/devices/change")
 @auth_required
-def change_times():
+def change_device():
+    args = request.args
     changed_device = DevicesDB.change_device(
-        request.form["record_id"],
+        args.get("record_id"),
         request.form["phone"],
         request.form["desktop"],
         request.form["tablet"]
     )
-
-    return json.dumps(changed_device),200
+    if changed_device is None:
+        return "Wrong data"
+    return json.dumps(changed_device), 200

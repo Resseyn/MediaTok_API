@@ -31,7 +31,7 @@ class SmartModeDB:
                 sleep_time INTEGER NOT NULL,
                 promotion_time_and_percentage TEXT,
                 created_at BIGINT NOT NULL,
-                creator_id INTEGER NOT NULL
+                creator_id INTEGER PRIMARY KEY NOT NULL
             );
             """
             try:
@@ -73,11 +73,9 @@ class SmartModeDB:
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
                 smart_mode = SmartMode(*server_data).__dict__
-                cursor.close()
                 return smart_mode
             except Exception as e:
                 print(f"Error getting smart_mode by server_id: {e}")
-                cursor.close()
                 cls.connection.rollback()
 
     @classmethod
@@ -88,12 +86,9 @@ class SmartModeDB:
                 cursor.execute(select_query, (creator_id,))
                 smart_mode_data = cursor.fetchone()
                 return SmartMode(*smart_mode_data).__dict__
-                cursor.close()
-                return smart_modes[0]
             except Exception as e:
                 print(f"Error showing smart_modes: {e}")
                 cls.connection.rollback()
-                cursor.close()
 
     @classmethod
     def change_smart_mode_property(cls, toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id):
@@ -111,11 +106,9 @@ class SmartModeDB:
                                (toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id))
                 cls.connection.commit()
                 smart_mode = SmartMode(toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id)
-                cursor.close()
                 return smart_mode.__dict__
             except Exception as e:
                 print(f"Error changing smart_mode property: {e}")
-                cursor.close()
                 cls.connection.rollback()
 
     @classmethod
