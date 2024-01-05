@@ -84,6 +84,8 @@ class UserDB:
                 cursor.execute(select_query, (login, password))
                 user_data = cursor.fetchone()
                 if user_data:
+                    if user_data[5] is False:
+                        return None
                     cursor.close()
                     return User(*user_data).__dict__
                 cursor.close()
@@ -128,6 +130,17 @@ class UserDB:
             cursor.close()
             print("Error changing user activity:", e)
 
+    @classmethod
+    def delete_user(cls, user_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                delete_query = ("DELETE FROM users WHERE user_id = %s")
+                cursor.execute(delete_query, (user_id,))
+                return True
+        except psycopg2.Error as e:
+            print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return False
     @classmethod
     def close_connection(cls):
         cls.connection.close()

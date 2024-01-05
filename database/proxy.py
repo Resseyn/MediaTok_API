@@ -121,6 +121,7 @@ class ProxyDB:
             print("Error showing proxies:", e)
             return []
 
+    @classmethod
     def change_proxy(cls, proxy_id, address, activity):
         try:
             with cls.connection.cursor() as cursor:

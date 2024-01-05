@@ -34,3 +34,14 @@ def change_proxy_activity():
     if act is None:
         return "Unknown proxy_id!", 400
     return f"Success: changed to {act}", 200
+
+@app.get("/api/links/delete")
+@auth_required
+def delete_proxy():
+    args = request.args
+    changed = ProxyDB.delete_proxy(
+        args.get("proxy_id"),
+    )
+    if changed is None:
+        return "Wrong data", 400
+    return json.dumps(changed), 200

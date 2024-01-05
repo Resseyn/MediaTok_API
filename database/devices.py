@@ -98,6 +98,17 @@ class DevicesDB:
             print(f"Error showing devices: {e}")
 
     @classmethod
+    def delete_device(cls, record_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                delete_query = ("DELETE FROM devices WHERE record_id = %s")
+                cursor.execute(delete_query, (record_id,))
+                return True
+        except psycopg2.Error as e:
+            print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return False#TODO: а если как смартмод
+    @classmethod
     def close_connection(cls):
         cls.connection.close()
 

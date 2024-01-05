@@ -53,3 +53,14 @@ def set_link_activity():
     args = request.args
     act = LinksDB.change_link_activity(args.get("link_id"))
     return f"Success: changed to {act}", 200
+
+@app.get("/api/links/delete")
+@auth_required
+def delete_link():
+    args = request.args
+    changed = LinksDB.delete_link(
+        args.get("link_id"),
+    )
+    if changed is None:
+        return "Wrong data", 400
+    return json.dumps(changed), 200

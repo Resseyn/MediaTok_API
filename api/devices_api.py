@@ -40,3 +40,15 @@ def change_device():
     if changed_device is None:
         return "Wrong data"
     return json.dumps(changed_device), 200
+
+
+@app.get("/api/devices/delete")
+@auth_required
+def delete_device():
+    args = request.args
+    changed_device = DevicesDB.delete_device(
+        args.get("record_id"),
+    )
+    if changed_device is None:
+        return "Wrong data", 400
+    return json.dumps(changed_device), 200

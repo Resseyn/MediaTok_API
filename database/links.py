@@ -97,6 +97,17 @@ class LinksDB:
             print("Error changing link activity:", e)
 
     @classmethod
+    def delete_link(cls, link_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                delete_query = ("DELETE FROM links WHERE link_id = %s")
+                cursor.execute(delete_query, (link_id,))
+                return True
+        except psycopg2.Error as e:
+            print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return False
+    @classmethod
     def close_connection(cls):
         cls.connection.close()
 
