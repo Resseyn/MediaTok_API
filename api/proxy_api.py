@@ -34,3 +34,23 @@ def change_proxy_activity():
     if act is None:
         return "Unknown proxy_id!", 400
     return f"Success: changed to {act}", 200
+
+
+@app.get("/api/proxy/changeAddress")
+@auth_required
+def change_proxy_address():
+    args = request.args
+    new_proxy = ProxyDB.change_proxy(args.get("proxy_id"),request.form["address"])
+    if new_proxy is None:
+        return "Unknown proxy_id!", 400
+    return f"Success: changed to {new_proxy}", 200
+
+
+@app.get("/api/proxy/delete")
+@auth_required
+def delete_proxy():
+    args = request.args
+    is_deleted = ProxyDB.delete_proxy(args.get("proxy_id"))
+    if is_deleted is False:
+        return "Unknown proxy_id!", 400
+    return f"Success: changed to {is_deleted}", 200

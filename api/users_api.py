@@ -32,3 +32,10 @@ def set_user_activity():
     args = request.args
     act = UserDB.change_user_activity(args.get("user_id"))
     return f"Success: changed to {act}", 200
+
+@app.get("/api/users/delete")
+@auth_required
+def delete_user():
+    args = request.args
+    is_deleted = UserDB.change_user_activity(args.get("user_id"))
+    return f"Success: changed to {act}", 200 if is_deleted else f"Unknown user_id!", 400

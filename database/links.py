@@ -3,6 +3,7 @@ import time
 import psycopg2
 from database import postgres
 
+
 class Link:
     def __init__(self, link_id, link, leads_to_post, to_a_specific_link, spec_links, curr_time, traffic, activity,
                  created_at, creator_id):
@@ -19,6 +20,7 @@ class Link:
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
 
 class LinksDB:
     connection = postgres.conn
@@ -99,6 +101,7 @@ class LinksDB:
     @classmethod
     def close_connection(cls):
         cls.connection.close()
+
 
 # Пример использования.
 LinksDB.create_link_table()
