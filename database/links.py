@@ -123,10 +123,9 @@ class LinksDB:
                         to_a_specific_link = %s,
                         spec_links = %s,
                         time = %s,
-                        traffic = %s,
-                        creator_id = %s
+                        traffic = %s
                     WHERE link_id = %s'''
-                    cursor.execute(update_query, (link,leads_to_post,(False if spec_links == "" else True), spec_links, link_time,traffic,creator_id, link_id))
+                    cursor.execute(update_query, (link,leads_to_post,(False if spec_links == "" else True), spec_links, link_time, traffic, link_id))
                     cls.connection.commit()
                     return Link(link_id, link, leads_to_post, (False if spec_links == "" else True), spec_links, link_time, traffic, link_data[7], link_data[8], creator_id).__dict__
                 return None

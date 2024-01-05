@@ -79,7 +79,6 @@ def change_link():
             session.get("client_id"))
         if link_id is None:
             return "Wrong data", 400
-    except Exception as e:
-        print(e)
+    except:
         return "Wrong data", 400
     return json.dumps(link_id), 200
