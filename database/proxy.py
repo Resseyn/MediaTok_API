@@ -123,7 +123,7 @@ class ProxyDB:
             return []
 
     @classmethod
-    def change_proxy(cls, proxy_id, address, activity):
+    def change_proxy(cls, proxy_id, address):
         try:
             with cls.connection.cursor() as cursor:
                 update_query = "UPDATE proxy SET address = %s WHERE proxy_id = %s RETURNING server_id,activity,creator_id"
