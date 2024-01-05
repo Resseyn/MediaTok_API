@@ -36,7 +36,7 @@ def change_proxy_activity():
     return f"Success: changed to {act}", 200
 
 
-@app.get("/api/proxy/changeAddress")
+@app.post("/api/proxy/change")
 @auth_required
 def change_proxy_address():
     request_data = json.loads(request.data)
