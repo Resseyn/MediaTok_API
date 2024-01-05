@@ -27,7 +27,7 @@ class SmartModeDB:
         with cls.connection.cursor() as cursor:
             create_table_query = """
             CREATE TABLE IF NOT EXISTS smart_mode (
-                smart_mode BOOLEAN NOT NULL,
+                toggle BOOLEAN NOT NULL,
                 sleep_time INTEGER NOT NULL,
                 promotion_time_and_percentage TEXT,
                 created_at BIGINT NOT NULL,
@@ -44,22 +44,23 @@ class SmartModeDB:
 
     @classmethod
     def add_property(cls, toggle, sleep_time, promotion_time_and_percentage, creator_id):
+
         with cls.connection.cursor() as cursor:
-            select_query = "SELECT * FROM smart_mode WHERE server_id = %s"
+            select_query = "SELECT * FROM smart_mode WHERE creator_id = %s"
             cursor.execute(select_query, (creator_id,))
             server_data = cursor.fetchone()
             if server_data is not None:
                 SmartModeDB.change_smart_mode_property(toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id)
-                return SmartMode(toggle, sleep_time, promotion_time_and_percentage, creator_id).__dict__
+                return SmartMode(toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id).__dict__
             #TODO: это если уже есть запись в бд, вроде должно работать
             insert_query = (
                 "INSERT INTO smart_mode (toggle,sleep_time,promotion_time_and_percentage,created_at,creator_id) "
-                "VALUES (%s, %s, %s, %s, %s) RETURNING server_id")
+                "VALUES (%s, %s, %s, %s, %s) RETURNING creator_id")
             try:
                 cursor.execute(insert_query, (toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id,))
                 cls.connection.commit()
                 cursor.close()
-                return SmartMode(toggle, sleep_time, promotion_time_and_percentage, creator_id).__dict__
+                return SmartMode(toggle, sleep_time, promotion_time_and_percentage,  time.time(),creator_id).__dict__
             except Exception as e:
                 print(f"Error adding property: {e}")
                 cls.connection.rollback()
@@ -68,7 +69,7 @@ class SmartModeDB:
     @classmethod
     def get_smart_mode_by_server_id(cls, server_id):
         with cls.connection.cursor() as cursor:
-            select_query = "SELECT * FROM smart_mode WHERE server_id = %s"
+            select_query = "SELECT * FROM smart_mode WHERE creator_id = %s"
             try:
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
@@ -96,9 +97,9 @@ class SmartModeDB:
             try:
                 update_query = """
                 UPDATE smart_mode 
-                SET smart_mode = %s, 
+                SET toggle = %s, 
                     sleep_time = %s, 
-                    promotion_time_and_precentage = %s, 
+                    promotion_time_and_percentage = %s, 
                     created_at = %s
                 WHERE creator_id = %s
                 """
