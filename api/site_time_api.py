@@ -34,24 +34,3 @@ def add_time():
         return "Invalid data", 400
     return json.dumps(new_time), 200
 
-
-@app.get("/api/site_time/change")
-@auth_required
-def change_times():
-    args = request.args
-    emul = request.form["emulation_of_inactivity"].split("-")
-    emul_between_art = request.form["emulation_of_inactivity"].split("-")
-    number_of_transactions = request.form["emulation_of_inactivity"].split("-")
-    try:
-        changed_time = SiteTimeDB.change_times(
-            args.get("time_id"),
-            emul[0],
-            emul[1],
-            request.form["make_transitions"],
-            emul_between_art[0],
-            emul_between_art[1],
-            number_of_transactions[0],
-            number_of_transactions[1])
-    except:
-        return "Invalid data", 400
-    return json.dumps(changed_time), 200
