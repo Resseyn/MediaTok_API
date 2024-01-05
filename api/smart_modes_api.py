@@ -24,7 +24,7 @@ def add_mode():
         session.get("client_id"))
     return json.dumps(server_id), 200
 
-@app.get("/api/smart_mode/change")
+@app.post("/api/smart_mode/change")
 @auth_required
 def change_mode():
     server_id = SmartModeDB.change_smart_mode_property(

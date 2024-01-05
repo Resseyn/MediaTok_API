@@ -72,7 +72,7 @@ class ProxyDB:
 
                 check_query = ("SELECT * FROM proxy WHERE server_id = %s")
                 cursor.execute(check_query, (server_id,))
-
+                cls.connection.commit()
                 if len(cursor.fetchall()):
                     ServersDB.change_proxy_flag(server_id, False)
                 return True
