@@ -1,5 +1,7 @@
 import json
+
 import psycopg2
+
 from database import postgres
 
 

@@ -1,6 +1,8 @@
 import json
 import time
+
 import psycopg2
+
 from database import postgres
 
 

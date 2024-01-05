@@ -1,7 +1,10 @@
-import time
 import json
+import time
+
 import psycopg2
+
 from database import postgres
+
 
 class User:
     def __init__(self, user_id, login, password, name, surname, activity, created_at):
@@ -59,18 +62,6 @@ class UserDB:
             cursor.close()
             return None
 
-    @classmethod
-    def delete_user(cls,user_id):
-        try:
-            with cls.connection.cursor() as cursor:
-                delete_query = ("DELETE FROM users WHERE user_id = %s")
-                cursor.execute(delete_query, (user_id))
-                cls.connection.commit()
-                return True
-        except psycopg2.Error as e:
-            print("Error deleting user:", e)
-            cls.connection.rollback()
-            return False
 
     @classmethod
     def get_user_by_id(cls, user_id):
