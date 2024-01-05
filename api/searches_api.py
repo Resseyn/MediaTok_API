@@ -1,12 +1,8 @@
-
 import json
-
 from flask import request, session
-
 from api.sessions import auth_required
 from database.searches import SearchesDB
 from src.loader import app
-
 
 @app.get("/api/searches/show")
 @auth_required
@@ -22,18 +18,16 @@ def show_searches():
     ]
     return json.dumps(result_map, indent=2), 200
 
-
 @app.post("/api/searches/add")
 @auth_required
 def add_search():
-    args = request.args
+    data = json.loads(request.data)
     search_id = SearchesDB.add_search(
-        args.get("type"),
-        request.form["link"],
-        request.form["props"],
+        data.get("type"),
+        data.get("link"),
+        data.get("props"),
         session.get("client_id"))
     return json.dumps(search_id), 200
-
 
 @app.get("/api/searches/changeActivity")
 @auth_required
@@ -46,7 +40,7 @@ def set_search_activity():
 @auth_required
 def delete_search():
     args = request.args
-    changed = SearchesDB.delete_proxy(
+    changed = SearchesDB.delete_search(
         args.get("search_id"),
     )
     if changed is None:
