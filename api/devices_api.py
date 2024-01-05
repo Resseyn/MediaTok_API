@@ -32,21 +32,8 @@ def add_device():
 def delete_device():
     args = request.args
     changed_device = DevicesDB.delete_device(
-        args.get("record_id"),
+        session["client_id"],
     )
     if changed_device is None:
         return "Wrong data", 400
     return json.dumps(changed_device), 200
-
-@app.post("/api/devices/change")
-@auth_required
-def change_device():
-    args = request.args
-    server_id = DevicesDB.change_device(
-        args.get("record_id"),
-        request.form["phone"],
-        request.form["desktop"],
-        request.form["tablet"],)
-    if server_id is None:
-        return "Wrong data", 400
-    return json.dumps(server_id), 200
