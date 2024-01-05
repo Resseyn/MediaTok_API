@@ -39,8 +39,8 @@ def change_proxy_activity():
 @app.get("/api/proxy/changeAddress")
 @auth_required
 def change_proxy_address():
-    args = request.args
-    new_proxy = ProxyDB.change_proxy(args.get("proxy_id"),request.form["address"])
+    request_data = json.loads(request.data)
+    new_proxy = ProxyDB.change_proxy(request_data["proxy_id"],request_data["address"])
     if new_proxy is None:
         return "Unknown proxy_id!", 400
     return json.dumps(new_proxy), 200
