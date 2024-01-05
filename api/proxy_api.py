@@ -43,14 +43,16 @@ def change_proxy_address():
     new_proxy = ProxyDB.change_proxy(args.get("proxy_id"),request.form["address"])
     if new_proxy is None:
         return "Unknown proxy_id!", 400
-    return f"Success: changed to {new_proxy}", 200
+    return json.dumps(new_proxy), 200
 
 
-@app.get("/api/proxy/delete")
+@app.get("/api/links/delete")
 @auth_required
 def delete_proxy():
     args = request.args
-    is_deleted = ProxyDB.delete_proxy(args.get("proxy_id"))
-    if is_deleted is False:
-        return "Unknown proxy_id!", 400
-    return f"Success: changed to {is_deleted}", 200
+    changed = ProxyDB.delete_proxy(
+        args.get("proxy_id"),
+    )
+    if changed is None:
+        return "Wrong data", 400
+    return json.dumps(changed), 200

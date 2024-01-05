@@ -99,6 +99,42 @@ class LinksDB:
             print("Error changing link activity:", e)
 
     @classmethod
+    def delete_link(cls, link_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                delete_query = ("DELETE FROM links WHERE link_id = %s")
+                cursor.execute(delete_query, (link_id,))
+                cls.connection.commit()
+                return True
+        except psycopg2.Error as e:
+            print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return False
+
+    @classmethod
+    def change_link(cls, link_id, link, leads_to_post, spec_links, link_time, traffic, creator_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                select_query = "SELECT * FROM links WHERE link_id = %s"
+                cursor.execute(select_query, (link_id,))
+                link_data = cursor.fetchone()
+                if link_data:
+                    update_query = '''UPDATE links 
+                    SET link = %s, 
+                        leads_to_post = %s, 
+                        to_a_specific_link = %s,
+                        spec_links = %s,
+                        time = %s,
+                        traffic = %s
+                    WHERE link_id = %s'''
+                    cursor.execute(update_query, (link,leads_to_post,(False if spec_links == "" else True), spec_links, link_time, traffic, link_id))
+                    cls.connection.commit()
+                    return Link(link_id, link, leads_to_post, (False if spec_links == "" else True), spec_links, link_time, traffic, link_data[7], link_data[8], creator_id).__dict__
+                return None
+        except psycopg2.Error as e:
+            print(f"Error changing link:", e)
+            cls.connection.rollback()
+    @classmethod
     def close_connection(cls):
         cls.connection.close()
 

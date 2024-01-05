@@ -33,7 +33,6 @@ class ProxyDB:
                 """
                 cursor.execute(create_table_query)
                 cls.connection.commit()
-                cursor.close()
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error creating proxy table(proxy.py):", e)
@@ -46,7 +45,6 @@ class ProxyDB:
                 count_query = "SELECT COUNT(*) FROM proxy WHERE server_id = %s"
                 cursor.execute(count_query, (server_id,))
                 count = cursor.fetchone()[0]
-                #TODO: проверить работает ли
                 if count >= 3:
                     return None
 
@@ -125,7 +123,7 @@ class ProxyDB:
             return []
 
     @classmethod
-    def change_proxy(cls, proxy_id, address):
+    def change_proxy(cls, proxy_id, address, activity):
         try:
             with cls.connection.cursor() as cursor:
                 update_query = "UPDATE proxy SET address = %s WHERE proxy_id = %s RETURNING server_id,activity,creator_id"
@@ -150,7 +148,6 @@ class ProxyDB:
                     cls.connection.commit()
                     cursor.close()
                     return not user_data[3]
-                cursor.close()
                 return None
         except psycopg2.Error as e:
             cls.connection.rollback()

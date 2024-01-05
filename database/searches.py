@@ -2,6 +2,8 @@ import json
 import time
 from datetime import datetime
 
+import psycopg2
+
 from database import postgres
 from database.servers import ServersDB
 from scripts.date import get_month_name
@@ -97,6 +99,18 @@ class SearchesDB:
         cursor.close()
         return not (search_data[5])
 
+    @classmethod
+    def delete_search(cls, search_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                delete_query = ("DELETE FROM searches WHERE search_id = %s")
+                cursor.execute(delete_query, (search_id,))
+                cls.connection.commit()
+                return True
+        except psycopg2.Error as e:
+            print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return False
     @classmethod
     def close_connection(cls):
         cls.connection.close()

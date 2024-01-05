@@ -139,6 +139,18 @@ class ServersDB:
             cursor.close()
 
     @classmethod
+    def delete_server(cls, server_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                delete_query = ("DELETE FROM servers WHERE server_id = %s")
+                cursor.execute(delete_query, (server_id,))
+                cls.connection.commit()
+                return True
+        except psycopg2.Error as e:
+            print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return False
+    @classmethod
     def close_connection(cls):
         cls.connection.close()
 

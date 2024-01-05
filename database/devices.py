@@ -32,31 +32,35 @@ class DevicesDB:
                     creator_id INTEGER NOT NULL
                 );
             """
-            cursor.execute(create_table_query)
-            cls.connection.commit()
+                cursor.execute(create_table_query)
+                cls.connection.commit()
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error creating devices table: {e}")
 
     @classmethod
     def add_device(cls, phone,desktop,tablet,creator_id):
+        if int(phone) + int(desktop) + int(tablet) != 100:
+            return None
         try:
             with cls.connection.cursor() as cursor:
                 insert_query = (
                     "INSERT INTO devices (phone,desktop,tablet,creator_id) "
                     "VALUES (%s, %s, %s,%s) RETURNING record_id"
                 )
-                cursor.execute(insert_query, (phone,desktop,tablet,creator_id)
+                cursor.execute(insert_query, (phone,int(phone) + int(desktop), 100,creator_id)
                                )
                 record_id = cursor.fetchone()[0]
                 cls.connection.commit()
-                return Device(record_id,phone,phone+desktop,phone+desktop+tablet,creator_id).__dict__
+                return Device(record_id,phone,int(phone) + int(desktop), 100,creator_id).__dict__
         except psycopg2.Error as e:
             print(f"Error adding device: {e}")
             return None
 
     @classmethod
     def change_device(cls,record_id,phone,desktop,tablet):
+        if int(phone) + int(desktop) + int(tablet) != 100:
+            return None
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM devices WHERE record_id = %s"
@@ -71,12 +75,10 @@ class DevicesDB:
                     tablet = %s
                 WHERE record_id = %s
                 RETURNING creator_id'''
-                    cursor.execute(update_query, (phone,desktop,tablet,record_id))
+                    cursor.execute(update_query, (phone,int(phone) + int(desktop), 100,record_id))
                     creator_id = cursor.fetchone()[0]
                     cls.connection.commit()
-                    cursor.close()
-                    return Device(record_id, phone, phone+desktop, phone+desktop+tablet,creator_id).__dict__
-                cursor.close()
+                    return Device(record_id, phone,int(phone) + int(desktop), 100 ,creator_id).__dict__
                 return None
         except psycopg2.Error as e:
             cls.connection.rollback()
@@ -94,6 +96,19 @@ class DevicesDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error showing devices: {e}")
+
+    @classmethod
+    def delete_device(cls, record_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                delete_query = ("DELETE FROM devices WHERE record_id = %s")
+                cursor.execute(delete_query, (record_id,))
+                cls.connection.commit()
+                return True
+        except psycopg2.Error as e:
+            print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return False#TODO: а если как смартмод
 
     @classmethod
     def close_connection(cls):

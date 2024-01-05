@@ -39,5 +39,16 @@ def add_search():
 @auth_required
 def set_search_activity():
     args = request.args
-    act = SearchesDB.change_search_activity(args.get("server_id"))
+    act = SearchesDB.change_search_activity(args.get("search_id"))
     return f"Success: changed to {act}", 200
+
+@app.get("/api/searches/delete")
+@auth_required
+def delete_search():
+    args = request.args
+    changed = SearchesDB.delete_proxy(
+        args.get("search_id"),
+    )
+    if changed is None:
+        return "Wrong data", 400
+    return json.dumps(changed), 200

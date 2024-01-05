@@ -36,3 +36,15 @@ def set_server_activity():
     args = request.args
     act = ServersDB.change_server_activity(args.get("server_id"))
     return f"Success: changed to {act}", 200
+
+
+@app.get("/api/servers/delete")
+@auth_required
+def delete_server():
+    args = request.args
+    changed = ServersDB.delete_server(
+        args.get("server_id"),
+    )
+    if changed is None:
+        return "Wrong data", 400
+    return json.dumps(changed), 200

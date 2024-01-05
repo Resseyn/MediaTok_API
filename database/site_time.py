@@ -31,7 +31,7 @@ class SiteTimeDB:
     connection = postgres.conn
 
     @classmethod
-    def create_link_table(cls):
+    def create_site_time_table(cls):
         try:
             with cls.connection.cursor() as cursor:
                 create_table_query = """
@@ -47,8 +47,8 @@ class SiteTimeDB:
                     creator_id INTEGER NOT NULL
                 );
             """
-            cursor.execute(create_table_query)
-            cls.connection.commit()
+                cursor.execute(create_table_query)
+                cls.connection.commit()
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error creating site_times table: {e}")
@@ -112,7 +112,6 @@ class SiteTimeDB:
                     return SiteTime(time_id, emulation_of_inactivity_min, emulation_of_inactivity_max, make_transitions,
                                     emulation_of_inactivity_between_articles_min,emulation_of_inactivity_between_articles_max,
                                     number_of_transitions_min, number_of_transitions_max,creator_id).__dict__
-                cursor.close()
                 return None
         except psycopg2.Error as e:
             cls.connection.rollback()
@@ -137,4 +136,4 @@ class SiteTimeDB:
 
 
 # Пример использования.
-SiteTimeDB.create_link_table()
+SiteTimeDB.create_site_time_table()

@@ -37,5 +37,11 @@ def set_user_activity():
 @auth_required
 def delete_user():
     args = request.args
-    is_deleted = UserDB.change_user_activity(args.get("user_id"))
-    return f"Success: changed to {act}", 200 if is_deleted else f"Unknown user_id!", 400
+    if session["user_id"] != args.get("user_id"):
+        return "Wrong data", 400
+    changed = UserDB.delete_user(
+        args.get("user_id"),
+    )
+    if changed is None:
+        return "Wrong data", 400
+    return json.dumps(changed), 200
