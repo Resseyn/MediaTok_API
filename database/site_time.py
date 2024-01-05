@@ -6,12 +6,11 @@ from database import postgres
 
 
 class SiteTime:
-    def __init__(self, time_id, emulation_of_inactivity_min, emulation_of_inactivity_max,
+    def __init__(self, emulation_of_inactivity_min, emulation_of_inactivity_max,
                  make_transitions,
                  emulation_of_inactivity_between_articles_min, emulation_of_inactivity_between_articles_max,
                  number_of_transitions_min, number_of_transitions_max,
                  creator_id):
-        self.time_id = time_id
         self.emulation_of_inactivity_min = emulation_of_inactivity_min
         self.emulation_of_inactivity_max = emulation_of_inactivity_max
         self.make_transitions = make_transitions
@@ -35,7 +34,6 @@ class SiteTimeDB:
             with cls.connection.cursor() as cursor:
                 create_table_query = """
                 CREATE TABLE IF NOT EXISTS site_times (
-                    time_id SERIAL PRIMARY KEY,
                     emulation_of_inactivity_min INTEGER NOT NULL,
                     emulation_of_inactivity_max INTEGER NOT NULL,
                     make_transitions BOOLEAN NOT NULL,
@@ -60,21 +58,31 @@ class SiteTimeDB:
                  creator_id):
         try:
             with cls.connection.cursor() as cursor:
+                select_query = "SELECT * FROM site_times WHERE creator_id = %s"
+                cursor.execute(select_query, (creator_id,))
+                time_data = cursor.fetchone()
+                if time_data is not None:
+                    SiteTimeDB.change_times(creator_id,emulation_of_inactivity_min, emulation_of_inactivity_max,
+                 make_transitions,
+                 emulation_of_inactivity_between_articles_min, emulation_of_inactivity_between_articles_max,
+                 number_of_transitions_min, number_of_transitions_max)
+                    return SiteTime(emulation_of_inactivity_min,emulation_of_inactivity_max, make_transitions,
+                                emulation_of_inactivity_between_articles_min,emulation_of_inactivity_between_articles_max,
+                                number_of_transitions_min, number_of_transitions_max,creator_id).__dict__
                 insert_query = (
                     "INSERT INTO site_times (emulation_of_inactivity_min, emulation_of_inactivity_max, "
                     "make_transitions, emulation_of_inactivity_between_articles_min, "
                     "emulation_of_inactivity_between_articles_max, number_of_transitions_min, "
                     "number_of_transitions_max, creator_id) "
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING time_id"
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
                 )
                 cursor.execute(insert_query, (
                     emulation_of_inactivity_min, emulation_of_inactivity_max, make_transitions,
                     emulation_of_inactivity_between_articles_min, emulation_of_inactivity_between_articles_max,
                     number_of_transitions_min, number_of_transitions_max, creator_id)
                                )
-                time_id = cursor.fetchone()[0]
                 cls.connection.commit()
-                return SiteTime(time_id,emulation_of_inactivity_min,emulation_of_inactivity_max, make_transitions,
+                return SiteTime(emulation_of_inactivity_min,emulation_of_inactivity_max, make_transitions,
                                 emulation_of_inactivity_between_articles_min,emulation_of_inactivity_between_articles_max,
                                 number_of_transitions_min, number_of_transitions_max,creator_id).__dict__
         except psycopg2.Error as e:
@@ -82,16 +90,16 @@ class SiteTimeDB:
             return None
 
     @classmethod
-    def change_times(cls,time_id, emulation_of_inactivity_min, emulation_of_inactivity_max,
+    def change_times(cls,creator_id, emulation_of_inactivity_min, emulation_of_inactivity_max,
                  make_transitions,
                  emulation_of_inactivity_between_articles_min, emulation_of_inactivity_between_articles_max,
-                 number_of_transitions_min, number_of_transitions_max,):
+                 number_of_transitions_min, number_of_transitions_max):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM site_times WHERE time_id = %s"
-                cursor.execute(select_query, (time_id))
-                user_data = cursor.fetchone()
-                if user_data:
+                select_query = "SELECT * FROM site_times WHERE creator_id = %s"
+                cursor.execute(select_query, (creator_id,))
+                time_data = cursor.fetchone()
+                if time_data:
                     update_query = '''UPDATE site_times 
                 SET emulation_of_inactivity_min = %s, 
                     emulation_of_inactivity_max = %s, 
@@ -100,15 +108,13 @@ class SiteTimeDB:
                     emulation_of_inactivity_between_articles_max = %s,
                     number_of_transitions_min = %s,
                     number_of_transitions_max = %s
-                WHERE time_id = %s'''
+                WHERE creator_id = %s'''
                     cursor.execute(update_query, (emulation_of_inactivity_min,emulation_of_inactivity_max,
                                                   make_transitions,emulation_of_inactivity_between_articles_min,
                                                   emulation_of_inactivity_between_articles_max,
-                                                  number_of_transitions_min,number_of_transitions_max,time_id))
-                    creator_id = cursor.fetchone()[0]
+                                                  number_of_transitions_min,number_of_transitions_max,creator_id,))
                     cls.connection.commit()
-                    cursor.close()
-                    return SiteTime(time_id, emulation_of_inactivity_min, emulation_of_inactivity_max, make_transitions,
+                    return SiteTime(emulation_of_inactivity_min, emulation_of_inactivity_max, make_transitions,
                                     emulation_of_inactivity_between_articles_min,emulation_of_inactivity_between_articles_max,
                                     number_of_transitions_min, number_of_transitions_max,creator_id).__dict__
                 return None
@@ -122,9 +128,8 @@ class SiteTimeDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM site_times WHERE creator_id = %s"
                 cursor.execute(select_query, (creator_id,))
-                times_data = cursor.fetchall()
-                times = [SiteTime(*time_data).__dict__ for time_data in times_data]
-                return times
+                time_data = cursor.fetchone()
+                return SiteTime(*time_data).__dict__
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error showing times: {e}")

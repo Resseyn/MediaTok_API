@@ -1,8 +1,11 @@
 import json
+
 from flask import request, session
+
 from api.sessions import auth_required
 from database.site_time import SiteTimeDB
 from src.loader import app
+
 
 @app.get("/api/site_time/show")
 @auth_required
@@ -10,18 +13,18 @@ def show_times():
     servers = SiteTimeDB.show_times(session.get("client_id"))
     return json.dumps(servers, indent=2), 200
 
+
 @app.post("/api/site_time/add")
 @auth_required
 def add_time():
-    data = json.loads(request.data)
-    emul = data["emulation_of_inactivity"].split("-")
-    emul_between_art = data["emulation_of_inactivity_between_articles"].split("-")
-    number_of_transactions = data["number_of_transitions"].split("-")
+    emul = request.form["emulation_of_inactivity"].split("-")
+    emul_between_art = request.form["emulation_of_inactivity_between_articles"].split("-")
+    number_of_transactions = request.form["number_of_transitions"].split("-")
     try:
         new_time = SiteTimeDB.add_time(
             emul[0],
             emul[1],
-            data["make_transitions"],
+            request.form["make_transitions"],
             emul_between_art[0],
             emul_between_art[1],
             number_of_transactions[0],
