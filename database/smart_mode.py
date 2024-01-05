@@ -52,7 +52,6 @@ class SmartModeDB:
             if server_data is not None:
                 SmartModeDB.change_smart_mode_property(toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id)
                 return SmartMode(toggle, sleep_time, promotion_time_and_percentage, time.time(), creator_id).__dict__
-            #TODO: это если уже есть запись в бд, вроде должно работать
             insert_query = (
                 "INSERT INTO smart_mode (toggle,sleep_time,promotion_time_and_percentage,created_at,creator_id) "
                 "VALUES (%s, %s, %s, %s, %s) RETURNING creator_id")

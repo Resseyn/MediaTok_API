@@ -32,7 +32,7 @@ def add_time():
             session.get("client_id"))
     except:
         return "Invalid data", 400
-    return json.dumps(new_time)
+    return json.dumps(new_time), 200
 
 
 @app.get("/api/site_time/change")
@@ -54,6 +54,4 @@ def change_times():
             number_of_transactions[1])
     except:
         return "Invalid data", 400
-    return json.dumps(changed_time)
-
-    return json.dumps(changed_time),200
+    return json.dumps(changed_time), 200
