@@ -96,13 +96,13 @@ class SearchesDB:
             return None
 
     @classmethod
-    def change_search_activity(cls, search_id):
+    def change_search_activity(cls, search_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM searches WHERE search_id = %s"
+                select_query = "SELECT creator_id FROM searches WHERE search_id = %s"
                 cursor.execute(select_query, (search_id,))
-                search_data = cursor.fetchone()
-                if search_data:
+                search_data = cursor.fetchone()[0]
+                if search_data == creator_id:
                     update_query = "UPDATE searches SET activity = %s WHERE search_id = %s"
                     cursor.execute(update_query, (not search_data[5], search_id))
                     cls.connection.commit()
@@ -115,9 +115,14 @@ class SearchesDB:
             return None
 
     @classmethod
-    def delete_search(cls, search_id):
+    def delete_search(cls, search_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
+                select_query = "SELECT creator_id FROM searches WHERE search_id = %s"
+                cursor.execute(select_query, (search_id,))
+                creator_id_from_db = cursor.fetchone()[0]
+                if creator_id_from_db != creator_id:
+                    return False
                 delete_query = "DELETE FROM searches WHERE search_id = %s"
                 cursor.execute(delete_query, (search_id,))
                 cls.connection.commit()
@@ -131,10 +136,10 @@ class SearchesDB:
     def change_search(cls, search_id, search_for, link, properties, creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                search_query = "SELECT * FROM searches WHERE search_id = %s"
+                search_query = "SELECT creator_id FROM searches WHERE search_id = %s"
                 cursor.execute(search_query, (search_id,))
-                search_data = cursor.fetchone()
-                if search_data:
+                search_data = cursor.fetchone()[0]
+                if search_data[0] == creator_id:
                     update_query = """
                                         UPDATE searches SET 
                                         search_for = %s, 
@@ -148,6 +153,7 @@ class SearchesDB:
                     cls.connection.commit()
                     return Search(search_id, search_for, link, properties, (False if properties == "" else True),
                                   search_data[5], search_data[6], creator_id)
+                return False
         except psycopg2.Error as e:
             print("Error changing search:", e)
             cls.connection.rollback()

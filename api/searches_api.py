@@ -36,11 +36,11 @@ def add_search():
 @auth_required
 def set_search_activity():
     args = request.args
-    act = SearchesDB.change_search_activity(args.get("search_id"))
+    act = SearchesDB.change_search_activity(args.get("search_id"),session.get("client_id"))
     return f"Success: changed to {act}", 200
 
 
-@app.get("/api/searches/change")
+@app.post("/api/searches/change")
 @auth_required
 def change_search():
     data = json.loads(request.data)
@@ -63,6 +63,7 @@ def delete_search():
     args = request.args
     changed = SearchesDB.delete_search(
         args.get("search_id"),
+        session.get("client_id")
     )
     if changed is None:
         return "Wrong data", 400

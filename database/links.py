@@ -81,15 +81,15 @@ class LinksDB:
             print("Error showing links:", e)
 
     @classmethod
-    def change_link_activity(cls, link_id):
+    def change_link_activity(cls, link_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM links WHERE link_id = %s"
+                select_query = "SELECT creator_id FROM links WHERE link_id = %s"
                 cursor.execute(select_query, (link_id,))
-                link_data = cursor.fetchone()
-                if link_data:
+                link_data = cursor.fetchone()[0]
+                if link_data == creator_id:
                     update_query = "UPDATE links SET activity = %s WHERE link_id = %s"
-                    cursor.execute(update_query, (not link_data[7], link_id,))
+                    cursor.execute(update_query, (not link_data[7], link_id,creator_id))
                     cls.connection.commit()
                     return not link_data[7]
                 return None
@@ -98,9 +98,14 @@ class LinksDB:
             print("Error changing link activity:", e)
 
     @classmethod
-    def delete_link(cls, link_id):
+    def delete_link(cls, link_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
+                select_query = "SELECT creator_id FROM links WHERE link_id =%s"
+                cursor.execute(select_query, (link_id))
+                creator_id_from_db = cursor.fetchone()[0]
+                if creator_id != creator_id_from_db:
+                    return "Permission error"
                 delete_query = "DELETE FROM links WHERE link_id = %s"
                 cursor.execute(delete_query, (link_id,))
                 cls.connection.commit()
@@ -114,10 +119,10 @@ class LinksDB:
     def change_link(cls, link_id, link, leads_to_post, spec_links, link_time, traffic, creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM links WHERE link_id = %s"
+                select_query = "SELECT creator_id FROM links WHERE link_id = %s"
                 cursor.execute(select_query, (link_id,))
-                link_data = cursor.fetchone()
-                if link_data:
+                link_data = cursor.fetchone()[0]
+                if link_data == creator_id:
                     update_query = '''UPDATE links 
                     SET link = %s, 
                         leads_to_post = %s, 
@@ -132,10 +137,12 @@ class LinksDB:
                     cls.connection.commit()
                     return Link(link_id, link, leads_to_post, (False if spec_links == "" else True), spec_links,
                                 link_time, traffic, link_data[7], link_data[8], creator_id).__dict__
+
                 return None
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
             cls.connection.rollback()
+            return None
 
     @classmethod
     def close_connection(cls):

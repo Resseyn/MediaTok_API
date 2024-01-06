@@ -40,8 +40,13 @@ def add_link():
 @auth_required
 def set_link_activity():
     args = request.args
-    act = LinksDB.change_link_activity(args.get("link_id"))
-    return f"Success: changed to {act}", 200
+    act = LinksDB.change_link_activity(args.get("link_id"),session.get("client_id"))
+    if act is not None:
+        return f"Success: changed to {act}", 200
+    elif act == "Permission error":
+        return f"No permission to change", 403
+    else:
+        return f"Error changing link activity",400
 
 
 @app.get("/api/links/delete")
@@ -49,10 +54,12 @@ def set_link_activity():
 def delete_link():
     args = request.args
     changed = LinksDB.delete_link(
-        args.get("link_id"),
+        args.get("link_id"),session.get("client_id")
     )
     if changed is None:
         return "Wrong data", 400
+    if changed == "Permission error":
+        return "No permission to delete", 403
     return json.dumps(changed), 200
 
 

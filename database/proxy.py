@@ -66,9 +66,14 @@ class ProxyDB:
             return None
 
     @classmethod
-    def delete_proxy(cls, proxy_id):
+    def delete_proxy(cls, proxy_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
+                select_query = "SELECT creator_id FROM proxy where proxy_id = %s"
+                cursor.execute(select_query, (proxy_id,))
+                creator_id_from_db = cursor.fetchone()[0]
+                if creator_id_from_db != creator_id:
+                    return False
                 delete_query = "DELETE FROM proxy WHERE proxy_id = %s RETURNING server_id"
                 cursor.execute(delete_query, (proxy_id,))
                 server_id = cursor.fetchone()[0]
@@ -76,7 +81,7 @@ class ProxyDB:
                 check_query = "SELECT * FROM proxy WHERE server_id = %s"
                 cursor.execute(check_query, (server_id,))
 
-                if len(cursor.fetchall()):
+                if not len(cursor.fetchall()):
                     ServersDB.change_proxy_flag(server_id, False)
                 cls.connection.commit()
                 return True
@@ -126,9 +131,14 @@ class ProxyDB:
             return []
 
     @classmethod
-    def change_proxy(cls, proxy_id, address):
+    def change_proxy(cls, proxy_id, address,creator_id):
         try:
             with cls.connection.cursor() as cursor:
+                select_query = "SELECT creator_id FROM proxy WHERE proxy_id = %s"
+                cursor.execute(select_query, proxy_id)
+                creator_id_from_db = cursor.fetchone()[0]
+                if creator_id_from_db != creator_id:
+                    return None
                 update_query = "UPDATE proxy SET address = %s WHERE proxy_id = %s RETURNING server_id,activity,creator_id"
                 cursor.execute(update_query, (address, proxy_id))
                 proxy_data = cursor.fetchone()
@@ -139,13 +149,13 @@ class ProxyDB:
             return None
 
     @classmethod
-    def change_proxy_activity(cls, proxy_id):
+    def change_proxy_activity(cls, proxy_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM proxy WHERE proxy_id = %s"
+                select_query = "SELECT creator_id FROM proxy WHERE proxy_id = %s"
                 cursor.execute(select_query, (proxy_id,))
-                user_data = cursor.fetchone()
-                if user_data:
+                user_data = cursor.fetchone()[0]
+                if user_data == creator_id:
                     update_query = "UPDATE proxy SET activity = %s WHERE proxy_id = %s"
                     cursor.execute(update_query, (not user_data[3], proxy_id,))
                     cls.connection.commit()

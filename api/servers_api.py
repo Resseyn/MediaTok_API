@@ -33,7 +33,7 @@ def add_server():
 @auth_required
 def set_server_activity():
     args = request.args
-    act = ServersDB.change_server_activity(args.get("server_id"))
+    act = ServersDB.change_server_activity(args.get("server_id"),session.get("client_id"))
     return f"Success: changed to {act}", 200
 
 
@@ -43,6 +43,7 @@ def delete_server():
     args = request.args
     changed = ServersDB.delete_server(
         args.get("server_id"),
+        session.get("client_id")
     )
     if changed is None:
         return "Wrong data", 400

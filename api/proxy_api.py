@@ -29,7 +29,7 @@ def add_proxy():
 @auth_required
 def change_proxy_activity():
     args = request.args
-    act = ProxyDB.change_proxy_activity(args.get("proxy_id"))
+    act = ProxyDB.change_proxy_activity(args.get("proxy_id"),session.get("client_id"))
     if act is None:
         return "Unknown proxy_id!", 400
     return f"Success: changed to {act}", 200
@@ -39,7 +39,7 @@ def change_proxy_activity():
 @auth_required
 def change_proxy_address():
     data = json.loads(request.data)
-    new_proxy = ProxyDB.change_proxy(data["proxy_id"], data.get("address"))
+    new_proxy = ProxyDB.change_proxy(data["proxy_id"], data.get("address"),session.get("client_id"))
     if new_proxy is None:
         return "Unknown proxy_id!", 400
     return json.dumps(new_proxy), 200
@@ -49,7 +49,7 @@ def change_proxy_address():
 @auth_required
 def delete_proxy():
     args = request.args
-    changed = ProxyDB.delete_proxy(args.get("proxy_id"))
+    changed = ProxyDB.delete_proxy(args.get("proxy_id"),session.get("client_id"))
     if changed is None:
         return "Wrong data", 400
     return json.dumps(changed), 200

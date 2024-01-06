@@ -104,13 +104,13 @@ class ServersDB:
             print("Error showing servers(servers.py):", e)
 
     @classmethod
-    def change_server_activity(cls, server_id):
+    def change_server_activity(cls, server_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM servers WHERE server_id = %s"
+                select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
-                server_data = cursor.fetchone()
-                if server_data:
+                server_data = cursor.fetchone()[0]
+                if server_data == creator_id:
                     update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
                     cursor.execute(update_query, (not server_data[8], server_id,))
                     cls.connection.commit()
@@ -122,26 +122,32 @@ class ServersDB:
             cursor.close()
 
     @classmethod
-    def change_proxy_flag(cls, server_id, flag):
+    def change_proxy_flag(cls, server_id, flag,creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM servers WHERE server_id = %s"
+                select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, server_id)
-                server_data = cursor.fetchone()
-                if server_data:
+                server_data = cursor.fetchone()[0]
+                if server_data == creator_id:
                     update_query = "UPDATE servers SET to_a_specific_proxy = %s WHERE server_id = %s"
                     cursor.execute(update_query, (flag, server_id,))
                     cls.connection.commit()
                     return True
+                return None
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing proxy flag (servers.py):", e)
             cursor.close()
 
     @classmethod
-    def delete_server(cls, server_id):
+    def delete_server(cls, server_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
+                select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
+                cursor.execute(select_query, (server_id,))
+                creator_id_from_db = cursor.fetchone()[0]
+                if creator_id_from_db != creator_id:
+                    return False
                 delete_query = "DELETE FROM servers WHERE server_id = %s"
                 cursor.execute(delete_query, (server_id,))
                 cls.connection.commit()
@@ -155,10 +161,10 @@ class ServersDB:
     def change_server(cls, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM servers WHERE server_id = %s"
+                select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
-                server_data = cursor.fetchone()
-                if server_data:
+                server_data = cursor.fetchone()[0]
+                if server_data == creator_id:
                     update_query = """
                     UPDATE servers SET 
                     name = %s, 
