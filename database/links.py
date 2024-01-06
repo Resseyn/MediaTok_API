@@ -121,8 +121,8 @@ class LinksDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM links WHERE link_id = %s"
                 cursor.execute(select_query, (link_id,))
-                link_data = cursor.fetchone()[0]
-                if link_data == creator_id:
+                link_data = cursor.fetchone()
+                if link_data[0] == creator_id:
                     update_query = '''UPDATE links 
                     SET link = %s, 
                         leads_to_post = %s, 
