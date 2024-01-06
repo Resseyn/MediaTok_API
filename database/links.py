@@ -91,7 +91,7 @@ class LinksDB:
                 link_data = cursor.fetchone()
                 if link_data[-1] == creator_id:
                     update_query = "UPDATE links SET activity = %s WHERE link_id = %s"
-                    cursor.execute(update_query, (not link_data[7], link_id,creator_id))
+                    cursor.execute(update_query, (not link_data[7], link_id))
                     cls.connection.commit()
                     return not link_data[7]
                 return "0xperm"
@@ -106,7 +106,10 @@ class LinksDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM links WHERE link_id =%s"
                 cursor.execute(select_query, link_id)
-                creator_id_from_db = cursor.fetchone()[0]
+                fetch_data = cursor.fetchone()
+                if fetch_data is None:
+                    return "0xdb"
+                creator_id_from_db = fetch_data[0]
                 if creator_id != creator_id_from_db:
                     return "0xperm"
                 delete_query = "DELETE FROM links WHERE link_id = %s"

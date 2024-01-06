@@ -1,6 +1,7 @@
 .venv
 .idea
 .git
+config.py
 
 < home = C:\software\python3121
 implementation = CPython

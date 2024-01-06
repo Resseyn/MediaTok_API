@@ -54,7 +54,7 @@ def change_search():
         data.get("search_for"),
         data.get("link"),
         data.get("properties"),
-        data.get("creator_id")
+        session.get("client_id")
     )
     if changed_search == "0xdb": return err.db_update("searches")
     if changed_search == "0xperm": return err.perm("change", "searches")

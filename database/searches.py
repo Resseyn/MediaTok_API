@@ -99,7 +99,7 @@ class SearchesDB:
     def change_search_activity(cls, search_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT creator_id FROM searches WHERE search_id = %s"
+                select_query = "SELECT * FROM searches WHERE search_id = %s"
                 cursor.execute(select_query, (search_id,))
                 search_data = cursor.fetchone()
                 if search_data[-1] == creator_id:
@@ -120,7 +120,10 @@ class SearchesDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM searches WHERE search_id = %s"
                 cursor.execute(select_query, (search_id,))
-                creator_id_from_db = cursor.fetchone()[0]
+                fetch_data = cursor.fetchone()
+                if fetch_data is None:
+                    return "0xdb"
+                creator_id_from_db = fetch_data[0]
                 if creator_id_from_db != creator_id:
                     return "0xperm"
                 delete_query = "DELETE FROM searches WHERE search_id = %s"
@@ -136,9 +139,10 @@ class SearchesDB:
     def change_search(cls, search_id, search_for, link, properties, creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                search_query = "SELECT creator_id FROM searches WHERE search_id = %s"
+                search_query = "SELECT * FROM searches WHERE search_id = %s"
                 cursor.execute(search_query, (search_id,))
                 search_data = cursor.fetchone()
+                print(search_data[-1],creator_id)
                 if search_data[-1] == creator_id:
                     update_query = """
                                         UPDATE searches SET 
@@ -152,7 +156,7 @@ class SearchesDB:
                     ))
                     cls.connection.commit()
                     return Search(search_id, search_for, link, properties, (False if properties == "" else True),
-                                  search_data[5], search_data[6], creator_id)
+                                  search_data[5], search_data[6], creator_id).__dict__
                 return "0xperm"
         except psycopg2.Error as e:
             print("Error changing search:", e)

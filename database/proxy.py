@@ -152,9 +152,12 @@ class ProxyDB:
     def change_proxy_activity(cls, proxy_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT creator_id FROM proxy WHERE proxy_id = %s"
+                select_query = "SELECT * FROM proxy WHERE proxy_id = %s"
                 cursor.execute(select_query, (proxy_id,))
-                user_data = cursor.fetchone()
+                fetch_data = cursor.fetchone()
+                if fetch_data is None:
+                    return "0xdb"
+                user_data = fetch_data
                 if user_data[-1] == creator_id:
                     update_query = "UPDATE proxy SET activity = %s WHERE proxy_id = %s"
                     cursor.execute(update_query, (not user_data[3], proxy_id,))

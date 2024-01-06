@@ -1,3 +1,4 @@
+import asyncio
 import json
 from datetime import datetime
 
@@ -5,11 +6,11 @@ from database import postgres
 
 
 class SmartMode:
-    def __init__(self, toggle, sleep_time, promotion_time_and_percentage, created_at, creator_id):
+    def __init__(self, toggle, sleep_time, promotion_time_and_percentage, update_time, creator_id):
         self.toggle = toggle
         self.sleep_time = sleep_time
         self.promotion_time_and_percentage = promotion_time_and_percentage
-        self.created_at = created_at
+        self.update_time = update_time
         self.creator_id = creator_id
 
     def toJSON(self):
@@ -26,7 +27,7 @@ class SmartModeDB:
             create_table_query = """
             CREATE TABLE IF NOT EXISTS smart_mode (
                 toggle BOOLEAN NOT NULL,
-                sleep_time INTEGER NOT NULL,
+                sleep_time TEXT NOT NULL,
                 promotion_time_and_percentage TEXT,
                 update_time BIGINT NOT NULL,
                 creator_id INTEGER PRIMARY KEY NOT NULL
@@ -41,7 +42,26 @@ class SmartModeDB:
             cursor.close()
 
     @classmethod
+    def change_update_time(cls):
+        with cls.connection.cursor() as cursor:
+            select_query = "SELECT update_time,sleep_time FROM smart_mode WHERE toggle = %s"
+            cursor.execute(select_query, (True,))
+            fetch_data = cursor.fetchone()
+            if fetch_data is None:
+                return "Smart_mode is off"
+            user_data = fetch_data
+            update_query = "UPDATE smart_mode SET update_time = %s WHERE toggle = %s"
+            new_update_time = int(user_data[0])+1 if int(user_data[0]) < 24 else 0
+            cursor.execute(update_query, (new_update_time, True,))
+            cls.connection.commit()
+            cursor.close()
+            return "Changed update time (smart_mode) to ",new_update_time
+
+
+    @classmethod
     def add_property(cls, toggle, sleep_time, promotion_time_and_percentage, creator_id):
+
+        sleep_time += "000"
 
         with cls.connection.cursor() as cursor:
             select_query = "SELECT * FROM smart_mode WHERE creator_id = %s"
@@ -49,35 +69,26 @@ class SmartModeDB:
             server_data = cursor.fetchone()
             if server_data is not None:
                 SmartModeDB.change_smart_mode_property(toggle, sleep_time, promotion_time_and_percentage, creator_id)
-                return SmartMode(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, creator_id).__dict__
+                return SmartMode(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour,
+                                 creator_id).__dict__
             insert_query = (
                 "INSERT INTO smart_mode (toggle,sleep_time,promotion_time_and_percentage,update_time,creator_id) "
                 "VALUES (%s, %s, %s, %s, %s) RETURNING creator_id")
             try:
-                cursor.execute(insert_query, (toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, creator_id,))
+                cursor.execute(insert_query,
+                               (toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, creator_id,))
                 cls.connection.commit()
                 cursor.close()
-                return SmartMode(toggle, sleep_time, promotion_time_and_percentage,  datetime.now().hour,creator_id).__dict__
+                return SmartMode(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour,
+                                 creator_id).__dict__
             except Exception as e:
                 print(f"Error adding property: {e}")
                 cls.connection.rollback()
                 cursor.close()
+                return "0xdb"
 
     @classmethod
-    def get_smart_mode_by_server_id(cls, server_id):
-        with cls.connection.cursor() as cursor:
-            select_query = "SELECT * FROM smart_mode WHERE creator_id = %s"
-            try:
-                cursor.execute(select_query, (server_id,))
-                server_data = cursor.fetchone()
-                smart_mode = SmartMode(*server_data).__dict__
-                return smart_mode
-            except Exception as e:
-                print(f"Error getting smart_mode by server_id: {e}")
-                cls.connection.rollback()
-
-    @classmethod
-    def show_smart_mode(cls, creator_id):
+    def show_smart_mode(cls,creator_id):
         with cls.connection.cursor() as cursor:
             select_query = "SELECT * FROM smart_mode WHERE creator_id = %s"
             try:
@@ -104,7 +115,8 @@ class SmartModeDB:
                 cursor.execute(update_query,
                                (toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, creator_id))
                 cls.connection.commit()
-                smart_mode = SmartMode(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, creator_id)
+                smart_mode = SmartMode(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour,
+                                       creator_id)
                 return smart_mode.__dict__
             except Exception as e:
                 print(f"Error changing smart_mode property: {e}")
@@ -116,5 +128,13 @@ class SmartModeDB:
         cls.connection.close()
 
 
+# async def auto_change_sleep_time():
+#     while True:
+#         if datetime.now().minute <= 1:
+#             print(SmartModeDB.change_update_time())
+#         await asyncio.sleep(60) TODO: убийца богов
+
+
 # Пример использования.
 SmartModeDB.create_smart_mode_table()
+

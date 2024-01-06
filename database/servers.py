@@ -110,10 +110,10 @@ class ServersDB:
     def change_server_activity(cls, server_id, creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
+                select_query = "SELECT * FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
-                if server_data[0] == creator_id:
+                if server_data[-1] == creator_id:
                     update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
                     cursor.execute(update_query, (not server_data[8], server_id,))
                     cls.connection.commit()
@@ -150,7 +150,10 @@ class ServersDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
-                creator_id_from_db = cursor.fetchone()[0]
+                fetch_data = cursor.fetchone()
+                if fetch_data is None:
+                    return "0xdb"
+                creator_id_from_db = fetch_data[0]
                 if creator_id_from_db != creator_id:
                     return "0xperm"
                 delete_query = "DELETE FROM servers WHERE server_id = %s"
@@ -166,7 +169,7 @@ class ServersDB:
     def change_server(cls, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
+                select_query = "SELECT * FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
                 if server_data[-1] == creator_id:

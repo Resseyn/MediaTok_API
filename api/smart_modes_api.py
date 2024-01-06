@@ -26,7 +26,7 @@ def add_mode():
         data["sleep_time"],
         data["promotion_time_and_percentage"],
         session.get("client_id"))
-    if server_id == "0xdb": return err.not_found("smart_modes")
+    if server_id == "0xdb": return err.db_update("smart_modes")
     return json.dumps(server_id), 200
 
 #
