@@ -27,7 +27,7 @@ def add_user():
 def change_user():
     data = json.loads(request.data)
     changed_user = UserDB.change_user(data["user_id"], data["login"], data["password"], data["name"],
-                                      data["surname"], data["activity"], data["created_at"])
+                                      data["surname"])
     if changed_user:
         return json.dumps(changed_user), 200
     elif not changed_user:
@@ -48,9 +48,9 @@ def set_user_activity():
 @auth_required
 def delete_user():
     args = request.args
-    if session["user_id"] != args.get("user_id"):
+    if session["client_id"] == args.get("user_id"):
         return "Wrong data", 400
     changed = UserDB.delete_user(args.get("user_id"))
-    if changed is None:
+    if changed is False:
         return "Wrong data", 400
     return json.dumps(changed), 200

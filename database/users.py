@@ -64,7 +64,7 @@ class UserDB:
             return None
 
     @classmethod
-    def change_user(cls, user_id, login, password, name, surname, created_at):
+    def change_user(cls, user_id, login, password, name, surname):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM users WHERE user_id = %s"
@@ -82,7 +82,7 @@ class UserDB:
                         login, password, name, surname, user_id
                     ))
                     cls.connection.commit()
-                    return User(user_id, login, password, name, surname, user_data[5], created_at).__dict__
+                    return User(user_id, login, password, name, surname, user_data[5], user_data[6]).__dict__
                 return False
         except psycopg2.Error as e:
             print(f"Error changing user:", e)
