@@ -49,7 +49,7 @@ class ProxyDB:
                 cursor.execute(count_query, (server_id,))
                 count = cursor.fetchone()[0]
                 if count >= 3:
-                    return None
+                    return "0xc"
 
                 insert_query = (
                     "INSERT INTO proxy (server_id, address, activity, creator_id) "
@@ -57,13 +57,13 @@ class ProxyDB:
                 )
                 cursor.execute(insert_query, (server_id, address, True, creator_id))
                 proxy_id = cursor.fetchone()[0]
-                ServersDB.change_proxy_flag(server_id, True)
+                ServersDB.change_proxy_flag(server_id, True,creator_id)
                 cls.connection.commit()
                 return proxy_id
         except psycopg2.Error as e:
             print("Error adding proxy(proxy.py):", e)
             cls.connection.rollback()
-            return None
+            return "0xdb"
 
     @classmethod
     def delete_proxy(cls, proxy_id,creator_id):
@@ -73,7 +73,7 @@ class ProxyDB:
                 cursor.execute(select_query, (proxy_id,))
                 creator_id_from_db = cursor.fetchone()[0]
                 if creator_id_from_db != creator_id:
-                    return False
+                    return "0xperm"
                 delete_query = "DELETE FROM proxy WHERE proxy_id = %s RETURNING server_id"
                 cursor.execute(delete_query, (proxy_id,))
                 server_id = cursor.fetchone()[0]
@@ -82,13 +82,13 @@ class ProxyDB:
                 cursor.execute(check_query, (server_id,))
 
                 if not len(cursor.fetchall()):
-                    ServersDB.change_proxy_flag(server_id, False)
+                    ServersDB.change_proxy_flag(server_id, False,creator_id)
                 cls.connection.commit()
                 return True
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
             cls.connection.rollback()
-            return False
+            return "0xdb"
 
     @classmethod
     def get_proxy_by_server_id(cls, server_id):
@@ -128,7 +128,7 @@ class ProxyDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error showing proxies:", e)
-            return []
+            return "0xdb"
 
     @classmethod
     def change_proxy(cls, proxy_id, address,creator_id):
@@ -138,7 +138,7 @@ class ProxyDB:
                 cursor.execute(select_query, proxy_id)
                 creator_id_from_db = cursor.fetchone()[0]
                 if creator_id_from_db != creator_id:
-                    return None
+                    return "0xperm"
                 update_query = "UPDATE proxy SET address = %s WHERE proxy_id = %s RETURNING server_id,activity,creator_id"
                 cursor.execute(update_query, (address, proxy_id))
                 proxy_data = cursor.fetchone()
@@ -146,7 +146,7 @@ class ProxyDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing proxy:", e)
-            return None
+            return "0xdb"
 
     @classmethod
     def change_proxy_activity(cls, proxy_id,creator_id):
@@ -161,12 +161,12 @@ class ProxyDB:
                     cls.connection.commit()
                     cursor.close()
                     return not user_data[3]
-                return None
+                return "0xperm"
         except psycopg2.Error as e:
             cls.connection.rollback()
             cursor.close()
             print("Error changing user activity:", e)
-            return None
+            return "0xdb"
 
     @classmethod
     def close_connection(cls):
