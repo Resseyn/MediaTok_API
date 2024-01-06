@@ -2,6 +2,7 @@ import json
 from flask import request, session
 from api.sessions import auth_required
 from database.servers import ServersDB
+from src.errors import err
 from src.loader import app
 
 
@@ -9,6 +10,7 @@ from src.loader import app
 @auth_required
 def show_servers():
     servers = ServersDB.show_servers(session.get("client_id"))
+    if servers == "0xdb": err.not_found("servers")
     return json.dumps(servers, indent=2), 200
 
 
@@ -26,6 +28,7 @@ def add_server():
         data.get("ip"),
         data.get("activity"),
         session.get("client_id"))
+    if server_id == "0xdb": return err.db_add("servers")
     return json.dumps(server_id), 200
 
 
@@ -33,7 +36,9 @@ def add_server():
 @auth_required
 def set_server_activity():
     args = request.args
-    act = ServersDB.change_server_activity(args.get("server_id"),session.get("client_id"))
+    act = ServersDB.change_server_activity(args.get("server_id"), session.get("client_id"))
+    if act == "0xdb": return err.db_update("servers")
+    if act == "0xperm": return err.perm("set activity", "servers")
     return f"Success: changed to {act}", 200
 
 
@@ -45,8 +50,8 @@ def delete_server():
         args.get("server_id"),
         session.get("client_id")
     )
-    if changed is None:
-        return "Wrong data", 400
+    if changed == "0xdb": return err.db_update("servers")
+    if changed == "0xperm": return err.perm("set activity", "servers")
     return json.dumps(changed), 200
 
 
@@ -64,4 +69,6 @@ def change_server():
         data.get("storage"),
         data.get("ip"),
         session.get("client_id"))
+    if server_id == "0xdb": return err.db_update("servers")
+    if server_id == "0xperm": return err.perm("set activity", "servers")
     return json.dumps(server_id), 200

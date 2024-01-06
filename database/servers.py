@@ -73,6 +73,7 @@ class ServersDB:
             print("Ошибка add server(servers.py):", e)
             cls.connection.rollback()
             cursor.close()
+            return "0xdb"
 
     @classmethod
     def get_server_by_id(cls, server_id):
@@ -88,6 +89,7 @@ class ServersDB:
             cursor.close()
             cls.connection.rollback()
             print("Error getting server by ID(servers.py):", e)
+            return "0xdb"
 
     @classmethod
     def show_servers(cls, creator_id):
@@ -102,9 +104,10 @@ class ServersDB:
             cursor.close()
             cls.connection.rollback()
             print("Error showing servers(servers.py):", e)
+            return "0xdb"
 
     @classmethod
-    def change_server_activity(cls, server_id,creator_id):
+    def change_server_activity(cls, server_id, creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
@@ -115,14 +118,16 @@ class ServersDB:
                     cursor.execute(update_query, (not server_data[8], server_id,))
                     cls.connection.commit()
                     return not server_data[8]
-                return None
+                return "0xperm"
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing server activity(servers.py):", e)
             cursor.close()
+            return "0xdb"
 
     @classmethod
-    def change_proxy_flag(cls, server_id, flag,creator_id):
+    def change_proxy_flag(cls, server_id, flag,
+                          creator_id):  # TODO: разобраться с тем нужен ли пермишн для добавления прокси для чужих серверов (check usages) и ошибки сделать
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM servers WHERE server_id = %s"
@@ -140,14 +145,14 @@ class ServersDB:
             cursor.close()
 
     @classmethod
-    def delete_server(cls, server_id,creator_id):
+    def delete_server(cls, server_id, creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
                 creator_id_from_db = cursor.fetchone()[0]
                 if creator_id_from_db != creator_id:
-                    return False
+                    return "0xperm"
                 delete_query = "DELETE FROM servers WHERE server_id = %s"
                 cursor.execute(delete_query, (server_id,))
                 cls.connection.commit()
@@ -155,7 +160,7 @@ class ServersDB:
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
             cls.connection.rollback()
-            return False
+            return "0xdb"
 
     @classmethod
     def change_server(cls, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, creator_id):
@@ -182,10 +187,11 @@ class ServersDB:
                     cls.connection.commit()
                     return Server(server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip,
                                   server_data[8], server_data[9], server_data[10], creator_id).__dict__
-                return None
+                return "0xperm"
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
             cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def close_connection(cls):
