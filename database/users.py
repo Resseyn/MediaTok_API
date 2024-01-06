@@ -61,7 +61,7 @@ class UserDB:
             print("Error adding user:", e)
             cls.connection.rollback()
             cursor.close()
-            return None
+            return "0xp"
 
     @classmethod
     def change_user(cls, user_id, login, password, name, surname):
@@ -83,11 +83,11 @@ class UserDB:
                     ))
                     cls.connection.commit()
                     return User(user_id, login, password, name, surname, user_data[5], user_data[6]).__dict__
-                return False
+                return "0xu"
         except psycopg2.Error as e:
             print(f"Error changing user:", e)
             cls.connection.rollback()
-            return None
+            return "0xdb"
 
     @classmethod
     def get_user_by_id(cls, user_id):
@@ -139,6 +139,7 @@ class UserDB:
             cls.connection.rollback()
             cursor.close()
             print("Error showing users:", e)
+            return "0xdb"
 
     @classmethod
     def change_user_activity(cls, user_id):
@@ -154,11 +155,12 @@ class UserDB:
                     cursor.close()
                     return not user_data[5]
                 cursor.close()
-                return None
+                return "0xdb"  # TODO: че это за хуйня что тут происходит какой if
         except psycopg2.Error as e:
             cls.connection.rollback()
             cursor.close()
             print("Error changing user activity:", e)
+            return "0xdb"
 
     @classmethod
     def delete_user(cls, user_id):
@@ -171,7 +173,7 @@ class UserDB:
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
             cls.connection.rollback()
-            return False
+            return "0xdb"
 
     @classmethod
     def close_connection(cls):

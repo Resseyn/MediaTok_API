@@ -2,6 +2,7 @@ import json
 from flask import request, session
 from api.sessions import auth_required
 from database.users import UserDB
+from src.errors import err
 from src.loader import app
 
 
@@ -9,6 +10,7 @@ from src.loader import app
 @auth_required
 def show_users():
     users = UserDB.show_users()
+    if users == "0xdb": return err.not_found("users")
     return json.dumps(users, indent=2), 200
 
 
@@ -17,8 +19,7 @@ def show_users():
 def add_user():
     data = json.loads(request.data)
     user_id = UserDB.add_user(data["login"], data["password"], data["name"], data["surname"])
-    if user_id is None:
-        return "This login is present!", 400
+    if user_id == "0xp": return err.db_add("users")
     return json.dumps(user_id), 200
 
 
@@ -28,12 +29,9 @@ def change_user():
     data = json.loads(request.data)
     changed_user = UserDB.change_user(data["user_id"], data["login"], data["password"], data["name"],
                                       data["surname"])
-    if changed_user:
-        return json.dumps(changed_user), 200
-    elif not changed_user:
-        return "User not found!", 400
-    else:
-        return "Error changing user!", 400
+    if changed_user == "0xu": return err.not_found("users")
+    if changed_user == "0xdb": return err.db_update("users")
+    return json.dumps(changed_user), 200
 
 
 @app.get("/api/users/changeActivity")
@@ -41,6 +39,7 @@ def change_user():
 def set_user_activity():
     args = request.args
     act = UserDB.change_user_activity(args.get("user_id"))
+    if act == "0xdb": return err.db_update("users")
     return f"Success: changed to {act}", 200
 
 
@@ -49,8 +48,8 @@ def set_user_activity():
 def delete_user():
     args = request.args
     if session["client_id"] == args.get("user_id"):
-        return "Wrong data", 400
+        return err.create("ебать ты тупой себя удаляешь", "228")
     changed = UserDB.delete_user(args.get("user_id"))
-    if changed is False:
-        return "Wrong data", 400
+    if changed == "0xdb":
+        return err.not_found("users")
     return json.dumps(changed), 200
