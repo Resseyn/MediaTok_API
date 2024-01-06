@@ -2,6 +2,7 @@ import json
 from flask import request, session
 from api.sessions import auth_required
 from database.searches import SearchesDB
+from src.errors import err
 from src.loader import app
 
 
@@ -9,6 +10,7 @@ from src.loader import app
 @auth_required
 def show_searches():
     searches = SearchesDB.show_searches(session.get("client_id"))
+    if searches == "0xdb": return err.not_found("searches")
     result_map = [
         dict(search_id=search["search_id"], search=";".join([search["link"],
                                                              str(True),
@@ -29,6 +31,7 @@ def add_search():
         data.get("link"),
         data.get("props"),
         session.get("client_id"))
+    if search_id == "0xdb": return err.db_add("searches")
     return json.dumps(search_id), 200
 
 
@@ -36,7 +39,9 @@ def add_search():
 @auth_required
 def set_search_activity():
     args = request.args
-    act = SearchesDB.change_search_activity(args.get("search_id"),session.get("client_id"))
+    act = SearchesDB.change_search_activity(args.get("search_id"), session.get("client_id"))
+    if act == "0xdb": return err.db_update("searches")
+    if act == "0xperm": return err.perm("set activity", "searches")
     return f"Success: changed to {act}", 200
 
 
@@ -51,10 +56,9 @@ def change_search():
         data.get("properties"),
         data.get("creator_id")
     )
-    if changed_search:
-        return json.dumps(changed_search), 200
-    else:
-        return "Error while changing search", 400
+    if changed_search == "0xdb": return err.db_update("searches")
+    if changed_search == "0xperm": return err.perm("change", "searches")
+    return json.dumps(changed_search), 200
 
 
 @app.get("/api/searches/delete")
@@ -65,6 +69,6 @@ def delete_search():
         args.get("search_id"),
         session.get("client_id")
     )
-    if changed is None:
-        return "Wrong data", 400
+    if changed == "0xdb": return err.db_update("searches")
+    if changed == "0xperm": return err.perm("change", "searches")
     return json.dumps(changed), 200

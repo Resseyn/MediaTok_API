@@ -64,7 +64,7 @@ class SearchesDB:
         except psycopg2.Error as e:
             print(f"Error adding search: {e}")
             cls.connection.rollback()
-            return None
+            return "0xdb"
 
     @classmethod
     def get_search_by_id(cls, search_id):
@@ -77,10 +77,10 @@ class SearchesDB:
                     search = Search(*search_data).__dict__
                     return search
                 else:
-                    return None
+                    return "0xdb"
         except psycopg2.Error as e:
             print(f"Error getting search by ID: {e}")
-            return None
+            return "0xdb"
 
     @classmethod
     def show_searches(cls, creator_id):
@@ -93,7 +93,7 @@ class SearchesDB:
                 return searches
         except psycopg2.Error as e:
             print(f"Error showing searches: {e}")
-            return None
+            return "0xdb"
 
     @classmethod
     def change_search_activity(cls, search_id,creator_id):
@@ -108,11 +108,11 @@ class SearchesDB:
                     cls.connection.commit()
                     return not search_data[5]
                 else:
-                    return None
+                    return "0xperm"
         except psycopg2.Error as e:
             print(f"Error changing search activity: {e}")
             cls.connection.rollback()
-            return None
+            return "0xdb"
 
     @classmethod
     def delete_search(cls, search_id,creator_id):
@@ -122,7 +122,7 @@ class SearchesDB:
                 cursor.execute(select_query, (search_id,))
                 creator_id_from_db = cursor.fetchone()[0]
                 if creator_id_from_db != creator_id:
-                    return False
+                    return "0xperm"
                 delete_query = "DELETE FROM searches WHERE search_id = %s"
                 cursor.execute(delete_query, (search_id,))
                 cls.connection.commit()
@@ -130,7 +130,7 @@ class SearchesDB:
         except psycopg2.Error as e:
             print(f"Error deleting search: {e}")
             cls.connection.rollback()
-            return False
+            return "0xdb"
 
     @classmethod
     def change_search(cls, search_id, search_for, link, properties, creator_id):
@@ -153,11 +153,11 @@ class SearchesDB:
                     cls.connection.commit()
                     return Search(search_id, search_for, link, properties, (False if properties == "" else True),
                                   search_data[5], search_data[6], creator_id)
-                return False
+                return "0xperm"
         except psycopg2.Error as e:
             print("Error changing search:", e)
             cls.connection.rollback()
-            return False
+            return "0xdb"
 
     @classmethod
     def close_connection(cls):
