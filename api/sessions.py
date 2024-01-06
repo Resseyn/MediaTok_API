@@ -1,12 +1,14 @@
+import json
+import time
 from datetime import datetime, timedelta
 from functools import wraps
 
 import jwt
 from flask import session, request, redirect, url_for, jsonify
 
-from config import api_secret_key
 from database.users import UserDB
 from src.loader import app
+from config import api_secret_key
 
 app.secret_key = api_secret_key
 
@@ -42,7 +44,8 @@ def index():
 
 @app.post('/api/auth/login')
 def login():
-    client = UserDB.get_user_by_auth(request.form["login"], request.form["password"])
+    data = json.loads(request.data)
+    client = UserDB.get_user_by_auth(data["login"], data["password"])
     if client is None:
         return "Wrong auth data", 400
 

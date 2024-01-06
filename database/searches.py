@@ -128,10 +128,10 @@ class SearchesDB:
             return False
 
     @classmethod
-    def change_search(cls, search_id, search_for, link, properties, activity, creator_id):
+    def change_search(cls, search_id, search_for, link, properties, creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                search_query = "SELECT created_at FROM searches WHERE search_id = %s"
+                search_query = "SELECT * FROM searches WHERE search_id = %s"
                 cursor.execute(search_query, (search_id,))
                 search_data = cursor.fetchone()
                 if search_data:
@@ -140,15 +140,14 @@ class SearchesDB:
                                         search_for = %s, 
                                         link = %s, 
                                         properties = %s,
-                                        list_seti = %s, 
-                                        activity = %s
+                                        list_seti = %s
                                         WHERE search_id = %s;"""
                     cursor.execute(update_query, (
-                        search_for, link, properties, (False if properties == "" else True), activity, search_id
+                        search_for, link, properties, (False if properties == "" else True), search_id
                     ))
                     cls.connection.commit()
                     return Search(search_id, search_for, link, properties, (False if properties == "" else True),
-                                  activity, search_data[0], creator_id)
+                                  search_data[5], search_data[6], creator_id)
         except psycopg2.Error as e:
             print("Error changing search:", e)
             cls.connection.rollback()

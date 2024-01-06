@@ -49,7 +49,6 @@ def change_search():
         data.get("search_for"),
         data.get("link"),
         data.get("properties"),
-        data.get("activity"),
         data.get("creator_id")
     )
     if changed_search:

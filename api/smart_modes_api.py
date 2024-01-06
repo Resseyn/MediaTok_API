@@ -25,14 +25,14 @@ def add_mode():
         session.get("client_id"))
     return json.dumps(server_id), 200
 
-
-@app.post("/api/smart_mode/change")
-@auth_required
-def change_mode():
-    data = json.loads(request.data)
-    server_id = SmartModeDB.change_smart_mode_property(
-        data["toggle"],
-        data["sleep_time"],
-        data["promotion_time_and_percentage"],
-        session.get("client_id"))
-    return json.dumps(server_id), 200
+#
+# @app.post("/api/smart_mode/change")
+# @auth_required
+# def change_mode():
+#     data = json.loads(request.data)
+#     server_id = SmartModeDB.change_smart_mode_property(
+#         data["toggle"],
+#         data["sleep_time"],
+#         data["promotion_time_and_percentage"],
+#         session.get("client_id"))
+#     return json.dumps(server_id), 200

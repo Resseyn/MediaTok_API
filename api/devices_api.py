@@ -38,15 +38,15 @@ def delete_device():
     return json.dumps(changed_device), 200
 
 
-@app.post("/api/devices/change")
-@auth_required
-def change_device():
-    data = json.loads(request.data)
-    changed_device = DevicesDB.change_device(
-        data.get("record_id"),
-        data.get("phone"),
-        data.get("desktop"),
-        data.get("tablet"), )
-    if changed_device is None:
-        return "Wrong data", 400
-    return json.dumps(changed_device), 200
+# @app.post("/api/devices/change")
+# @auth_required
+# def change_device():
+#     data = json.loads(request.data)
+#     changed_device = DevicesDB.change_device(
+#         data.get("record_id"),
+#         data.get("phone"),
+#         data.get("desktop"),
+#         data.get("tablet"), )
+#     if changed_device is None:
+#         return "Wrong data", 400
+#     return json.dumps(changed_device), 200
