@@ -19,6 +19,7 @@ class User:
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
+
 class UserDB:
     connection = postgres.conn
 
@@ -62,6 +63,32 @@ class UserDB:
             cursor.close()
             return None
 
+    @classmethod
+    def change_user(cls, user_id, login, password, name, surname, activity,created_at ):
+        try:
+            with cls.connection.cursor() as cursor:
+                select_query = "SELECT * FROM users WHERE user_id = %s"
+                cursor.execute(select_query, (user_id,))
+                user_data = cursor.fetchone()
+                if user_data:
+                    update_query = """
+                    UPDATE users SET 
+                    login = %s, 
+                    password = %s, 
+                    name = %s, 
+                    surname = %s, 
+                    activity = %s
+                    WHERE user_id = %s;"""
+                    cursor.execute(update_query, (
+                        login, password, name, surname, activity, user_id
+                    ))
+                    cls.connection.commit()
+                    return User(user_id,login,password,name,surname,activity,created_at).__dict__
+                return False
+        except psycopg2.Error as e:
+            print(f"Error changing user:", e)
+            cls.connection.rollback()
+            return None
 
     @classmethod
     def get_user_by_id(cls, user_id):
@@ -146,9 +173,11 @@ class UserDB:
             print("Error deleting proxy:", e)
             cls.connection.rollback()
             return False
+
     @classmethod
     def close_connection(cls):
         cls.connection.close()
+
 
 # Пример использования
 UserDB.create_user_table()

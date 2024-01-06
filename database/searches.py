@@ -128,6 +128,32 @@ class SearchesDB:
             return False
 
     @classmethod
+    def change_search(cls, search_id,search_for,link,properties,activity,creator_id):
+        try:
+            with cls.connection.cursor() as cursor:
+                search_query = "SELECT created_at FROM searches WHERE search_id = %s"
+                cursor.execute(search_query,(search_id,))
+                search_data = cursor.fetchone()
+                if search_data:
+                    update_query = """
+                                        UPDATE searches SET 
+                                        search_for = %s, 
+                                        link = %s, 
+                                        properties = %s,
+                                        list_seti = %s, 
+                                        activity = %s
+                                        WHERE search_id = %s;"""
+                    cursor.execute(update_query, (
+                        search_for, link, properties, (False if properties == "" else True),activity, search_id
+                    ))
+                    cls.connection.commit()
+                    return Search(search_for,search_for, link, properties,(False if properties == "" else True),activity, search_id,search_data[0],creator_id)
+        except psycopg2.Error as e:
+            print("Error changing search:",e)
+            cls.connection.rollback()
+            return False
+
+    @classmethod
     def close_connection(cls):
         cls.connection.close()
 

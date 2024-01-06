@@ -19,6 +19,20 @@ def add_user():
         return "This login is present!", 400
     return json.dumps(user_id), 200
 
+
+@app.post("/api/users/change")
+@auth_required
+def change_user():
+    data = json.loads(request.data)
+    changed_user = UserDB.change_user(data["user_id"], data["login"], data["password"], data["name"],
+                                      data["surname"], data["activity"],data["created_at"])
+    if changed_user:
+        return json.dumps(changed_user), 200
+    elif not changed_user:
+        return "User not found!",400
+    else:
+        return "Error changing user!",400
+
 @app.get("/api/users/changeActivity")
 @auth_required
 def set_user_activity():

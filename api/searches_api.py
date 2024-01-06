@@ -36,6 +36,23 @@ def set_search_activity():
     act = SearchesDB.change_search_activity(args.get("search_id"))
     return f"Success: changed to {act}", 200
 
+@app.get("/api/searches/change")
+@auth_required
+def change_search():
+    data = json.loads(request.data)
+    changed_search = SearchesDB.change_search(
+        data.get("search_id"),
+        data.get("search_for"),
+        data.get("link"),
+        data.get("properties"),
+        data.get("activity"),
+        data.get("creator_id")
+    )
+    if changed_search:
+        return json.dumps(changed_search), 200
+    else:
+        return "Error while changing search", 400
+
 @app.get("/api/searches/delete")
 @auth_required
 def delete_search():

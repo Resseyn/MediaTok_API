@@ -120,7 +120,7 @@ class SiteTimeDB:
                 return None
         except psycopg2.Error as e:
             cls.connection.rollback()
-            print(f"Error changing site_times:",e)
+            print("Error changing site_times:",e)
 
     @classmethod
     def show_times(cls, creator_id):
