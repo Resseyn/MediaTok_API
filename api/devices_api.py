@@ -3,12 +3,15 @@ from flask import request, session
 from api.sessions import auth_required
 from database.devices import DevicesDB
 from src.loader import app
+from src.errors import err
 
 
 @app.get("/api/devices/show")
 @auth_required
 def show_devices():
     servers = DevicesDB.show_devices(session.get("client_id"))
+    if servers == "0xdb":
+        return err.not_found("devices")
     return json.dumps(servers, indent=2), 200
 
 
@@ -21,9 +24,9 @@ def add_device():
         data.get("desktop"),
         data.get("tablet"),
         session.get("client_id"))
-    if device is None:
-        return "Wrong data", 400
-    return json.dumps(device), 200
+    if device == "0xdb":
+        return err.not_found("devices")
+    return json.dumps(device), 201
 
 
 @app.get("/api/devices/delete")
@@ -32,10 +35,9 @@ def delete_device():
     changed_device = DevicesDB.delete_device(
         session["client_id"],
     )
-    if changed_device is None:
-        return "Wrong data", 400
+    if changed_device == "0xdb":
+        return err.not_found("devices")
     return json.dumps(changed_device), 200
-
 
 # @app.post("/api/devices/change")
 # @auth_required

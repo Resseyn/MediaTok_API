@@ -48,8 +48,9 @@ class DevicesDB:
                 cursor.execute(select_query, (creator_id,))
                 device_data = cursor.fetchone()
                 if device_data:
-                    DevicesDB.change_device(creator_id, phone, desktop, tablet)
-                    return Device(phone, int(phone) + int(desktop), 100, creator_id).__dict__
+                    if DevicesDB.change_device(creator_id, phone, desktop, tablet) != "0xdb":
+                        return Device(phone, int(phone) + int(desktop), 100, creator_id).__dict__
+                    return "0xdb"
                 insert_query = (
                     "INSERT INTO devices (phone,desktop,tablet,creator_id) "
                     "VALUES (%s, %s, %s,%s)"
@@ -60,7 +61,7 @@ class DevicesDB:
                 return Device(phone, int(phone) + int(desktop), 100, creator_id).__dict__
         except psycopg2.Error as e:
             print(f"Error adding device: {e}")
-            return None
+            return "0xdb"
 
     @classmethod
     def change_device(cls, creator_id, phone, desktop, tablet):
@@ -97,6 +98,7 @@ class DevicesDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error showing devices: {e}")
+            return "0xdb"
 
     @classmethod
     def delete_device(cls, creator_id):
@@ -109,7 +111,7 @@ class DevicesDB:
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
             cls.connection.rollback()
-            return False
+            return "0xdb"
 
     @classmethod
     def close_connection(cls):
