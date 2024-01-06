@@ -109,8 +109,8 @@ class ServersDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
-                server_data = cursor.fetchone()[0]
-                if server_data == creator_id:
+                server_data = cursor.fetchone()
+                if server_data[0] == creator_id:
                     update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
                     cursor.execute(update_query, (not server_data[8], server_id,))
                     cls.connection.commit()
@@ -125,10 +125,10 @@ class ServersDB:
     def change_proxy_flag(cls, server_id, flag,creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
+                select_query = "SELECT * FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, server_id)
-                server_data = cursor.fetchone()[0]
-                if server_data == creator_id:
+                server_data = cursor.fetchone()
+                if server_data[-1] == creator_id:
                     update_query = "UPDATE servers SET to_a_specific_proxy = %s WHERE server_id = %s"
                     cursor.execute(update_query, (flag, server_id,))
                     cls.connection.commit()
@@ -163,8 +163,8 @@ class ServersDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
-                server_data = cursor.fetchone()[0]
-                if server_data == creator_id:
+                server_data = cursor.fetchone()
+                if server_data[-1] == creator_id:
                     update_query = """
                     UPDATE servers SET 
                     name = %s, 

@@ -101,8 +101,8 @@ class SearchesDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM searches WHERE search_id = %s"
                 cursor.execute(select_query, (search_id,))
-                search_data = cursor.fetchone()[0]
-                if search_data == creator_id:
+                search_data = cursor.fetchone()
+                if search_data[-1] == creator_id:
                     update_query = "UPDATE searches SET activity = %s WHERE search_id = %s"
                     cursor.execute(update_query, (not search_data[5], search_id))
                     cls.connection.commit()
@@ -138,8 +138,8 @@ class SearchesDB:
             with cls.connection.cursor() as cursor:
                 search_query = "SELECT creator_id FROM searches WHERE search_id = %s"
                 cursor.execute(search_query, (search_id,))
-                search_data = cursor.fetchone()[0]
-                if search_data[0] == creator_id:
+                search_data = cursor.fetchone()
+                if search_data[-1] == creator_id:
                     update_query = """
                                         UPDATE searches SET 
                                         search_for = %s, 

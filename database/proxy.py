@@ -154,8 +154,8 @@ class ProxyDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM proxy WHERE proxy_id = %s"
                 cursor.execute(select_query, (proxy_id,))
-                user_data = cursor.fetchone()[0]
-                if user_data == creator_id:
+                user_data = cursor.fetchone()
+                if user_data[-1] == creator_id:
                     update_query = "UPDATE proxy SET activity = %s WHERE proxy_id = %s"
                     cursor.execute(update_query, (not user_data[3], proxy_id,))
                     cls.connection.commit()
