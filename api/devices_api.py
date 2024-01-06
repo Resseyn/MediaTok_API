@@ -29,9 +29,8 @@ def add_device():
 @app.get("/api/devices/delete")
 @auth_required
 def delete_device():
-    args = request.args
     changed_device = DevicesDB.delete_device(
-        session.get("client_id"),
+        session["client_id"],
     )
     if changed_device is None:
         return "Wrong data", 400
