@@ -1,6 +1,7 @@
 from api import app
 
-# TODO: обнуление курсоров при ошибке
+import database
+
 
 if __name__ == '__main__':
     app.run(debug=True)
