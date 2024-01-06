@@ -90,7 +90,7 @@ class SiteTimeDB:
                                 number_of_transitions_min, number_of_transitions_max, creator_id).__dict__
         except psycopg2.Error as e:
             print(f"Error adding time: {e}")
-            return None
+            return "0xdb"
 
     @classmethod
     def change_times(cls, creator_id, emulation_of_inactivity_min, emulation_of_inactivity_max,
@@ -137,6 +137,7 @@ class SiteTimeDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error showing times: {e}")
+            return "0xdb"
 
     @classmethod
     def close_connection(cls):
