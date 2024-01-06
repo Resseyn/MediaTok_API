@@ -135,14 +135,14 @@ class ServersDB:
                     return True
         except psycopg2.Error as e:
             cls.connection.rollback()
-            print("Error changing proxy flag (servers.py):",e)
+            print("Error changing proxy flag (servers.py):", e)
             cursor.close()
 
     @classmethod
     def delete_server(cls, server_id):
         try:
             with cls.connection.cursor() as cursor:
-                delete_query = ("DELETE FROM servers WHERE server_id = %s")
+                delete_query = "DELETE FROM servers WHERE server_id = %s"
                 cursor.execute(delete_query, (server_id,))
                 cls.connection.commit()
                 return True
@@ -171,15 +171,16 @@ class ServersDB:
                     activity = %s
                     WHERE server_id = %s;"""
                     cursor.execute(update_query, (
-                    name, login_anyd, password_anyd, cpu, ram, storage, ip, server_data[8], server_id
+                        name, login_anyd, password_anyd, cpu, ram, storage, ip, server_data[8], server_id
                     ))
                     cls.connection.commit()
-                    return Server(server_id, name, login_anyd, password_anyd,  cpu, ram, storage, ip,
+                    return Server(server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip,
                                   server_data[8], server_data[9], server_data[10], creator_id).__dict__
                 return None
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
             cls.connection.rollback()
+
     @classmethod
     def close_connection(cls):
         cls.connection.close()

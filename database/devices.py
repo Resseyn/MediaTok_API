@@ -6,7 +6,7 @@ from database import postgres
 
 
 class Device:
-    def __init__(self,phone,desktop,tablet,creator_id):
+    def __init__(self, phone, desktop, tablet, creator_id):
         self.phone = phone
         self.desktop = desktop
         self.tablet = tablet
@@ -39,7 +39,7 @@ class DevicesDB:
             print(f"Error creating devices table: {e}")
 
     @classmethod
-    def add_device(cls, phone,desktop,tablet,creator_id):
+    def add_device(cls, phone, desktop, tablet, creator_id):
         if int(phone) + int(desktop) + int(tablet) != 100:
             return None
         try:
@@ -48,22 +48,22 @@ class DevicesDB:
                 cursor.execute(select_query, (creator_id,))
                 device_data = cursor.fetchone()
                 if device_data:
-                    DevicesDB.change_device(creator_id,phone,desktop,tablet)
-                    return Device(phone,int(phone) + int(desktop), 100,creator_id).__dict__
+                    DevicesDB.change_device(creator_id, phone, desktop, tablet)
+                    return Device(phone, int(phone) + int(desktop), 100, creator_id).__dict__
                 insert_query = (
                     "INSERT INTO devices (phone,desktop,tablet,creator_id) "
                     "VALUES (%s, %s, %s,%s)"
                 )
-                cursor.execute(insert_query, (phone,int(phone) + int(desktop), 100,creator_id)
+                cursor.execute(insert_query, (phone, int(phone) + int(desktop), 100, creator_id)
                                )
                 cls.connection.commit()
-                return Device(phone,int(phone) + int(desktop), 100,creator_id).__dict__
+                return Device(phone, int(phone) + int(desktop), 100, creator_id).__dict__
         except psycopg2.Error as e:
             print(f"Error adding device: {e}")
             return None
 
     @classmethod
-    def change_device(cls,creator_id,phone,desktop,tablet):
+    def change_device(cls, creator_id, phone, desktop, tablet):
         if int(phone) + int(desktop) + int(tablet) != 100:
             return None
         try:
@@ -77,13 +77,13 @@ class DevicesDB:
                     desktop = %s, 
                     tablet = %s
                 WHERE creator_id = %s'''
-                    cursor.execute(update_query, (phone,int(phone) + int(desktop), 100,creator_id))
+                    cursor.execute(update_query, (phone, int(phone) + int(desktop), 100, creator_id))
                     cls.connection.commit()
-                    return Device(phone,int(phone) + int(desktop), 100 ,creator_id).__dict__
+                    return Device(phone, int(phone) + int(desktop), 100, creator_id).__dict__
                 return None
         except psycopg2.Error as e:
             cls.connection.rollback()
-            print(f"Error changing device:",e)
+            print(f"Error changing device:", e)
 
     @classmethod
     def show_devices(cls, creator_id):
@@ -102,7 +102,7 @@ class DevicesDB:
     def delete_device(cls, creator_id):
         try:
             with cls.connection.cursor() as cursor:
-                delete_query = ("DELETE FROM devices WHERE creator_id = %s")
+                delete_query = "DELETE FROM devices WHERE creator_id = %s"
                 cursor.execute(delete_query, (creator_id,))
                 cls.connection.commit()
                 return True

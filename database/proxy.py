@@ -17,6 +17,7 @@ class Proxy:
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__, sort_keys=True, indent=4)
 
+
 class ProxyDB:
     connection = postgres.conn
 
@@ -68,11 +69,11 @@ class ProxyDB:
     def delete_proxy(cls, proxy_id):
         try:
             with cls.connection.cursor() as cursor:
-                delete_query = ("DELETE FROM proxy WHERE proxy_id = %s RETURNING server_id")
+                delete_query = "DELETE FROM proxy WHERE proxy_id = %s RETURNING server_id"
                 cursor.execute(delete_query, (proxy_id,))
                 server_id = cursor.fetchone()[0]
 
-                check_query = ("SELECT * FROM proxy WHERE server_id = %s")
+                check_query = "SELECT * FROM proxy WHERE server_id = %s"
                 cursor.execute(check_query, (server_id,))
 
                 if len(cursor.fetchall()):
@@ -131,7 +132,7 @@ class ProxyDB:
                 update_query = "UPDATE proxy SET address = %s WHERE proxy_id = %s RETURNING server_id,activity,creator_id"
                 cursor.execute(update_query, (address, proxy_id))
                 proxy_data = cursor.fetchone()
-                return Proxy(proxy_id, proxy_data[0], address, proxy_data[1],proxy_data[2]).__dict__
+                return Proxy(proxy_id, proxy_data[0], address, proxy_data[1], proxy_data[2]).__dict__
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing proxy:", e)
@@ -160,6 +161,7 @@ class ProxyDB:
     @classmethod
     def close_connection(cls):
         cls.connection.close()
+
 
 # Пример использования/
 ProxyDB.create_proxy_table()

@@ -30,29 +30,26 @@ class LinksDB:
     @classmethod
     def create_link_table(cls):
         try:
-            cursor = cls.connection.cursor()
-            create_table_query = """
-            CREATE TABLE IF NOT EXISTS links (
-                link_id SERIAL PRIMARY KEY,
-                link TEXT NOT NULL,
-                leads_to_post BOOLEAN NOT NULL,
-                to_a_specific_link BOOLEAN NOT NULL,
-                spec_links TEXT NOT NULL,
-                time VARCHAR(255) NOT NULL,
-                traffic INTEGER NOT NULL,
-                activity BOOLEAN NOT NULL,
-                created_at BIGINT NOT NULL,
-                creator_id INTEGER NOT NULL
-            );
-            """
-            cursor.execute(create_table_query)
-            cls.connection.commit()
+            with cls.connection.cursor() as cursor:
+                create_table_query = """
+                CREATE TABLE IF NOT EXISTS links (
+                    link_id SERIAL PRIMARY KEY,
+                    link TEXT NOT NULL,
+                    leads_to_post BOOLEAN NOT NULL,
+                    to_a_specific_link BOOLEAN NOT NULL,
+                    spec_links TEXT NOT NULL,
+                    time VARCHAR(255) NOT NULL,
+                    traffic INTEGER NOT NULL,
+                    activity BOOLEAN NOT NULL,
+                    created_at BIGINT NOT NULL,
+                    creator_id INTEGER NOT NULL
+                );
+                """
+                cursor.execute(create_table_query)
+                cls.connection.commit()
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error creating link table:", e)
-        finally:
-            if cursor:
-                cursor.close()
 
     @classmethod
     def add_link(cls, link, leads_to_post, spec_links, link_time, traffic, creator_id):
@@ -104,7 +101,7 @@ class LinksDB:
     def delete_link(cls, link_id):
         try:
             with cls.connection.cursor() as cursor:
-                delete_query = ("DELETE FROM links WHERE link_id = %s")
+                delete_query = "DELETE FROM links WHERE link_id = %s"
                 cursor.execute(delete_query, (link_id,))
                 cls.connection.commit()
                 return True
@@ -129,13 +126,17 @@ class LinksDB:
                         time = %s,
                         traffic = %s
                     WHERE link_id = %s'''
-                    cursor.execute(update_query, (link,leads_to_post,(False if spec_links == "" else True), spec_links, link_time, traffic, link_id))
+                    cursor.execute(update_query, (
+                        link, leads_to_post, (False if spec_links == "" else True), spec_links, link_time, traffic,
+                        link_id))
                     cls.connection.commit()
-                    return Link(link_id, link, leads_to_post, (False if spec_links == "" else True), spec_links, link_time, traffic, link_data[7], link_data[8], creator_id).__dict__
+                    return Link(link_id, link, leads_to_post, (False if spec_links == "" else True), spec_links,
+                                link_time, traffic, link_data[7], link_data[8], creator_id).__dict__
                 return None
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
             cls.connection.rollback()
+
     @classmethod
     def close_connection(cls):
         cls.connection.close()

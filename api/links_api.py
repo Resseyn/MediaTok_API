@@ -4,6 +4,7 @@ from api.sessions import auth_required
 from database.links import LinksDB
 from src.loader import app
 
+
 @app.get("/api/links/show")
 @auth_required
 def show_links():
@@ -20,6 +21,7 @@ def show_links():
     ]
     return json.dumps(result_map, indent=2), 200
 
+
 @app.post("/api/links/add")
 @auth_required
 def add_link():
@@ -33,12 +35,14 @@ def add_link():
         session.get("client_id"))
     return json.dumps(link_id), 200
 
+
 @app.get("/api/links/changeActivity")
 @auth_required
 def set_link_activity():
     args = request.args
     act = LinksDB.change_link_activity(args.get("link_id"))
     return f"Success: changed to {act}", 200
+
 
 @app.get("/api/links/delete")
 @auth_required
@@ -50,6 +54,7 @@ def delete_link():
     if changed is None:
         return "Wrong data", 400
     return json.dumps(changed), 200
+
 
 @app.post("/api/links/change")
 @auth_required

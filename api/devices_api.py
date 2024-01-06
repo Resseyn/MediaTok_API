@@ -4,11 +4,13 @@ from api.sessions import auth_required
 from database.devices import DevicesDB
 from src.loader import app
 
+
 @app.get("/api/devices/show")
 @auth_required
 def show_devices():
     servers = DevicesDB.show_devices(session.get("client_id"))
     return json.dumps(servers, indent=2), 200
+
 
 @app.post("/api/devices/add")
 @auth_required
@@ -23,6 +25,7 @@ def add_device():
         return "Wrong data", 400
     return json.dumps(device), 200
 
+
 @app.get("/api/devices/delete")
 @auth_required
 def delete_device():
@@ -34,6 +37,7 @@ def delete_device():
         return "Wrong data", 400
     return json.dumps(changed_device), 200
 
+
 @app.post("/api/devices/change")
 @auth_required
 def change_device():
@@ -42,7 +46,7 @@ def change_device():
         data.get("record_id"),
         data.get("phone"),
         data.get("desktop"),
-        data.get("tablet"),)
+        data.get("tablet"), )
     if changed_device is None:
         return "Wrong data", 400
     return json.dumps(changed_device), 200

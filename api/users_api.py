@@ -4,11 +4,13 @@ from api.sessions import auth_required
 from database.users import UserDB
 from src.loader import app
 
+
 @app.get("/api/users/show")
 @auth_required
 def show_users():
     users = UserDB.show_users()
     return json.dumps(users, indent=2), 200
+
 
 @app.post("/api/users/add")
 @auth_required
@@ -25,13 +27,14 @@ def add_user():
 def change_user():
     data = json.loads(request.data)
     changed_user = UserDB.change_user(data["user_id"], data["login"], data["password"], data["name"],
-                                      data["surname"], data["activity"],data["created_at"])
+                                      data["surname"], data["activity"], data["created_at"])
     if changed_user:
         return json.dumps(changed_user), 200
     elif not changed_user:
-        return "User not found!",400
+        return "User not found!", 400
     else:
-        return "Error changing user!",400
+        return "Error changing user!", 400
+
 
 @app.get("/api/users/changeActivity")
 @auth_required
@@ -39,6 +42,7 @@ def set_user_activity():
     args = request.args
     act = UserDB.change_user_activity(args.get("user_id"))
     return f"Success: changed to {act}", 200
+
 
 @app.get("/api/users/delete")
 @auth_required

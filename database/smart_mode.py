@@ -48,7 +48,7 @@ class SmartModeDB:
             cursor.execute(select_query, (creator_id,))
             server_data = cursor.fetchone()
             if server_data is not None:
-                SmartModeDB.change_smart_mode_property(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, creator_id)
+                SmartModeDB.change_smart_mode_property(toggle, sleep_time, promotion_time_and_percentage, creator_id)
                 return SmartMode(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, creator_id).__dict__
             insert_query = (
                 "INSERT INTO smart_mode (toggle,sleep_time,promotion_time_and_percentage,update_time,creator_id) "

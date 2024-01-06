@@ -1,13 +1,12 @@
-import time
 from datetime import datetime, timedelta
 from functools import wraps
 
 import jwt
 from flask import session, request, redirect, url_for, jsonify
 
+from config import api_secret_key
 from database.users import UserDB
 from src.loader import app
-from config import api_secret_key
 
 app.secret_key = api_secret_key
 

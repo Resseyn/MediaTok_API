@@ -4,11 +4,13 @@ from api.sessions import auth_required
 from database.proxy import ProxyDB
 from src.loader import app
 
+
 @app.get("/api/proxy/show")
 @auth_required
 def show_proxies():
     servers = ProxyDB.show_proxies(session.get("client_id"))
     return json.dumps(servers, indent=2), 200
+
 
 @app.post("/api/proxy/add")
 @auth_required
@@ -22,6 +24,7 @@ def add_proxy():
         return "Too many proxies to server!", 400
     return json.dumps(server_id), 200
 
+
 @app.get("/api/proxy/changeActivity")
 @auth_required
 def change_proxy_activity():
@@ -31,6 +34,7 @@ def change_proxy_activity():
         return "Unknown proxy_id!", 400
     return f"Success: changed to {act}", 200
 
+
 @app.post("/api/proxy/change")
 @auth_required
 def change_proxy_address():
@@ -39,6 +43,7 @@ def change_proxy_address():
     if new_proxy is None:
         return "Unknown proxy_id!", 400
     return json.dumps(new_proxy), 200
+
 
 @app.get("/api/links/delete")
 @auth_required

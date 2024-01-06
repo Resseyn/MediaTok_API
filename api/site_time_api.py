@@ -35,6 +35,7 @@ def add_time():
         return "Invalid data", 400
     return json.dumps(new_time), 200
 
+
 @app.post("/api/site_time/change")
 @auth_required
 def change_times():
@@ -45,7 +46,6 @@ def change_times():
     try:
         changed_time = SiteTimeDB.change_times(
             session["client_id"],
-            data.get("time_id"),
             emul[0],
             emul[1],
             data["make_transitions"],
