@@ -4,6 +4,7 @@ from flask import request, session
 
 from api.sessions import auth_required
 from database.smart_mode import SmartModeDB
+from src.errors import err
 from src.loader import app
 
 
@@ -11,6 +12,7 @@ from src.loader import app
 @auth_required
 def show_mode():
     servers = SmartModeDB.show_smart_mode(session.get("client_id"))
+    if servers == "0xdb": return err.not_found("smart_modes")
     return json.dumps(servers, indent=2), 200
 
 
@@ -23,6 +25,7 @@ def add_mode():
         data["sleep_time"],
         data["promotion_time_and_percentage"],
         session.get("client_id"))
+    if server_id == "0xdb": return err.not_found("smart_modes")
     return json.dumps(server_id), 200
 
 #

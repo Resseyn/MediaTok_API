@@ -87,6 +87,7 @@ class SmartModeDB:
             except Exception as e:
                 print(f"Error showing smart_modes: {e}")
                 cls.connection.rollback()
+                return "0xdb"
 
     @classmethod
     def change_smart_mode_property(cls, toggle, sleep_time, promotion_time_and_percentage, creator_id):
@@ -108,6 +109,7 @@ class SmartModeDB:
             except Exception as e:
                 print(f"Error changing smart_mode property: {e}")
                 cls.connection.rollback()
+                return "0xdb"
 
     @classmethod
     def close_connection(cls):
