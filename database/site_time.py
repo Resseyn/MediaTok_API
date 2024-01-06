@@ -133,7 +133,7 @@ class SiteTimeDB:
                 select_query = "SELECT * FROM site_times WHERE creator_id = %s"
                 cursor.execute(select_query, (creator_id,))
                 time_data = cursor.fetchone()
-                return SiteTime(*time_data).__dict__
+                return SiteTime(*time_data).__dict__ if time_data else "0xst"
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error showing times: {e}")

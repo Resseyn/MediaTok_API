@@ -39,9 +39,9 @@ class DevicesDB:
             print(f"Error creating devices table: {e}")
 
     @classmethod
-    def add_device(cls, phone, desktop, tablet, creator_id):
-        if int(phone) + int(desktop) + int(tablet) != 100:
-            return None
+    def add_device(cls, phone,desktop,tablet, creator_id):
+        if phone + desktop + tablet != 100:
+            return "0xn"
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM devices WHERE creator_id = %s"
@@ -58,7 +58,7 @@ class DevicesDB:
                 cursor.execute(insert_query, (phone, int(phone) + int(desktop), 100, creator_id)
                                )
                 cls.connection.commit()
-                return Device(phone, int(phone) + int(desktop), 100, creator_id).__dict__
+                return Device(phone, phone + desktop, 100, creator_id).__dict__
         except psycopg2.Error as e:
             print(f"Error adding device: {e}")
             return "0xdb"
@@ -94,7 +94,7 @@ class DevicesDB:
                 cursor.execute(select_query, (creator_id,))
                 devices_data = cursor.fetchall()
                 devices = [Device(*device_data).__dict__ for device_data in devices_data]
-                return devices
+                return devices if len(devices) else "0xst"
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error showing devices: {e}")

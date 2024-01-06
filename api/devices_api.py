@@ -10,6 +10,8 @@ from src.errors import err
 @auth_required
 def show_devices():
     servers = DevicesDB.show_devices(session.get("client_id"))
+    if servers == "0xst":
+        return err.create("Not configured",404)
     if servers == "0xdb":
         return err.not_found("devices")
     return json.dumps(servers, indent=2), 200
@@ -19,14 +21,15 @@ def show_devices():
 @auth_required
 def add_device():
     data = json.loads(request.data)
+    phone, desktop, tablet = list(map(int, data.get("device").split(";")))
     device = DevicesDB.add_device(
-        data.get("phone"),
-        data.get("desktop"),
-        data.get("tablet"),
+        phone,desktop-phone,tablet-desktop,
         session.get("client_id"))
     if device == "0xdb":
         return err.not_found("devices")
-    return json.dumps(device), 201
+    if device == "0xn":
+        return err.db_add("devices")
+    return json.dumps(device), 200
 
 
 @app.get("/api/devices/delete")

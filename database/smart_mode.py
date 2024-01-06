@@ -83,7 +83,7 @@ class SmartModeDB:
             try:
                 cursor.execute(select_query, (creator_id,))
                 smart_mode_data = cursor.fetchone()
-                return SmartMode(*smart_mode_data).__dict__
+                return SmartMode(*smart_mode_data).__dict__ if smart_mode_data else "0xst"
             except Exception as e:
                 print(f"Error showing smart_modes: {e}")
                 cls.connection.rollback()

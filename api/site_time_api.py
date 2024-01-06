@@ -12,6 +12,7 @@ from src.loader import app
 @auth_required
 def show_times():
     servers = SiteTimeDB.show_times(session.get("client_id"))
+    if servers == "0xst": return err.create("Not configured",404)
     if servers == "0xdb": return err.not_found("times")
     return json.dumps(servers, indent=2), 200
 
