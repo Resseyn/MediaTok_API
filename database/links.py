@@ -66,6 +66,7 @@ class LinksDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error adding link:", e)
+            return "0xdb"
 
     @classmethod
     def show_links(cls, creator_id):
@@ -79,6 +80,7 @@ class LinksDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error showing links:", e)
+            return "0xdb"
 
     @classmethod
     def change_link_activity(cls, link_id,creator_id):
@@ -92,20 +94,21 @@ class LinksDB:
                     cursor.execute(update_query, (not link_data[7], link_id,creator_id))
                     cls.connection.commit()
                     return not link_data[7]
-                return None
+                return "0xperm"
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing link activity:", e)
+            return "0xdb"
 
     @classmethod
     def delete_link(cls, link_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM links WHERE link_id =%s"
-                cursor.execute(select_query, (link_id))
+                cursor.execute(select_query, link_id)
                 creator_id_from_db = cursor.fetchone()[0]
                 if creator_id != creator_id_from_db:
-                    return "Permission error"
+                    return "0xperm"
                 delete_query = "DELETE FROM links WHERE link_id = %s"
                 cursor.execute(delete_query, (link_id,))
                 cls.connection.commit()
@@ -113,7 +116,7 @@ class LinksDB:
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
             cls.connection.rollback()
-            return False
+            return "0xdb"
 
     @classmethod
     def change_link(cls, link_id, link, leads_to_post, spec_links, link_time, traffic, creator_id):
@@ -138,11 +141,11 @@ class LinksDB:
                     return Link(link_id, link, leads_to_post, (False if spec_links == "" else True), spec_links,
                                 link_time, traffic, link_data[7], link_data[8], creator_id).__dict__
 
-                return None
+                return "0xperm"
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
             cls.connection.rollback()
-            return None
+            return "0xdb"
 
     @classmethod
     def close_connection(cls):
