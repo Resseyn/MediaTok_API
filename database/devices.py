@@ -62,6 +62,10 @@ class DevicesDB:
         except psycopg2.Error as e:
             print(f"Error adding device: {e}")
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def change_device(cls, creator_id, phone, desktop, tablet):
@@ -85,6 +89,10 @@ class DevicesDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error changing device:", e)
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def show_devices(cls, creator_id):
@@ -99,6 +107,10 @@ class DevicesDB:
             cls.connection.rollback()
             print(f"Error showing devices: {e}")
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def delete_device(cls, creator_id):
@@ -110,6 +122,10 @@ class DevicesDB:
                 return True
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
             cls.connection.rollback()
             return "0xdb"
 

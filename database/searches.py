@@ -65,6 +65,10 @@ class SearchesDB:
             print(f"Error adding search: {e}")
             cls.connection.rollback()
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def get_search_by_id(cls, search_id):
@@ -81,6 +85,10 @@ class SearchesDB:
         except psycopg2.Error as e:
             print(f"Error getting search by ID: {e}")
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def show_searches(cls, creator_id):
@@ -93,6 +101,10 @@ class SearchesDB:
                 return searches
         except psycopg2.Error as e:
             print(f"Error showing searches: {e}")
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
             return "0xdb"
 
     @classmethod
@@ -111,6 +123,10 @@ class SearchesDB:
                     return "0xperm"
         except psycopg2.Error as e:
             print(f"Error changing search activity: {e}")
+            cls.connection.rollback()
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
             cls.connection.rollback()
             return "0xdb"
 
@@ -132,6 +148,10 @@ class SearchesDB:
                 return True
         except psycopg2.Error as e:
             print(f"Error deleting search: {e}")
+            cls.connection.rollback()
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
             cls.connection.rollback()
             return "0xdb"
 
@@ -160,6 +180,10 @@ class SearchesDB:
                 return "0xperm"
         except psycopg2.Error as e:
             print("Error changing search:", e)
+            cls.connection.rollback()
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
             cls.connection.rollback()
             return "0xdb"
 

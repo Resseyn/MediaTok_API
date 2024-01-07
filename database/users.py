@@ -31,9 +31,9 @@ class UserDB:
                 CREATE TABLE IF NOT EXISTS users (
                     user_id SERIAL PRIMARY KEY,
                     login VARCHAR(255) NOT NULL UNIQUE,
+                    password VARCHAR(255) NOT NULL,
                     name VARCHAR(255) NOT NULL,
                     surname VARCHAR(255) NOT NULL,
-                    password VARCHAR(255) NOT NULL,
                     activity BOOLEAN NOT NULL,
                     created_at BIGINT NOT NULL
                 );
@@ -62,6 +62,10 @@ class UserDB:
             cls.connection.rollback()
             cursor.close()
             return "0xp"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def change_user(cls, user_id, login, password, name, surname):
@@ -88,6 +92,10 @@ class UserDB:
             print(f"Error changing user:", e)
             cls.connection.rollback()
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def get_user_by_id(cls, user_id):
@@ -105,6 +113,10 @@ class UserDB:
             cls.connection.rollback()
             cursor.close()
             print("Error getting user by ID:", e)
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def get_user_by_auth(cls, login, password):
@@ -124,6 +136,10 @@ class UserDB:
             cls.connection.rollback()
             cursor.close()
             print("Error getting user by authentication:", e)
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def show_users(cls):
@@ -139,6 +155,10 @@ class UserDB:
             cls.connection.rollback()
             cursor.close()
             print("Error showing users:", e)
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
             return "0xdb"
 
     @classmethod
@@ -161,6 +181,10 @@ class UserDB:
             cursor.close()
             print("Error changing user activity:", e)
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def delete_user(cls, user_id):
@@ -172,6 +196,10 @@ class UserDB:
                 return True
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
             cls.connection.rollback()
             return "0xdb"
 

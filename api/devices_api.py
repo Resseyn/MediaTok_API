@@ -9,9 +9,38 @@ from src.errors import err
 @app.get("/api/devices/show")
 @auth_required
 def show_devices():
+    """
+    Show devices
+    ---
+    tags:
+      - devices
+    responses:
+      200:
+        description: Current devices settings
+        schema:
+          type: object
+          properties:
+            phone:
+              type: integer
+              description: Percentage of phone
+            desktop:
+              type: integer
+              description: Percentage of phone+desktop
+            tablet:
+              type: integer
+              description: Percentage of phone+desktop+tablet (always = 100)
+            creator_id:
+              type: integer
+              description: Creator of devices record id
+      400:
+        description: Devices is not configured
+      404:
+        description: Database error
+
+    """
     servers = DevicesDB.show_devices(session.get("client_id"))
     if servers == "0xst":
-        return err.create("Not configured",404)
+        return err.create("Not configured",400)
     if servers == "0xdb":
         return err.not_found("devices")
     return json.dumps(servers, indent=2), 200
@@ -20,6 +49,44 @@ def show_devices():
 @app.post("/api/devices/add")
 @auth_required
 def add_device():
+    """
+Add a new device
+---
+tags:
+  - devices
+parameters:
+  - in: body
+    name: device
+    required: true
+    description: |
+      Device information in the format "phone;desktop;tablet", example: "30;70;100"
+    schema:
+      type: object
+      properties:
+        device:
+          type: string
+responses:
+  200:
+    description: Device added successfully
+    schema:
+      type: object
+      properties:
+        phone:
+          type: integer
+          description: Percentage of phone
+        desktop:
+          type: integer
+          description: Percentage of phone+desktop
+        tablet:
+          type: integer
+          description: Percentage of phone+desktop+tablet (always = 100)
+        creator_id:
+          type: integer
+          description: Creator of devices record id
+  400:
+    description: Device not added (db error)
+
+    """
     data = json.loads(request.data)
     phone, desktop, tablet = list(map(int, data.get("device").split(";")))
     device = DevicesDB.add_device(
@@ -27,20 +94,37 @@ def add_device():
         session.get("client_id"))
     if device == "0xdb":
         return err.not_found("devices")
-    if device == "0xn":
-        return err.db_add("devices")
     return json.dumps(device), 200
 
 
 @app.get("/api/devices/delete")
 @auth_required
 def delete_device():
-    changed_device = DevicesDB.delete_device(
+    """
+    Delete a device
+    ---
+    tags:
+      - devices
+    responses:
+      200:
+        description: Device deleted successfully
+        schema:
+          type: object
+          properties:
+            deleted:
+              type: boolean
+              description: Indicates whether the device was successfully deleted
+          example:
+            deleted: true
+      404:
+        description: Data not found in devices
+    """
+    deleted_device = DevicesDB.delete_device(
         session["client_id"],
     )
-    if changed_device == "0xdb":
+    if deleted_device == "0xdb":
         return err.not_found("devices")
-    return json.dumps(changed_device), 200
+    return json.dumps({"deleted":deleted_device}), 200
 
 # @app.post("/api/devices/change")
 # @auth_required

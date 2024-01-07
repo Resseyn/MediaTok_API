@@ -55,6 +55,10 @@ class ServersDB:
             print("Error creating server table(servers.py):", e)
             cls.connection.rollback()
             cursor.close()
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def add_server(cls, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, creator_id):
@@ -74,6 +78,10 @@ class ServersDB:
             cls.connection.rollback()
             cursor.close()
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def get_server_by_id(cls, server_id):
@@ -90,6 +98,10 @@ class ServersDB:
             cls.connection.rollback()
             print("Error getting server by ID(servers.py):", e)
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def show_servers(cls, creator_id):
@@ -104,6 +116,10 @@ class ServersDB:
             cursor.close()
             cls.connection.rollback()
             print("Error showing servers(servers.py):", e)
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
             return "0xdb"
 
     @classmethod
@@ -124,6 +140,10 @@ class ServersDB:
             print("Error changing server activity(servers.py):", e)
             cursor.close()
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def change_proxy_flag(cls, server_id, flag,
@@ -131,8 +151,10 @@ class ServersDB:
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM servers WHERE server_id = %s"
-                cursor.execute(select_query, server_id)
+                cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
+                if server_data is None:
+                    return None
                 if server_data[-1] == creator_id:
                     update_query = "UPDATE servers SET to_a_specific_proxy = %s WHERE server_id = %s"
                     cursor.execute(update_query, (flag, server_id,))
@@ -143,6 +165,10 @@ class ServersDB:
             cls.connection.rollback()
             print("Error changing proxy flag (servers.py):", e)
             cursor.close()
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def delete_server(cls, server_id, creator_id):
@@ -162,6 +188,10 @@ class ServersDB:
                 return True
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
             cls.connection.rollback()
             return "0xdb"
 
@@ -193,6 +223,10 @@ class ServersDB:
                 return "0xperm"
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
+            cls.connection.rollback()
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
             cls.connection.rollback()
             return "0xdb"
 

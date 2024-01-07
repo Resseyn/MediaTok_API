@@ -67,6 +67,10 @@ class LinksDB:
             cls.connection.rollback()
             print("Error adding link:", e)
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def show_links(cls, creator_id):
@@ -80,6 +84,10 @@ class LinksDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error showing links:", e)
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
             return "0xdb"
 
     @classmethod
@@ -99,13 +107,17 @@ class LinksDB:
             cls.connection.rollback()
             print("Error changing link activity:", e)
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def delete_link(cls, link_id,creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM links WHERE link_id =%s"
-                cursor.execute(select_query, link_id)
+                cursor.execute(select_query, (link_id,))
                 fetch_data = cursor.fetchone()
                 if fetch_data is None:
                     return "0xdb"
@@ -118,6 +130,10 @@ class LinksDB:
                 return True
         except psycopg2.Error as e:
             print("Error deleting proxy:", e)
+            cls.connection.rollback()
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
             cls.connection.rollback()
             return "0xdb"
 
@@ -147,6 +163,10 @@ class LinksDB:
                 return "0xperm"
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
+            cls.connection.rollback()
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
             cls.connection.rollback()
             return "0xdb"
 

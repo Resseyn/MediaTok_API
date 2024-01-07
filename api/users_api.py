@@ -9,6 +9,45 @@ from src.loader import app
 @app.get("/api/users/show")
 @auth_required
 def show_users():
+    """
+    Show users
+
+    ---
+    tags:
+      - users
+    responses:
+      200:
+        description: List of users
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              user_id:
+                type: integer
+                description: User ID
+              login:
+                type: string
+                description: User login
+              password:
+                type: string
+                description: User password
+              name:
+                type: string
+                description: User first name
+              surname:
+                type: string
+                description: User last name
+              activity:
+                type: boolean
+                description: User activity status
+              created_at:
+                type: integer
+                description: Timestamp of user creation
+      404:
+        description: No users found
+    """
+
     users = UserDB.show_users()
     if users == "0xdb": return err.not_found("users")
     return json.dumps(users, indent=2), 200
@@ -17,15 +56,116 @@ def show_users():
 @app.post("/api/users/add")
 @auth_required
 def add_user():
+    """
+    Add a new user
+
+    ---
+    tags:
+      - users
+    parameters:
+      - in: body
+        name: user_data
+        required: true
+        description: JSON object containing user information for registration
+        schema:
+          type: object
+          properties:
+            login:
+              type: string
+              description: User login
+            password:
+              type: string
+              description: User password
+            name:
+              type: string
+              description: User first name
+            surname:
+              type: string
+              description: User last name
+    responses:
+      200:
+        description: User added successfully
+        schema:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: ID of the newly added user
+      400:
+        description: User not added (db error)
+    """
+
     data = json.loads(request.data)
     user_id = UserDB.add_user(data["login"], data["password"], data["name"], data["surname"])
     if user_id == "0xp": return err.db_add("users")
-    return json.dumps(user_id), 200
+    return json.dumps({"user_id":user_id}), 200
 
 
 @app.post("/api/users/change")
 @auth_required
 def change_user():
+    """
+    Change user information
+
+    ---
+    tags:
+      - users
+    parameters:
+      - in: body
+        name: user
+        required: true
+        description: User information
+        schema:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: User ID
+            login:
+              type: string
+              description: User login
+            password:
+              type: string
+              description: User password
+            name:
+              type: string
+              description: User first name
+            surname:
+              type: string
+              description: User last name
+    responses:
+      200:
+        description: User information updated successfully
+        schema:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: User ID
+            login:
+              type: string
+              description: User login
+            password:
+              type: string
+              description: User password
+            name:
+              type: string
+              description: User first name
+            surname:
+              type: string
+              description: User last name
+            activity:
+              type: boolean
+              description: User activity status
+            created_at:
+              type: integer
+              description: Timestamp of user creation
+      404:
+        description: User not found
+      500:
+        description: Failed to update user information
+    """
+
     data = json.loads(request.data)
     changed_user = UserDB.change_user(data["user_id"], data["login"], data["password"], data["name"],
                                       data["surname"])
@@ -37,19 +177,85 @@ def change_user():
 @app.get("/api/users/changeActivity")
 @auth_required
 def set_user_activity():
-    args = request.args
-    act = UserDB.change_user_activity(args.get("user_id"))
-    if act == "0xdb": return err.db_update("users")
-    return f"Success: changed to {act}", 200
+    """
+    Change user activity status
+
+    ---
+    tags:
+      - users
+    parameters:
+      - in: body
+        name: user
+        required: true
+        description: User ID for activity change
+        schema:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: User ID
+    responses:
+      200:
+        description: User activity status changed successfully
+        schema:
+          type: object
+          properties:
+            changed_to:
+              type: boolean
+              description: New user activity status
+      404:
+        description: User not found
+      500:
+        description: Failed to update user activity status
+    """
+
+    args = json.loads(request.data)
+    changed = UserDB.change_user_activity(args.get("user_id"))
+    if changed == "0xdb": return err.db_update("users")
+    return json.dumps({"changed_to": changed}), 200
 
 
 @app.get("/api/users/delete")
 @auth_required
 def delete_user():
-    args = request.args
+    """
+    Delete user
+
+    ---
+    tags:
+      - users
+    parameters:
+      - in: body
+        name: user
+        required: true
+        description: User ID to be deleted
+        schema:
+          type: object
+          properties:
+            user_id:
+              type: integer
+              description: User ID
+    responses:
+      200:
+        description: User deleted successfully
+        schema:
+          type: object
+          properties:
+            is_deleted:
+              type: boolean
+              description: Indicates whether the user is deleted
+      404:
+        description: User not found
+      403:
+        description: Cannot delete own user
+      500:
+        description: Failed to delete user
+    """
+
+    args = json.loads(request.data)
     if session["client_id"] == args.get("user_id"):
-        return err.create("ебать ты тупой себя удаляешь", "228")
-    changed = UserDB.delete_user(args.get("user_id"))
-    if changed == "0xdb":
+        return err.perm("delete","users")
+    is_deleted = UserDB.delete_user(args.get("user_id"))
+    if is_deleted == "0xdb":
         return err.not_found("users")
-    return json.dumps(changed), 200
+    return json.dumps({"is_deleted":is_deleted}), 200

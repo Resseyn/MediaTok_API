@@ -64,6 +64,10 @@ class ProxyDB:
             print("Error adding proxy(proxy.py):", e)
             cls.connection.rollback()
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def delete_proxy(cls, proxy_id,creator_id):
@@ -89,6 +93,10 @@ class ProxyDB:
             print("Error deleting proxy:", e)
             cls.connection.rollback()
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def get_proxy_by_server_id(cls, server_id):
@@ -102,6 +110,10 @@ class ProxyDB:
             print("Error getting proxy by ID(proxy.py):", e)
             cls.connection.rollback()
             return None
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def get_proxy_by_proxy_id(cls, proxy_id):
@@ -115,6 +127,10 @@ class ProxyDB:
             print("Error getting proxy by ID(proxy.py):", e)
             cls.connection.rollback()
             return None
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def show_proxies(cls, creator_id):
@@ -129,14 +145,22 @@ class ProxyDB:
             cls.connection.rollback()
             print("Error showing proxies:", e)
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def change_proxy(cls, proxy_id, address,creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM proxy WHERE proxy_id = %s"
-                cursor.execute(select_query, proxy_id)
-                creator_id_from_db = cursor.fetchone()[0]
+                cursor.execute(select_query, (proxy_id,))
+                fetch = cursor.fetchone()
+                if fetch is None:
+                    return "0xdb"
+                creator_id_from_db = fetch[0]
+
                 if creator_id_from_db != creator_id:
                     return "0xperm"
                 update_query = "UPDATE proxy SET address = %s WHERE proxy_id = %s RETURNING server_id,activity,creator_id"
@@ -146,6 +170,10 @@ class ProxyDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing proxy:", e)
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
             return "0xdb"
 
     @classmethod
@@ -169,6 +197,10 @@ class ProxyDB:
             cls.connection.rollback()
             cursor.close()
             print("Error changing user activity:", e)
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
             return "0xdb"
 
     @classmethod

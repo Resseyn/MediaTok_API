@@ -49,6 +49,10 @@ class SiteTimeDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error creating site_times table: {e}")
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def add_time(cls, emulation_of_inactivity_min, emulation_of_inactivity_max,
@@ -91,6 +95,10 @@ class SiteTimeDB:
         except psycopg2.Error as e:
             print(f"Error adding time: {e}")
             return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def change_times(cls, creator_id, emulation_of_inactivity_min, emulation_of_inactivity_max,
@@ -125,6 +133,10 @@ class SiteTimeDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing site_times:", e)
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
+            return "0xdb"
 
     @classmethod
     def show_times(cls, creator_id):
@@ -137,6 +149,10 @@ class SiteTimeDB:
         except psycopg2.Error as e:
             cls.connection.rollback()
             print(f"Error showing times: {e}")
+            return "0xdb"
+        except TypeError as te:
+            print("Wrong data! ",te)
+            cls.connection.rollback()
             return "0xdb"
 
     @classmethod
