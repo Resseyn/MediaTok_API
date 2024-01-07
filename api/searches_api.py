@@ -268,11 +268,18 @@ def delete_search():
     tags:
       - searches
     parameters:
-      - in: query
-        name: search_id
-        type: integer
+      - in: body
+        name: search_data
         required: true
-        description: ID of the search to be deleted
+        description: JSON object containing search_id
+        schema:
+          type: object
+          properties:
+            link_id:
+              type: integer
+              description: ID of the search to delete
+          example:
+            link_id: 1
     responses:
       200:
         description: Search deleted successfully

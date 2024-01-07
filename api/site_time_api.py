@@ -17,12 +17,7 @@ def show_times():
     ---
     tags:
       - site_time
-    parameters:
-      - in: query
-        name: client_id
-        type: integer
-        required: true
-        description: ID of the client to fetch site time configurations
+
     responses:
       200:
         description: Site time configurations retrieved successfully

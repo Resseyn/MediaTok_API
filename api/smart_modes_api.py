@@ -17,12 +17,6 @@ def show_mode():
     ---
     tags:
       - smart_mode
-    parameters:
-      - in: query
-        name: client_id
-        type: integer
-        required: true
-        description: ID of the client to fetch smart mode configurations
     responses:
       200:
         description: Smart mode configurations retrieved successfully

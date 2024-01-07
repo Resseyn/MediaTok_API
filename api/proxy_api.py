@@ -145,7 +145,7 @@ def change_proxy_activity():
           example:
             changed_to: true
       400:
-        description: Too many active proxies! (Client error)
+        description: Too many active proxies! (More than 3 for one server)
       404:
         description: Data not found in proxies
     """
@@ -233,11 +233,18 @@ def delete_proxy():
     tags:
       - proxies
     parameters:
-      - in: query
-        name: proxy_id
-        type: integer
+      - in: body
+        name: proxy_data
         required: true
-        description: ID of the proxy to be deleted
+        description: JSON object containing proxy_id
+        schema:
+          type: object
+          properties:
+            link_id:
+              type: integer
+              description: ID of the proxy to delete
+          example:
+            link_id: 7
     responses:
       200:
         description: Proxy deleted successfully

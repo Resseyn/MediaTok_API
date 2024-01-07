@@ -239,11 +239,18 @@ def set_server_activity():
     tags:
       - servers
     parameters:
-      - in: query
-        name: server_id
-        type: integer
+      - in: body
+        name: server_data
         required: true
-        description: ID of the server to change activity
+        description: JSON object containing server_id
+        schema:
+          type: object
+          properties:
+            link_id:
+              type: integer
+              description: ID of the server to change activity
+          example:
+            link_id: 7
     responses:
       200:
         description: Server activity changed successfully
@@ -278,11 +285,18 @@ def delete_server():
     tags:
       - servers
     parameters:
-      - in: query
-        name: server_id
-        type: integer
+      - in: body
+        name: server_data
         required: true
-        description: ID of the server to be deleted
+        description: JSON object containing server_id
+        schema:
+          type: object
+          properties:
+            link_id:
+              type: integer
+              description: ID of the server to delete
+          example:
+            link_id: 7
     responses:
       200:
         description: Server deleted successfully

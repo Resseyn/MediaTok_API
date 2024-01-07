@@ -199,11 +199,18 @@ def delete_link():
     tags:
       - links
     parameters:
-      - in: query
-        name: link_id
-        type: integer
+      - in: body
+        name: link_data
         required: true
-        description: ID of the link to be deleted
+        description: JSON object containing link_id
+        schema:
+          type: object
+          properties:
+            link_id:
+              type: integer
+              description: ID of the link to delete
+          example:
+            link_id: 1
     responses:
       200:
         description: Link deleted successfully
