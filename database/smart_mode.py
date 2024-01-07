@@ -1,4 +1,3 @@
-import asyncio
 import json
 from datetime import datetime
 
@@ -51,12 +50,11 @@ class SmartModeDB:
                 return "Smart_mode is off"
             user_data = fetch_data
             update_query = "UPDATE smart_mode SET update_time = %s WHERE toggle = %s"
-            new_update_time = int(user_data[0])+1 if int(user_data[0]) < 24 else 0
+            new_update_time = int(user_data[0]) + 1 if int(user_data[0]) < 24 else 0
             cursor.execute(update_query, (new_update_time, True,))
             cls.connection.commit()
             cursor.close()
-            return "Changed update time (smart_mode) to ",new_update_time
-
+            return "Changed update time (smart_mode) to ", new_update_time
 
     @classmethod
     def add_property(cls, toggle, sleep_time, promotion_time_and_percentage, creator_id):
@@ -88,7 +86,7 @@ class SmartModeDB:
                 return "0xdb"
 
     @classmethod
-    def show_smart_mode(cls,creator_id):
+    def show_smart_mode(cls, creator_id):
         with cls.connection.cursor() as cursor:
             select_query = "SELECT * FROM smart_mode WHERE creator_id = %s"
             try:
@@ -137,4 +135,3 @@ class SmartModeDB:
 
 # Пример использования.
 SmartModeDB.create_smart_mode_table()
-
