@@ -43,7 +43,7 @@ class SmartModeDB:
     @classmethod
     def change_update_time(cls):
         with cls.connection.cursor() as cursor:
-            select_query = "SELECT update_time,sleep_time FROM smart_mode WHERE toggle = %s"
+            select_query = "SELECT update_time, sleep_time FROM smart_mode WHERE toggle = %s"
             cursor.execute(select_query, (True,))
             fetch_data = cursor.fetchone()
             if fetch_data is None:
