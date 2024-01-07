@@ -130,18 +130,11 @@ def set_search_activity():
     tags:
       - searches
     parameters:
-      - in: body
-        name: search_data
+      - in: query
+        name: search_id
+        type: integer
         required: true
-        description: JSON object containing search_id
-        schema:
-          type: object
-          properties:
-            search_id:
-              type: integer
-              description: ID of the search to change activity
-          example:
-            search_id: 1
+        description: ID of the search to change activity
     responses:
       200:
         description: Search activity changed successfully
@@ -159,7 +152,7 @@ def set_search_activity():
         description: Failed to update data in searches
     """
 
-    args = json.loads(request.data)
+    args = request.args
     act = SearchesDB.change_search_activity(args.get("search_id"), session.get("client_id"))
     if act == "0xdb": return err.db_update("searches")
     if act == "0xperm": return err.perm("set activity", "searches")
@@ -268,18 +261,11 @@ def delete_search():
     tags:
       - searches
     parameters:
-      - in: body
-        name: search_data
+      - in: query
+        name: search_id
+        type: integer
         required: true
-        description: JSON object containing search_id
-        schema:
-          type: object
-          properties:
-            link_id:
-              type: integer
-              description: ID of the search to delete
-          example:
-            link_id: 1
+        description: ID of the search to delete
     responses:
       200:
         description: Search deleted successfully
@@ -297,7 +283,7 @@ def delete_search():
         description: Data not found in searches
     """
 
-    args = json.loads(request.data)
+    args = request.args
     is_deleted = SearchesDB.delete_search(
         args.get("search_id"),
         session.get("client_id")

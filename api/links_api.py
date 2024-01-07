@@ -153,18 +153,11 @@ def set_link_activity():
     tags:
       - links
     parameters:
-      - in: body
-        name: link_data
+      - in: query
+        name: link_id
+        type: integer
         required: true
-        description: JSON object containing link_id
-        schema:
-          type: object
-          properties:
-            link_id:
-              type: integer
-              description: ID of the link to change activity
-          example:
-            link_id: 1
+        description: ID of the link to change link activity
     responses:
       200:
         description: Link activity changed successfully
@@ -181,7 +174,7 @@ def set_link_activity():
       500:
         description: Failed to add data in links
     """
-    args = json.loads(request.data)
+    args = request.args
     act = LinksDB.change_link_activity(args.get("link_id"), session.get("client_id"))
     if act == "0xperm":
         return err.perm("set activity", "links")
@@ -199,18 +192,11 @@ def delete_link():
     tags:
       - links
     parameters:
-      - in: body
-        name: link_data
+      - in: query
+        name: link_id
+        type: integer
         required: true
-        description: JSON object containing link_id
-        schema:
-          type: object
-          properties:
-            link_id:
-              type: integer
-              description: ID of the link to delete
-          example:
-            link_id: 1
+        description: ID of the link to delete link
     responses:
       200:
         description: Link deleted successfully
@@ -227,7 +213,7 @@ def delete_link():
       500:
         description: Failed to update data in links
     """
-    args = json.loads(request.data)
+    args = request.args
     is_deleted = LinksDB.delete_link(
         args.get("link_id"), session.get("client_id")
     )

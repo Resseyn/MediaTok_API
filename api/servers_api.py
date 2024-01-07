@@ -239,18 +239,11 @@ def set_server_activity():
     tags:
       - servers
     parameters:
-      - in: body
-        name: server_data
+      - in: query
+        name: server_id
+        type: integer
         required: true
-        description: JSON object containing server_id
-        schema:
-          type: object
-          properties:
-            link_id:
-              type: integer
-              description: ID of the server to change activity
-          example:
-            link_id: 7
+        description: ID of the server to change activity
     responses:
       200:
         description: Server activity changed successfully
@@ -268,7 +261,7 @@ def set_server_activity():
         description: Data not found in servers
     """
 
-    args = json.loads(request.data)
+    args = request.args
     act = ServersDB.change_server_activity(args.get("server_id"), session.get("client_id"))
     if act == "0xdb": return err.db_update("servers")
     if act == "0xperm": return err.perm("set activity", "servers")
@@ -285,18 +278,11 @@ def delete_server():
     tags:
       - servers
     parameters:
-      - in: body
-        name: server_data
+      - in: query
+        name: server_id
+        type: integer
         required: true
-        description: JSON object containing server_id
-        schema:
-          type: object
-          properties:
-            link_id:
-              type: integer
-              description: ID of the server to delete
-          example:
-            link_id: 7
+        description: ID of the server to delete
     responses:
       200:
         description: Server deleted successfully
@@ -314,7 +300,7 @@ def delete_server():
         description: Data not found in servers
     """
 
-    args = json.loads(request.data)
+    args = request.args
     is_deleted = ServersDB.delete_server(
         args.get("server_id"),
         session.get("client_id")

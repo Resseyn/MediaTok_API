@@ -184,16 +184,11 @@ def set_user_activity():
     tags:
       - users
     parameters:
-      - in: body
-        name: user
+      - in: query
+        name: user_id
+        type: integer
         required: true
-        description: User ID for activity change
-        schema:
-          type: object
-          properties:
-            user_id:
-              type: integer
-              description: User ID
+        description: ID of the user to change activity
     responses:
       200:
         description: User activity status changed successfully
@@ -209,7 +204,7 @@ def set_user_activity():
         description: Failed to update user activity status
     """
 
-    args = json.loads(request.data)
+    args = request.args
     changed = UserDB.change_user_activity(args.get("user_id"))
     if changed == "0xdb": return err.db_update("users")
     return json.dumps({"changed_to": changed}), 200
@@ -225,16 +220,11 @@ def delete_user():
     tags:
       - users
     parameters:
-      - in: body
-        name: user
+      - in: query
+        name: user_id
+        type: integer
         required: true
-        description: User ID to be deleted
-        schema:
-          type: object
-          properties:
-            user_id:
-              type: integer
-              description: User ID
+        description: ID of the user to delete
     responses:
       200:
         description: User deleted successfully
@@ -252,7 +242,7 @@ def delete_user():
         description: Failed to delete user
     """
 
-    args = json.loads(request.data)
+    args = request.args
     if session["client_id"] == args.get("user_id"):
         return err.perm("delete","users")
     is_deleted = UserDB.delete_user(args.get("user_id"))

@@ -121,18 +121,11 @@ def change_proxy_activity():
     tags:
       - proxies
     parameters:
-      - in: body
-        name: proxy_data
+      - in: query
+        name: proxy_id
+        type: integer
         required: true
-        description: JSON object containing proxy_id
-        schema:
-          type: object
-          properties:
-            proxy_id:
-              type: integer
-              description: ID of the proxy to change activity
-          example:
-            proxy_id: 1
+        description: ID of the proxy to change activity
     responses:
       200:
         description: Proxy activity changed successfully
@@ -150,7 +143,7 @@ def change_proxy_activity():
         description: Data not found in proxies
     """
 
-    args = json.loads(request.data)
+    args = request.args
     act = ProxyDB.change_proxy_activity(args.get("proxy_id"), session.get("client_id"))
     if act == "0xdb": return err.not_found("proxy")
     if act == "0xc": return err.create("Too many active proxies!", 400)
@@ -233,18 +226,11 @@ def delete_proxy():
     tags:
       - proxies
     parameters:
-      - in: body
-        name: proxy_data
+      - in: query
+        name: proxy_id
+        type: integer
         required: true
-        description: JSON object containing proxy_id
-        schema:
-          type: object
-          properties:
-            link_id:
-              type: integer
-              description: ID of the proxy to delete
-          example:
-            link_id: 7
+        description: ID of the proxy to delete
     responses:
       200:
         description: Proxy deleted successfully
@@ -262,7 +248,7 @@ def delete_proxy():
         description: Data not found in proxy
     """
 
-    args = json.loads(request.data)
+    args = request.args
     is_deleted = ProxyDB.delete_proxy(args.get("proxy_id"), session.get("client_id"))
     if is_deleted == "0xdb": return err.not_found("proxy")
     if is_deleted == "0xperm": return err.perm("delete", "proxy")
