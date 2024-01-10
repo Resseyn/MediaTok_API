@@ -46,7 +46,7 @@ def login():
     data = json.loads(request.data)
     client = UserDB.get_user_by_auth(data["login"], data["password"])
     if client is None:
-        return "Wrong auth data", 400
+        return jsonify({'message': "Wrong auth data"}), 400
 
     token = jwt.encode({'id': client["user_id"], 'exp': datetime.now() + timedelta(days=30)},
                        app.secret_key)
