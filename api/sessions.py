@@ -33,13 +33,13 @@ def auth_required(f):
     return decorated
 
 
-@app.get('/api/showCurrentUser')
-@auth_required
-def index():
-    if 'client_id' in session:
-        return jsonify({'user': f'{session["client_id"]}'}), 200
-    return 'You are not logged in', 403
-
+# @app.get('/api/showCurrentUser')
+# @auth_required
+# def index():
+#     if 'client_id' in session:
+#         return jsonify({'user': f'{session["client_id"]}'}), 200
+#     return 'You are not logged in', 403
+#
 
 @app.post('/api/auth/login')
 def login():
