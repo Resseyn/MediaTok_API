@@ -59,4 +59,4 @@ def login():
 @auth_required
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return jsonify({'message': "Success"}), 200
