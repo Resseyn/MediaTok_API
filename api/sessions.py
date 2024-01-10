@@ -52,7 +52,7 @@ def login():
                        app.secret_key)
     session['jwt'] = token
     session['client_id'] = client["user_id"]
-    return redirect(url_for('index'))
+    return redirect("/")
 
 
 @app.get('/api/auth/logout')
