@@ -125,12 +125,15 @@ def add_server():
             name:
               type: string
               description: Name of the server
+            type:
+              type: string
+              description: Type of the server (Hosting or Anydesc)
             login_anyd:
               type: string
-              description: Login for the anyd service on the server
+              description: Login for the anyd service on the server. Empty string if type is Hosting
             password_anyd:
               type: string
-              description: Password for the anyd service on the server
+              description: Password for the anyd service on the server. Empty string if type is Hosting
             cpu:
               type: string
               description: CPU information of the server
@@ -142,18 +145,27 @@ def add_server():
               description: Storage information of the server
             ip:
               type: string
-              description: IP address of the server
+              description: IP address of the server. Empty string if type is Anydesc
+            login:
+              type: string
+              description: Login to host. Empty string if type is Anydesc
+            password:
+              type: string
+              description: password to host. Empty string if type is Anydesc
             activity:
               type: boolean
               description: Activity status of the server (true for active, false for inactive)
           example:
             name: "ServerQuantum"
-            login_anyd: "quantumAdmin"
-            password_anyd: "quantumPass123"
+            type: "Hosting"
+            login_anyd: ""
+            password_anyd: ""
             cpu: "Intel Core i7"
             ram: "16GB"
             storage: "1TB"
-            ip: "192.168.1.1"
+            ip: "192.01.01"
+            login: "maestro"
+            password: "12r=f21mf1"
             activity: false
     responses:
       200:
@@ -167,12 +179,15 @@ def add_server():
             name:
               type: string
               description: Name of the server
+            type:
+              type: string
+              description: Type of the server (Hosting or Anydesc)
             login_anyd:
               type: string
-              description: Login for the anyd service on the server
+              description: Login for the anyd service on the server. Empty string if type if Hosting
             password_anyd:
               type: string
-              description: Password for the anyd service on the server
+              description: Password for the anyd service on the server. Empty string if type if Hosting
             cpu:
               type: string
               description: CPU information of the server
@@ -184,7 +199,13 @@ def add_server():
               description: Storage information of the server
             ip:
               type: string
-              description: IP address of the server
+              description: IP address of the server. Empty string if type if Anydesc
+            login:
+              type: string
+              description: Login to host. Empty string if type if Anydesc
+            password:
+              type: string
+              description: password to host. Empty string if type if Anydesc
             activity:
               type: boolean
               description: Activity status of the server (true for active, false for inactive)
@@ -200,12 +221,15 @@ def add_server():
           example:
             server_id: 6
             name: "ServerQuantum"
-            login_anyd: "quantumAdmin"
-            password_anyd: "quantumPass123"
+            type: "Hosting"
+            login_anyd: ""
+            password_anyd: ""
             cpu: "Intel Core i7"
             ram: "16GB"
             storage: "1TB"
-            ip: "192.168.1.1"
+            ip: "192.01.01"
+            login: "maestro"
+            password: "12r=f21mf1"
             activity: false
             to_a_specific_proxy: false
             created_at: 1704633862
@@ -217,12 +241,16 @@ def add_server():
     data = json.loads(request.data)
     server_id = ServersDB.add_server(
         data.get("name"),
+        data.get("type"),
         data.get("login_anyd"),
         data.get("password_anyd"),
+        data.get("link"),
         data.get("cpu"),
         data.get("ram"),
         data.get("storage"),
         data.get("ip"),
+        data.get("login"),
+        data.get("password"),
         data.get("activity"),
         session.get("client_id"))
     if server_id == "0xdb": return err.db_add("servers")
@@ -265,7 +293,7 @@ def set_server_activity():
     act = ServersDB.change_server_activity(args.get("server_id"), session.get("client_id"))
     if act == "0xdb": return err.db_update("servers")
     if act == "0xperm": return err.perm("set activity", "servers")
-    return json.dumps({"changed_to":act}), 200
+    return json.dumps({"changed_to": act}), 200
 
 
 @app.get("/api/servers/delete")
@@ -307,7 +335,7 @@ def delete_server():
     )
     if is_deleted == "0xdb": return err.db_update("servers")
     if is_deleted == "0xperm": return err.perm("set activity", "servers")
-    return json.dumps({"is_deleted":is_deleted}), 200
+    return json.dumps({"is_deleted": is_deleted}), 200
 
 
 @app.post("/api/servers/change")
@@ -416,12 +444,17 @@ def change_server():
     changed_server = ServersDB.change_server(
         data.get("server_id"),
         data.get("name"),
+        data.get("type"),
         data.get("login_anyd"),
         data.get("password_anyd"),
+        data.get("link"),
         data.get("cpu"),
         data.get("ram"),
         data.get("storage"),
         data.get("ip"),
+        data.get("login"),
+        data.get("password"),
+        data.get("activity"),
         session.get("client_id"))
     if changed_server == "0xdb": return err.db_update("servers")
     if changed_server == "0xperm": return err.perm("set activity", "servers")

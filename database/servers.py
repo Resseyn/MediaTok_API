@@ -5,17 +5,22 @@ from database import postgres
 
 
 class Server:
-    def __init__(self, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, to_a_specific_proxy,
+    def __init__(self, server_id, name, type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password,
+                 activity, to_a_specific_proxy,
                  created_at,
                  creator_id, ):
         self.server_id = server_id
         self.name = name
+        self.type = type
         self.login_anyd = login_anyd
         self.password_anyd = password_anyd
+        self.link = link
         self.cpu = cpu
         self.ram = ram
         self.storage = storage
         self.ip = ip
+        self.login = login
+        self.password = password
         self.activity = activity
         self.to_a_specific_proxy = to_a_specific_proxy
         self.created_at = created_at
@@ -37,12 +42,16 @@ class ServersDB:
                 CREATE TABLE IF NOT EXISTS servers (
                     server_id SERIAL PRIMARY KEY,
                     name VARCHAR(255) NOT NULL,
-                    login_anyd VARCHAR(255) NOT NULL,
-                    password_anyd VARCHAR(255) NOT NULL,
+                    type VARCHAR(255) NOT NULL,
+                    login_anyd VARCHAR(255),
+                    password_anyd VARCHAR(255),
+                    link VARCHAR(255),
                     cpu VARCHAR(255) NOT NULL,
                     ram VARCHAR(255) NOT NULL,
                     storage VARCHAR(255) NOT NULL,
-                    ip VARCHAR(255) NOT NULL,
+                    ip VARCHAR(255),
+                    login VARCHAR(255),
+                    password VARCHAR(255),
                     activity BOOLEAN NOT NULL,
                     to_a_specific_proxy BOOLEAN NOT NULL,
                     created_at BIGINT NOT NULL,
@@ -61,13 +70,14 @@ class ServersDB:
             return "0xdb"
 
     @classmethod
-    def add_server(cls, name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, creator_id):
+    def add_server(cls, name, type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password, activity, creator_id):
+        print(name, type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password, activity, creator_id)
         try:
             with cls.connection.cursor() as cursor:
                 insert_query = (
-                    "INSERT INTO servers (name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, to_a_specific_proxy, created_at, creator_id) "
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id, name, login_anyd, password_anyd, cpu, ram, storage,ip, activity, to_a_specific_proxy, created_at, creator_id")
-                cursor.execute(insert_query, (name, login_anyd, password_anyd, cpu, ram, storage, ip, activity, False,
+                    "INSERT INTO servers (name, type, login_anyd, password_anyd, link, cpu, ram, storage,ip, login, password, activity, to_a_specific_proxy, created_at, creator_id) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING server_id, name, type, login_anyd, password_anyd, link, cpu, ram, storage,ip, login, password, activity, to_a_specific_proxy, created_at, creator_id")
+                cursor.execute(insert_query, (name, type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password, activity, False,
                                               time.time(),
                                               creator_id,))
                 server_data = cursor.fetchone()
@@ -131,9 +141,9 @@ class ServersDB:
                 server_data = cursor.fetchone()
                 if server_data[-1] == creator_id:
                     update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
-                    cursor.execute(update_query, (not server_data[8], server_id,))
+                    cursor.execute(update_query, (not server_data[11], server_id,))
                     cls.connection.commit()
-                    return not server_data[8]
+                    return not server_data[11]
                 return "0xperm"
         except psycopg2.Error as e:
             cls.connection.rollback()
@@ -147,7 +157,7 @@ class ServersDB:
 
     @classmethod
     def change_proxy_flag(cls, server_id, flag,
-                          creator_id):  # TODO: разобраться с тем нужен ли пермишн для добавления прокси для чужих серверов (check usages) и ошибки сделать
+                          creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM servers WHERE server_id = %s"
@@ -196,7 +206,7 @@ class ServersDB:
             return "0xdb"
 
     @classmethod
-    def change_server(cls, server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip, creator_id):
+    def change_server(cls, server_id, name,type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password, activity, creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM servers WHERE server_id = %s"
@@ -206,20 +216,25 @@ class ServersDB:
                     update_query = """
                     UPDATE servers SET 
                     name = %s, 
+                    type = %s,
                     login_anyd = %s, 
                     password_anyd = %s, 
+                    link = %s,
                     cpu = %s, 
                     ram = %s, 
                     storage = %s,
                     ip = %s, 
+                    login = %s,
+                    password = %s,
                     activity = %s
                     WHERE server_id = %s;"""
                     cursor.execute(update_query, (
-                        name, login_anyd, password_anyd, cpu, ram, storage, ip, server_data[8], server_id
+                        name, type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password, activity, server_id
                     ))
                     cls.connection.commit()
-                    return Server(server_id, name, login_anyd, password_anyd, cpu, ram, storage, ip,
-                                  server_data[8], server_data[9], server_data[10], creator_id).__dict__
+                    return Server(server_id, name,type,
+                                  login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password,
+                                  activity, server_data[13], server_data[14], creator_id).__dict__
                 return "0xperm"
         except psycopg2.Error as e:
             print(f"Error changing link:", e)

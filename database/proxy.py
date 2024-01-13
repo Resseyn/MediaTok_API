@@ -7,9 +7,10 @@ from database.servers import ServersDB
 
 
 class Proxy:
-    def __init__(self, proxy_id, server_id, address, status, creator_id):
+    def __init__(self, proxy_id, name, server_id, address, status, creator_id):
         self.proxy_id = proxy_id
         self.server_id = server_id
+        self.name = name
         self.address = address
         self.status = status
         self.creator_id = creator_id
@@ -29,6 +30,7 @@ class ProxyDB:
                 CREATE TABLE IF NOT EXISTS proxy (
                     proxy_id SERIAL PRIMARY KEY,
                     server_id INT NOT NULL,
+                    name VARCHAR(255) NOT NULL,
                     address TEXT NOT NULL,
                     activity BOOLEAN NOT NULL,
                     creator_id INTEGER NOT NULL
@@ -42,7 +44,7 @@ class ProxyDB:
             cursor.close()
 
     @classmethod
-    def add_proxy(cls, server_id, address, creator_id):
+    def add_proxy(cls, server_id, name, address, creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 count_query = "SELECT COUNT(*) FROM proxy WHERE server_id = %s"
@@ -52,12 +54,12 @@ class ProxyDB:
                     return "0xc"
 
                 insert_query = (
-                    "INSERT INTO proxy (server_id, address, activity, creator_id) "
-                    "VALUES (%s, %s, %s, %s) RETURNING proxy_id"
+                    "INSERT INTO proxy (server_id, name, address, activity, creator_id) "
+                    "VALUES (%s, %s, %s, %s, %s) RETURNING proxy_id"
                 )
-                cursor.execute(insert_query, (server_id, address, True, creator_id))
+                cursor.execute(insert_query, (server_id, name, address, True, creator_id))
                 proxy_id = cursor.fetchone()[0]
-                ServersDB.change_proxy_flag(server_id, True,creator_id)
+                ServersDB.change_proxy_flag(server_id, True, creator_id)
                 cls.connection.commit()
                 return proxy_id
         except psycopg2.Error as e:
@@ -151,7 +153,7 @@ class ProxyDB:
             return "0xdb"
 
     @classmethod
-    def change_proxy(cls, proxy_id, address,creator_id):
+    def change_proxy(cls, proxy_id, name, address,creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM proxy WHERE proxy_id = %s"
@@ -163,10 +165,10 @@ class ProxyDB:
 
                 if creator_id_from_db != creator_id:
                     return "0xperm"
-                update_query = "UPDATE proxy SET address = %s WHERE proxy_id = %s RETURNING server_id,activity,creator_id"
-                cursor.execute(update_query, (address, proxy_id))
+                update_query = "UPDATE proxy SET name = %s, address = %s WHERE proxy_id = %s RETURNING server_id,activity,creator_id"
+                cursor.execute(update_query, (name, address, proxy_id,))
                 proxy_data = cursor.fetchone()
-                return Proxy(proxy_id, proxy_data[0], address, proxy_data[1], proxy_data[2]).__dict__
+                return Proxy(proxy_id, proxy_data[0], name,address, proxy_data[1], proxy_data[2]).__dict__
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing proxy:", e)
