@@ -29,6 +29,9 @@ def show_servers():
               name:
                 type: string
                 description: Name of the server
+              type:
+                type: string
+                description: Type of the server
               login_anyd:
                 type: string
                 description: Login for the anyd service on the server
@@ -62,6 +65,7 @@ def show_servers():
             example:
               - server_id: 3
                 name: "ServerQuantum"
+                type: "AnyDesk"
                 login_anyd: "quantumAdmin"
                 password_anyd: "quantumPass123"
                 cpu: "Intel Core i7"
@@ -74,6 +78,7 @@ def show_servers():
                 creator_id: 228
               - server_id: 5
                 name: "фаfgfgпф"
+                type: "AnyDesk"
                 login_anyd: "hf13dmin"
                 password_anyd: "umPass123"
                 cpu: "Intel Co131re i7"
@@ -86,8 +91,9 @@ def show_servers():
                 creator_id: 228
               - server_id: 4
                 name: "фавфпф"
-                login_anyd: "quanagagd13dmin"
-                password_anyd: "q13315umPass123"
+                type: "AnyDesk"
+                login_anyd: ""
+                password_anyd: ""
                 cpu: "Intel Co131re i7"
                 ram: "1136GB"
                 storage: "131TB"
@@ -391,6 +397,22 @@ def change_server():
             activity:
               type: string
               description: new activity
+          example:
+            server_id: 1
+            name: "ServerQuantum"
+            type: "Hosting"
+            login_anyd: ""
+            password_anyd: ""
+            cpu: "Intel Core i7"
+            ram: "16GB"
+            storage: "1TB"
+            ip: "192.01.01"
+            login: "maestro"
+            password: "12r=f21mf1"
+            activity: false
+            to_a_specific_proxy: false
+            created_at: 1704633862
+            creator_id: 228
     responses:
       200:
         description: Server details changed successfully
