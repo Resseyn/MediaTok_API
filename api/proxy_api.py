@@ -199,7 +199,7 @@ def change_proxy_address():
               description: ID of the changed proxy
             server_id:
               type: integer
-              description: ID of the associated server\
+              description: ID of the associated server
             name:
                 type: string
                 description: name of the proxy

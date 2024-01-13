@@ -38,6 +38,12 @@ def show_servers():
               password_anyd:
                 type: string
                 description: Password for the anyd service on the server
+              login:
+                type: string
+                description: Login for the server if using type Hosting
+              password:
+                type: string
+                description: Password for the server if using type Hosting
               cpu:
                 type: string
                 description: CPU information of the server
@@ -68,6 +74,8 @@ def show_servers():
                 type: "AnyDesk"
                 login_anyd: "quantumAdmin"
                 password_anyd: "quantumPass123"
+                login: ""
+                password: ""
                 cpu: "Intel Core i7"
                 ram: "16GB"
                 storage: "1TB"
@@ -81,6 +89,8 @@ def show_servers():
                 type: "AnyDesk"
                 login_anyd: "hf13dmin"
                 password_anyd: "umPass123"
+                login: ""
+                password: ""
                 cpu: "Intel Co131re i7"
                 ram: "1488B"
                 storage: "1131TB"
@@ -91,9 +101,11 @@ def show_servers():
                 creator_id: 228
               - server_id: 4
                 name: "фавфпф"
-                type: "AnyDesk"
+                type: "Hosting"
                 login_anyd: ""
                 password_anyd: ""
+                login: "KRASAVA"
+                password: "kark"
                 cpu: "Intel Co131re i7"
                 ram: "1136GB"
                 storage: "131TB"
@@ -122,7 +134,7 @@ def add_server():
       - servers
     parameters:
       - in: body
-        name: server_data
+        name: new_server_data
         required: true
         description: JSON object containing server details
         schema:
@@ -133,7 +145,7 @@ def add_server():
               description: Name of the server
             type:
               type: string
-              description: Type of the server (Hosting or Anydesc)
+              description: Type of the server (Hosting or AnyDesk)
             login_anyd:
               type: string
               description: Login for the anyd service on the server. Empty string if type is Hosting
@@ -151,13 +163,13 @@ def add_server():
               description: Storage information of the server
             ip:
               type: string
-              description: IP address of the server. Empty string if type is Anydesc
+              description: IP address of the server. Empty string if type is AnyDesk
             login:
               type: string
-              description: Login to host. Empty string if type is Anydesc
+              description: Login to host. Empty string if type is AnyDesk
             password:
               type: string
-              description: password to host. Empty string if type is Anydesc
+              description: Password to host. Empty string if type is AnyDesk
             activity:
               type: boolean
               description: Activity status of the server (true for active, false for inactive)
@@ -205,13 +217,13 @@ def add_server():
               description: Storage information of the server
             ip:
               type: string
-              description: IP address of the server. Empty string if type is Anydesc
+              description: IP address of the server. Empty string if type is AnyDesk
             login:
               type: string
-              description: Login to host. Empty string if type is Anydesc
+              description: Login to host. Empty string if type is AnyDesk
             password:
               type: string
-              description: password to host. Empty string if type is Anydesc
+              description: Password to host. Empty string if type is AnyDesk
             activity:
               type: boolean
               description: Activity status of the server (true for active, false for inactive)

@@ -43,6 +43,32 @@ def auth_required(f):
 
 @app.post('/api/auth/login')
 def login():
+    """
+    Login
+
+    ---
+    tags:
+      - login
+    parameters:
+      - in: body
+        name: auth_Data
+        required: true
+        description: JSON object containing server details
+        schema:
+          type: object
+          properties:
+            login:
+              type: string
+              description: Your login
+            password:
+              type: string
+              description: Your password
+    responses:
+      404:
+        description: Succesfully logged in (error cuz redirecred to "/")
+      400:
+        description: Wrong login or password
+    """
     data = json.loads(request.data)
     client = UserDB.get_user_by_auth(data["login"], data["password"])
     if client is None:
