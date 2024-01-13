@@ -44,13 +44,13 @@ def show_proxies():
             example:
               - proxy_id: 3
                 server_id: 4
-                name: "asddsa"
+                name: "gru proxy"
                 address: "1935153.18080"
                 status: true
                 creator_id: 228
               - proxy_id: 1
                 server_id: 4
-                name: "sadsa"
+                name: "dark proxy"
                 address: "192.168.1.1:8080"
                 status: false
                 creator_id: 228
@@ -91,6 +91,7 @@ def add_proxy():
               description: Address of the new proxy
           example:
             server_id: 4
+            name: "gru proxy"
             address: "192.168.1.2:8080"
     responses:
       201:
