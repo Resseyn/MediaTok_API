@@ -184,10 +184,10 @@ def add_server():
               description: Type of the server (Hosting or Anydesc)
             login_anyd:
               type: string
-              description: Login for the anyd service on the server. Empty string if type if Hosting
+              description: Login for the anyd service on the server. Empty string if type is Hosting
             password_anyd:
               type: string
-              description: Password for the anyd service on the server. Empty string if type if Hosting
+              description: Password for the anyd service on the server. Empty string if type is Hosting
             cpu:
               type: string
               description: CPU information of the server
@@ -199,13 +199,13 @@ def add_server():
               description: Storage information of the server
             ip:
               type: string
-              description: IP address of the server. Empty string if type if Anydesc
+              description: IP address of the server. Empty string if type is Anydesc
             login:
               type: string
-              description: Login to host. Empty string if type if Anydesc
+              description: Login to host. Empty string if type is Anydesc
             password:
               type: string
-              description: password to host. Empty string if type if Anydesc
+              description: password to host. Empty string if type is Anydesc
             activity:
               type: boolean
               description: Activity status of the server (true for active, false for inactive)
@@ -361,6 +361,9 @@ def change_server():
             name:
               type: string
               description: New name for the server
+            type:
+              type: string
+              description: New type for the server
             login_anyd:
               type: string
               description: New login for the anyd service on the server
@@ -379,6 +382,15 @@ def change_server():
             ip:
               type: string
               description: New IP address of the server
+            login:
+              type: string
+              description: Login to host. Empty string if type is Anydesc
+            password:
+              type: string
+              description: password to host. Empty string if type is Anydesc
+            activity:
+              type: string
+              description: new activity
     responses:
       200:
         description: Server details changed successfully
@@ -387,10 +399,13 @@ def change_server():
           properties:
             server_id:
               type: integer
-              description: ID of the changed server
+              description: ID of the server to be changed
             name:
               type: string
-              description: New name of the server
+              description: New name for the server
+            type:
+              type: string
+              description: New type for the server
             login_anyd:
               type: string
               description: New login for the anyd service on the server
@@ -409,9 +424,15 @@ def change_server():
             ip:
               type: string
               description: New IP address of the server
+            login:
+              type: string
+              description: Login to host. Empty string if type is Anydesc
+            password:
+              type: string
+              description: password to host. Empty string if type is Anydesc
             activity:
-              type: boolean
-              description: Activity status of the server (true for active, false for inactive)
+              type: string
+              description: new activity
             to_a_specific_proxy:
               type: boolean
               description: Indicates whether the server is linked to a specific proxy
@@ -422,17 +443,20 @@ def change_server():
               type: integer
               description: Creator of the server record ID
           example:
-            server_id: 3
-            name: "ServerNebula"
-            login_anyd: "nebulaAdmin"
-            password_anyd: "nebulaPass123"
-            cpu: "Intel Core i9"
-            ram: "32GB"
-            storage: "2TB"
-            ip: "192.168.1.2"
+            server_id: 1
+            name: "ServerQuantum"
+            type: "Hosting"
+            login_anyd: ""
+            password_anyd: ""
+            cpu: "Intel Core i7"
+            ram: "16GB"
+            storage: "1TB"
+            ip: "192.01.01"
+            login: "maestro"
+            password: "12r=f21mf1"
             activity: false
             to_a_specific_proxy: false
-            created_at: 1704574147
+            created_at: 1704633862
             creator_id: 228
       403:
         description: Permission denied to change server details

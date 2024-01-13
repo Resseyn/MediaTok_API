@@ -29,6 +29,9 @@ def show_proxies():
               server_id:
                 type: integer
                 description: ID of the associated server
+              name:
+                type: string
+                description: name of the proxy
               address:
                 type: string
                 description: Address of the proxy
@@ -41,11 +44,13 @@ def show_proxies():
             example:
               - proxy_id: 3
                 server_id: 4
+                name: "asddsa"
                 address: "1935153.18080"
                 status: true
                 creator_id: 228
               - proxy_id: 1
                 server_id: 4
+                name: "sadsa"
                 address: "192.168.1.1:8080"
                 status: false
                 creator_id: 228
@@ -78,6 +83,9 @@ def add_proxy():
             server_id:
               type: integer
               description: ID of the associated server
+            name:
+                type: string
+                description: name of the proxy
             address:
               type: string
               description: Address of the new proxy
@@ -171,6 +179,9 @@ def change_proxy_address():
             proxy_id:
               type: integer
               description: ID of the proxy to be changed
+            name:
+                type: string
+                description: name of the proxy
             address:
               type: string
               description: New address for the proxy
@@ -188,7 +199,10 @@ def change_proxy_address():
               description: ID of the changed proxy
             server_id:
               type: integer
-              description: ID of the associated server
+              description: ID of the associated server\
+            name:
+                type: string
+                description: name of the proxy
             address:
               type: string
               description: New address of the proxy
@@ -201,6 +215,7 @@ def change_proxy_address():
           example:
             proxy_id: 7
             server_id: 1
+            name: "dsdsds"
             address: "new.address.com"
             status: true
             creator_id: 228
