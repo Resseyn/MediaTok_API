@@ -84,8 +84,8 @@ def add_proxy():
               type: integer
               description: ID of the associated server
             name:
-                type: string
-                description: name of the proxy
+              type: string
+              description: name of the proxy
             address:
               type: string
               description: Address of the new proxy
@@ -201,8 +201,8 @@ def change_proxy_address():
               type: integer
               description: ID of the associated server
             name:
-                type: string
-                description: name of the proxy
+              type: string
+              description: name of the proxy
             address:
               type: string
               description: New address of the proxy
