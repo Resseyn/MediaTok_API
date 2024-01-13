@@ -56,6 +56,9 @@ def show_servers():
               ip:
                 type: string
                 description: IP address of the server
+              link:
+                type: string
+                description: Link to the server (URL)
               activity:
                 type: boolean
                 description: Activity status of the server (true for active, false for inactive)
@@ -80,6 +83,7 @@ def show_servers():
                 ram: "16GB"
                 storage: "1TB"
                 ip: "192.168.1.1"
+                link: "yaml.pridumal/pidoras"
                 activity: false
                 to_a_specific_proxy: false
                 created_at: 1704574147
@@ -95,6 +99,7 @@ def show_servers():
                 ram: "1488B"
                 storage: "1131TB"
                 ip: "19bfgf1318.1.1"
+                link: "ya.ebanutiy"
                 activity: true
                 to_a_specific_proxy: false
                 created_at: 1704574182
@@ -110,6 +115,7 @@ def show_servers():
                 ram: "1136GB"
                 storage: "131TB"
                 ip: "192.161318.1.1"
+                link: "YAML.HUETAAA"
                 activity: false
                 to_a_specific_proxy: true
                 created_at: 1704574165
@@ -164,6 +170,9 @@ def add_server():
             ip:
               type: string
               description: IP address of the server. Empty string if type is AnyDesk
+            link:
+              type: string
+              description: Link to the server (URL). Empty string if type is AnyDesk
             login:
               type: string
               description: Login to host. Empty string if type is AnyDesk
@@ -181,6 +190,7 @@ def add_server():
             cpu: "Intel Core i7"
             ram: "16GB"
             storage: "1TB"
+            link: "dor.yapi"
             ip: "192.01.01"
             login: "maestro"
             password: "12r=f21mf1"
@@ -218,6 +228,9 @@ def add_server():
             ip:
               type: string
               description: IP address of the server. Empty string if type is AnyDesk
+            link:
+              type: string
+              description: Link to the server (URL). Empty string if type is AnyDesk
             login:
               type: string
               description: Login to host. Empty string if type is AnyDesk
@@ -248,6 +261,7 @@ def add_server():
             ip: "192.01.01"
             login: "maestro"
             password: "12r=f21mf1"
+            login: "gde.dengi"
             activity: false
             to_a_specific_proxy: false
             created_at: 1704633862
@@ -397,15 +411,18 @@ def change_server():
             storage:
               type: string
               description: New storage information of the server
+            link:
+              type: string
+              description: Link to the server (URL)
             ip:
               type: string
               description: New IP address of the server
             login:
               type: string
-              description: Login to host. Empty string if type is Anydesc
+              description: Login to host. Empty string if type is Anydesk
             password:
               type: string
-              description: password to host. Empty string if type is Anydesc
+              description: password to host. Empty string if type is Anydesk
             activity:
               type: string
               description: new activity
@@ -419,6 +436,7 @@ def change_server():
             ram: "16GB"
             storage: "1TB"
             ip: "192.01.01"
+            link: "yaml.hyinya"
             login: "maestro"
             password: "12r=f21mf1"
             activity: false
@@ -470,6 +488,9 @@ def change_server():
             to_a_specific_proxy:
               type: boolean
               description: Indicates whether the server is linked to a specific proxy
+            link:
+              type: string
+              description: Link to the server (URL)
             created_at:
               type: integer
               description: Timestamp of when the server was created
@@ -488,6 +509,7 @@ def change_server():
             ip: "192.01.01"
             login: "maestro"
             password: "12r=f21mf1"
+            link: "yapid.or"
             activity: false
             to_a_specific_proxy: false
             created_at: 1704633862
