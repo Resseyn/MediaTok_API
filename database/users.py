@@ -10,9 +10,9 @@ class User:
     def __init__(self, user_id, login, password, name, surname, activity, created_at):
         self.user_id = user_id
         self.login = login
-        self.password = password
         self.name = name
         self.surname = surname
+        self.password = password
         self.activity = activity
         self.created_at = created_at
 

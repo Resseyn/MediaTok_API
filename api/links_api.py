@@ -1,5 +1,5 @@
 import json
-from flask import request, session
+from flask import request
 from api.sessions import auth_required
 from database.links import LinksDB
 from src.errors import err
@@ -8,7 +8,7 @@ from src.loader import app
 
 @app.get("/api/links/show")
 @auth_required
-def show_links():
+def show_links(jwt=None):
     """
     Show links
     ---
@@ -61,7 +61,7 @@ def show_links():
       404:
         description: Data not found in links
     """
-    links = LinksDB.show_links(session.get("client_id"))
+    links = LinksDB.show_links(jwt.get('client_id'))
     if links == "0xdb": return err.not_found("links")
     result_map = [
         dict(link_id=link["link_id"], link=";".join([link["link"],
@@ -78,7 +78,7 @@ def show_links():
 
 @app.post("/api/links/add")
 @auth_required
-def add_link():
+def add_link(jwt=None):
     """
     Add a new link
     ---
@@ -138,7 +138,7 @@ def add_link():
         data.get("spec_links"),
         data.get("link_time"),
         data.get("traffic"),
-        session.get("client_id"))
+        jwt.get('client_id'))
     if link_id == "0xdb":
         return err.db_add("links")
     return json.dumps({"link_id":link_id}), 201
@@ -146,7 +146,7 @@ def add_link():
 
 @app.get("/api/links/changeActivity")
 @auth_required
-def set_link_activity():
+def set_link_activity(jwt=None):
     """
     Change link activity
     ---
@@ -175,7 +175,7 @@ def set_link_activity():
         description: Failed to add data in links
     """
     args = request.args
-    act = LinksDB.change_link_activity(args.get("link_id"), session.get("client_id"))
+    act = LinksDB.change_link_activity(args.get("link_id"), jwt.get('client_id'))
     if act == "0xperm":
         return err.perm("set activity", "links")
     if act == "0xdb":
@@ -185,7 +185,7 @@ def set_link_activity():
 
 @app.get("/api/links/delete")
 @auth_required
-def delete_link():
+def delete_link(jwt=None):
     """
     Delete a link
     ---
@@ -215,7 +215,7 @@ def delete_link():
     """
     args = request.args
     is_deleted = LinksDB.delete_link(
-        args.get("link_id"), session.get("client_id")
+        args.get("link_id"), jwt.get("client_id")
     )
     if is_deleted == "0xdb":
         return err.db_update("links")
@@ -226,7 +226,7 @@ def delete_link():
 
 @app.post("/api/links/change")
 @auth_required
-def change_link():
+def change_link(jwt=None):
     """
     Change a link
     ---
@@ -315,7 +315,7 @@ def change_link():
         data.get("spec_links"),
         data.get("link_time"),
         data.get("traffic"),
-        session.get("client_id"))
+        jwt.get("client_id"))
     if link_id == "0xperm":
         return err.perm("change", "links")
     return json.dumps(data), 201

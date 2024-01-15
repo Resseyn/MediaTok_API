@@ -1,5 +1,5 @@
 import json
-from flask import request, session
+from flask import request
 from api.sessions import auth_required
 from database.searches import SearchesDB
 from src.errors import err
@@ -8,7 +8,7 @@ from src.loader import app
 
 @app.get("/api/searches/show")
 @auth_required
-def show_searches():
+def show_searches(jwt=None):
     """
     Show searches
 
@@ -52,7 +52,7 @@ def show_searches():
         description: Data not found in searches
     """
 
-    searches = SearchesDB.show_searches(session.get("client_id"))
+    searches = SearchesDB.show_searches(jwt.get('client_id'))
     if searches == "0xdb": return err.not_found("searches")
     result_map = [
         dict(search_id=search["search_id"], search=";".join([search["link"],
@@ -67,7 +67,7 @@ def show_searches():
 
 @app.post("/api/searches/add")
 @auth_required
-def add_search():
+def add_search(jwt=None):
     """
     Add a new search
 
@@ -115,14 +115,14 @@ def add_search():
         data.get("type"),
         data.get("link"),
         data.get("props"),
-        session.get("client_id"))
+        jwt.get("client_id"))
     if search_id == "0xdb": return err.db_add("searches")
     return json.dumps({"search_id":search_id}), 200
 
 
 @app.get("/api/searches/changeActivity")
 @auth_required
-def set_search_activity():
+def set_search_activity(jwt=None):
     """
     Change search activity
 
@@ -153,7 +153,7 @@ def set_search_activity():
     """
 
     args = request.args
-    act = SearchesDB.change_search_activity(args.get("search_id"), session.get("client_id"))
+    act = SearchesDB.change_search_activity(args.get("search_id"), jwt.get("client_id"))
     if act == "0xdb": return err.db_update("searches")
     if act == "0xperm": return err.perm("set activity", "searches")
     return json.dumps({"changed_to":act}), 200
@@ -161,7 +161,7 @@ def set_search_activity():
 
 @app.post("/api/searches/change")
 @auth_required
-def change_search():
+def change_search(jwt=None):
     """
     Change search details
 
@@ -244,7 +244,7 @@ def change_search():
         data.get("search_for"),
         data.get("link"),
         data.get("properties"),
-        session.get("client_id")
+        jwt.get("client_id")
     )
     if changed_search == "0xdb": return err.db_update("searches")
     if changed_search == "0xperm": return err.perm("change", "searches")
@@ -253,7 +253,7 @@ def change_search():
 
 @app.get("/api/searches/delete")
 @auth_required
-def delete_search():
+def delete_search(jwt=None):
     """
     Delete a search
 
@@ -286,7 +286,7 @@ def delete_search():
     args = request.args
     is_deleted = SearchesDB.delete_search(
         args.get("search_id"),
-        session.get("client_id")
+        jwt.get("client_id")
     )
     if is_deleted == "0xdb": return err.db_update("searches")
     if is_deleted == "0xperm": return err.perm("change", "searches")

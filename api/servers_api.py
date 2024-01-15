@@ -1,5 +1,5 @@
 import json
-from flask import request, session
+from flask import request
 from api.sessions import auth_required
 from database.servers import ServersDB
 from src.errors import err
@@ -8,7 +8,7 @@ from src.loader import app
 
 @app.get("/api/servers/show")
 @auth_required
-def show_servers():
+def show_servers(jwt=None):
     """
     Show servers
 
@@ -124,14 +124,14 @@ def show_servers():
         description: Data not found in servers
     """
 
-    servers = ServersDB.show_servers(session.get("client_id"))
+    servers = ServersDB.show_servers(jwt.get('client_id'))
     if servers == "0xdb": err.not_found("servers")
     return json.dumps(servers, indent=2), 200
 
 
 @app.post("/api/servers/add")
 @auth_required
-def add_server():
+def add_server(jwt=None):
     """
     Add a new server
 
@@ -284,14 +284,14 @@ def add_server():
         data.get("login"),
         data.get("password"),
         data.get("activity"),
-        session.get("client_id"))
+        jwt.get("client_id"))
     if server_id == "0xdb": return err.db_add("servers")
     return json.dumps(server_id), 200
 
 
 @app.get("/api/servers/changeActivity")
 @auth_required
-def set_server_activity():
+def set_server_activity(jwt=None):
     """
     Change server activity
 
@@ -322,7 +322,7 @@ def set_server_activity():
     """
 
     args = request.args
-    act = ServersDB.change_server_activity(args.get("server_id"), session.get("client_id"))
+    act = ServersDB.change_server_activity(args.get("server_id"), jwt.get("client_id"))
     if act == "0xdb": return err.db_update("servers")
     if act == "0xperm": return err.perm("set activity", "servers")
     return json.dumps({"changed_to": act}), 200
@@ -330,7 +330,7 @@ def set_server_activity():
 
 @app.get("/api/servers/delete")
 @auth_required
-def delete_server():
+def delete_server(jwt=None):
     """
     Delete a server
 
@@ -363,7 +363,7 @@ def delete_server():
     args = request.args
     is_deleted = ServersDB.delete_server(
         args.get("server_id"),
-        session.get("client_id")
+        jwt.get("client_id")
     )
     if is_deleted == "0xdb": return err.db_update("servers")
     if is_deleted == "0xperm": return err.perm("set activity", "servers")
@@ -372,7 +372,7 @@ def delete_server():
 
 @app.post("/api/servers/change")
 @auth_required
-def change_server():
+def change_server(jwt=None):
     """
     Change server details
 
@@ -535,7 +535,7 @@ def change_server():
         data.get("login"),
         data.get("password"),
         data.get("activity"),
-        session.get("client_id"))
+        jwt.get("client_id"))
     if changed_server == "0xdb": return err.db_update("servers")
     if changed_server == "0xperm": return err.perm("set activity", "servers")
     return json.dumps(changed_server), 200

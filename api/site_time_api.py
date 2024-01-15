@@ -1,6 +1,6 @@
 import json
 
-from flask import request, session
+from flask import request
 
 from api.sessions import auth_required
 from database.site_time import SiteTimeDB
@@ -10,7 +10,7 @@ from src.loader import app
 
 @app.get("/api/site_time/show")
 @auth_required
-def show_times():
+def show_times(jwt=None):
     """
     Show site time configurations
 
@@ -61,7 +61,7 @@ def show_times():
         description: Data not found in site_time
     """
 
-    site_time_curr = SiteTimeDB.show_times(session.get("client_id"))
+    site_time_curr = SiteTimeDB.show_times(jwt.get("client_id"))
     if site_time_curr == "0xst": return err.create("Not configured", 404)
     if site_time_curr == "0xdb": return err.not_found("times")
     return json.dumps(site_time_curr, indent=2), 200
@@ -69,7 +69,7 @@ def show_times():
 
 @app.post("/api/site_time/add")
 @auth_required
-def add_time():
+def add_time(jwt=None):
     """
     Add site time configurations
 
@@ -151,7 +151,7 @@ def add_time():
         emul_between_art[1],
         number_of_transactions[0],
         number_of_transactions[1],
-        session.get("client_id"))
+        jwt.get("client_id"))
     if new_time == "0xdb": return err.not_found("times")
     return json.dumps(new_time), 200
 

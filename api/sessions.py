@@ -4,26 +4,27 @@ from functools import wraps
 
 import jwt
 from flask import session, request, redirect, url_for, jsonify, make_response
+from flask.views import MethodView
+from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 
 from config import api_secret_key
 from database.users import UserDB
 from src.loader import app
 
 app.secret_key = api_secret_key
-
+#app.config["JWT_SECRET_KEY"] = api_secret_key
 
 # Decorator for protecting routes with JWT
 def auth_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = session.get('jwt')
-        print(session.items())
-
-        if not token:
+        token = request.headers.get('Authorization')
+        print(token)
+        print(request.headers)
+        if token is None:
             return jsonify({'message': 'Token is missing'}), 401
-
         try:
-            data = jwt.decode(token, app.secret_key, ["HS256", ])
+            kwargs["jwt"] = jwt.decode(token.split(" ")[1], app.secret_key, ["HS256", ])
         except jwt.ExpiredSignatureError:
             return jsonify({'message': 'Token has expired'}), 401
         except jwt:
@@ -71,22 +72,29 @@ def login():
         description: Wrong login or password
     """
     data = json.loads(request.data)
-    # resp = make_response()
-    # resp.set_cookie()
     client = UserDB.get_user_by_auth(data["login"], data["password"])
     if client is None:
         return jsonify({'message': "Wrong auth data"}), 400
 
-    token = jwt.encode({'id': client["user_id"], 'exp': datetime.now() + timedelta(days=30)},
+    acsstoken = jwt.encode({'client_id': client["user_id"], 'exp': datetime.now() + timedelta(days=30)},
                        app.secret_key)
-    session['jwt'] = token
-    session['client_id'] = client["user_id"]
-    print(session.items())
-    return jsonify({'message': "Succesfully logged in"}), 200
+    access_token = create_access_token(identity={"id": client["user_id"]}, fresh=True)
+    refresh_token = create_refresh_token(client["user_id"])
+    return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
+
+@app.route("/refresh")
+class TokenRefresh(MethodView):
+    @jwt_required(refresh=True)
+    def post(self):
+        current_user = get_jwt_identity()
+        new_token = create_access_token(identity=current_user, fresh=False)
+        # jti = get_jwt()["jti"]
+        # BLOCKLIST.add(jti)
+        return {"access_token": new_token}, 200
 
 
 @app.get('/api/auth/logout')
 @auth_required
-def logout():
-    session.clear()
+def logout(jwt=None):
+    request.cookies.clear()
     return jsonify({'message': "Success"}), 200

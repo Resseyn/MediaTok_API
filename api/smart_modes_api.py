@@ -1,6 +1,6 @@
 import json
 
-from flask import request, session
+from flask import request
 
 from api.sessions import auth_required
 from database.smart_mode import SmartModeDB
@@ -10,7 +10,7 @@ from src.loader import app
 
 @app.get("/api/smart_mode/show")
 @auth_required
-def show_mode():
+def show_mode(jwt=None):
     """
     Show smart mode configurations
 
@@ -48,7 +48,7 @@ def show_mode():
         description: Data not found in smart_modes
     """
 
-    servers = SmartModeDB.show_smart_mode(session.get("client_id"))
+    servers = SmartModeDB.show_smart_mode(jwt.get('client_id'))
     if servers == "0xst": return err.create("Not configured", 404)
     if servers == "0xdb": return err.not_found("smart_modes")
     return json.dumps(servers, indent=2), 200
@@ -56,7 +56,7 @@ def show_mode():
 
 @app.post("/api/smart_mode/add")
 @auth_required
-def add_mode():
+def add_mode(jwt=None):
     """
     Add smart mode configurations
 
@@ -116,7 +116,7 @@ def add_mode():
         data["toggle"],
         data["sleep_time"],
         data["promotion_time_and_percentage"],
-        session.get("client_id"))
+        jwt.get('client_id'))
     if server_id == "0xdb": return err.db_update("smart_modes")
     return json.dumps(server_id), 200
 

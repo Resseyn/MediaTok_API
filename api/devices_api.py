@@ -1,5 +1,5 @@
 import json
-from flask import request, session
+from flask import request
 from api.sessions import auth_required
 from database.devices import DevicesDB
 from src.loader import app
@@ -8,7 +8,7 @@ from src.errors import err
 
 @app.get("/api/devices/show")
 @auth_required
-def show_devices():
+def show_devices(jwt=None):
     """
     Show devices
     ---
@@ -38,7 +38,7 @@ def show_devices():
         description: Database error
 
     """
-    servers = DevicesDB.show_devices(session.get("client_id"))
+    servers = DevicesDB.show_devices(jwt.get("client_id"))
     if servers == "0xst":
         return err.create("Not configured",400)
     if servers == "0xdb":
@@ -48,7 +48,7 @@ def show_devices():
 
 @app.post("/api/devices/add")
 @auth_required
-def add_device():
+def add_device(jwt=None):
     """
 Add a new device
 ---
@@ -91,7 +91,7 @@ responses:
     phone, desktop, tablet = list(map(int, data.get("device").split(";")))
     device = DevicesDB.add_device(
         phone,desktop-phone,tablet-desktop,
-        session.get("client_id"))
+        data.get("client_id"))
     if device == "0xdb":
         return err.not_found("devices")
     return json.dumps(device), 200
@@ -99,7 +99,7 @@ responses:
 
 @app.get("/api/devices/delete")
 @auth_required
-def delete_device():
+def delete_device(jwt=None):
     """
     Delete a device
     ---
@@ -120,7 +120,7 @@ def delete_device():
         description: Data not found in devices
     """
     deleted_device = DevicesDB.delete_device(
-        session["client_id"],
+        jwt.get("client_id"),
     )
     if deleted_device == "0xdb":
         return err.not_found("devices")

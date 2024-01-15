@@ -8,7 +8,15 @@ from src.loader import app
 
 @app.get("/api/users/show")
 @auth_required
-def show_users():
+def show_user(jwt=None):
+    user = UserDB.get_user_by_id(jwt.get("client_id"))
+    if user == "0xdb": return err.not_found("users")
+    return json.dumps(user.__dict__, indent=2), 200
+
+
+@app.get("/api/users/showAll")
+@auth_required
+def show_users(jwt=None):
     """
     Show users
 
@@ -55,7 +63,7 @@ def show_users():
 
 @app.post("/api/users/add")
 @auth_required
-def add_user():
+def add_user(jwt=None):
     """
     Add a new user
 
@@ -105,7 +113,7 @@ def add_user():
 
 @app.post("/api/users/change")
 @auth_required
-def change_user():
+def change_user(jwt=None):
     """
     Change user information
 
@@ -178,7 +186,7 @@ def change_user():
 
 @app.get("/api/users/changeActivity")
 @auth_required
-def set_user_activity():
+def set_user_activity(jwt=None):
     """
     Change user activity status
 
@@ -214,7 +222,7 @@ def set_user_activity():
 
 @app.get("/api/users/delete")
 @auth_required
-def delete_user():
+def delete_user(jwt=None):
     """
     Delete user
 
@@ -245,7 +253,7 @@ def delete_user():
     """
 
     args = request.args
-    if session["client_id"] == args.get("user_id"):
+    if jwt.get('client_id') == args.get("user_id"):
         return err.perm("delete","users")
     is_deleted = UserDB.delete_user(args.get("user_id"))
     if is_deleted == "0xdb":

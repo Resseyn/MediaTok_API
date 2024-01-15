@@ -1,5 +1,5 @@
 import json
-from flask import request, session
+from flask import request
 from api.sessions import auth_required
 from database.proxy import ProxyDB
 from src.errors import err
@@ -8,7 +8,7 @@ from src.loader import app
 
 @app.get("/api/proxy/show")
 @auth_required
-def show_proxies():
+def show_proxies(jwt=None):
     """
     Show proxies
 
@@ -58,14 +58,14 @@ def show_proxies():
         description: Data not found in proxies
     """
 
-    servers = ProxyDB.show_proxies(session.get("client_id"))
+    servers = ProxyDB.show_proxies(jwt.get("client_id"))
     if servers == "0xdb": return err.not_found("servers")
     return json.dumps(servers, indent=2), 200
 
 
 @app.post("/api/proxy/add")
 @auth_required
-def add_proxy():
+def add_proxy(jwt=None):
     """
     Add a new proxy
 
@@ -115,7 +115,7 @@ def add_proxy():
         data.get("server_id"),
         data.get("name"),
         data.get("address"),
-        session.get("client_id"))
+        jwt.get("client_id"))
     if proxy_id == "0xc": return err.create("Too many proxies!", 400)
     if proxy_id == "0xdb": return err.db_add("proxy")
     return json.dumps({"proxy_id":proxy_id}), 201
@@ -123,7 +123,7 @@ def add_proxy():
 
 @app.get("/api/proxy/changeActivity")
 @auth_required
-def change_proxy_activity():
+def change_proxy_activity(jwt=None):
     """
     Change proxy activity
 
@@ -154,7 +154,7 @@ def change_proxy_activity():
     """
 
     args = request.args
-    act = ProxyDB.change_proxy_activity(args.get("proxy_id"), session.get("client_id"))
+    act = ProxyDB.change_proxy_activity(args.get("proxy_id"), jwt.get("client_id"))
     if act == "0xdb": return err.not_found("proxy")
     if act == "0xc": return err.create("Too many active proxies!", 400)
     return json.dumps({"changed_to":act}), 200
@@ -162,7 +162,7 @@ def change_proxy_activity():
 
 @app.post("/api/proxy/change")
 @auth_required
-def change_proxy_address():
+def change_proxy_address(jwt=None):
     """
     Change proxy details
 
@@ -227,7 +227,7 @@ def change_proxy_address():
     """
 
     data = json.loads(request.data)
-    new_proxy = ProxyDB.change_proxy(data["proxy_id"], data.get("name"), data.get("address"), session.get("client_id"))
+    new_proxy = ProxyDB.change_proxy(data["proxy_id"], data.get("name"), data.get("address"), jwt.get("client_id"))
     if new_proxy == "0xdb": return err.not_found("proxy")
     if new_proxy == "0xperm": return err.perm("change", "proxy")
     return json.dumps(new_proxy), 200
@@ -235,7 +235,7 @@ def change_proxy_address():
 
 @app.get("/api/proxy/delete")
 @auth_required
-def delete_proxy():
+def delete_proxy(jwt=None):
     """
     Delete a proxy
 
@@ -266,7 +266,7 @@ def delete_proxy():
     """
 
     args = request.args
-    is_deleted = ProxyDB.delete_proxy(args.get("proxy_id"), session.get("client_id"))
+    is_deleted = ProxyDB.delete_proxy(args.get("proxy_id"), jwt.get("client_id"))
     if is_deleted == "0xdb": return err.not_found("proxy")
     if is_deleted == "0xperm": return err.perm("delete", "proxy")
     return json.dumps({"is_deleted":is_deleted}), 200
