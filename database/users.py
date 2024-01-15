@@ -113,6 +113,7 @@ class UserDB:
             cls.connection.rollback()
             cursor.close()
             print("Error getting user by ID:", e)
+            return "0xdb"
         except TypeError as te:
             print("Wrong data! ",te)
             cls.connection.rollback()
@@ -142,11 +143,11 @@ class UserDB:
             return "0xdb"
 
     @classmethod
-    def show_users(cls):
+    def show_users(cls, client_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM users"
-                cursor.execute(select_query)
+                select_query = "SELECT * FROM users WHERE user_id <> $s"
+                cursor.execute(select_query, (client_id,))
                 users_data = cursor.fetchall()
                 users = [User(*user_data).__dict__ for user_data in users_data]
                 cursor.close()
