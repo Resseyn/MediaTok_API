@@ -181,8 +181,8 @@ def change_proxy_address():
               type: integer
               description: ID of the proxy to be changed
             name:
-                type: string
-                description: name of the proxy
+              type: string
+              description: name of the proxy
             address:
               type: string
               description: New address for the proxy

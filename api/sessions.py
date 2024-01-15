@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 
 import jwt
-from flask import session, request, redirect, url_for, jsonify
+from flask import session, request, redirect, url_for, jsonify, make_response
 
 from config import api_secret_key
 from database.users import UserDB
@@ -17,6 +17,7 @@ def auth_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = session.get('jwt')
+        print(session.items())
 
         if not token:
             return jsonify({'message': 'Token is missing'}), 401
@@ -64,12 +65,14 @@ def login():
               type: string
               description: Your password
     responses:
-      404:
-        description: Succesfully logged in (error cuz redirecred to "/")
+      200:
+        description: Succesfully logged in
       400:
         description: Wrong login or password
     """
     data = json.loads(request.data)
+    # resp = make_response()
+    # resp.set_cookie()
     client = UserDB.get_user_by_auth(data["login"], data["password"])
     if client is None:
         return jsonify({'message': "Wrong auth data"}), 400
@@ -78,7 +81,8 @@ def login():
                        app.secret_key)
     session['jwt'] = token
     session['client_id'] = client["user_id"]
-    return redirect("/")
+    print(session.items())
+    return jsonify({'message': "Succesfully logged in"}), 200
 
 
 @app.get('/api/auth/logout')

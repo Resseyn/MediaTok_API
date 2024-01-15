@@ -92,6 +92,8 @@ def add_user():
               type: integer
               description: ID of the newly added user
       400:
+        description: Login occupied
+      500:
         description: User not added (db error)
     """
 

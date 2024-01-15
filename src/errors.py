@@ -16,6 +16,8 @@ class err:
 
     @staticmethod
     def db_add(db_specification):
+        if db_specification == "users":
+            return jsonify(error=f"Login occupied"), 400
         return jsonify(error=f"Data has not been added to {db_specification} table"), 500
 
     @staticmethod
