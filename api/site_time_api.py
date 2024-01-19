@@ -62,7 +62,7 @@ def show_times(jwt=None):
     """
 
     site_time_curr = SiteTimeDB.show_times(jwt.get("client_id"))
-    if site_time_curr == "0xst": return err.create("Not configured", 404)
+    if site_time_curr == "0xst": return err.create("Not configured", 400)
     if site_time_curr == "0xdb": return err.not_found("times")
     return json.dumps(site_time_curr, indent=2), 200
 

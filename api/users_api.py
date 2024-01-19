@@ -10,7 +10,7 @@ from src.loader import app
 @auth_required
 def show_user(jwt=None):
     user = UserDB.get_user_by_id(jwt.get("client_id"))
-    if user == "0xdb": return err.not_found("users")
+    if user == "0xdb" or user is None: return err.not_found("users")
     return json.dumps(user.__dict__, indent=2), 200
 
 
@@ -56,7 +56,7 @@ def show_users(jwt=None):
         description: No users found
     """
 
-    users = UserDB.show_users()
+    users = UserDB.show_users(jwt.get("client_id"))
     if users == "0xdb": return err.not_found("users")
     return json.dumps(users, indent=2), 200
 
@@ -106,9 +106,10 @@ def add_user(jwt=None):
     """
 
     data = json.loads(request.data)
-    user_id = UserDB.add_user(data["login"], data["password"], data["name"], data["surname"])
-    if user_id == "0xp": return err.db_add("users")
-    return json.dumps({"user_id":user_id}), 200
+    user = UserDB.add_user(data["login"], data["password"], data["name"], data["surname"])
+    if user == "0xp": return err.db_add("users")
+    if user == "0xdb": return err.db_add("users")
+    return json.dumps(user), 200
 
 
 @app.post("/api/users/change")

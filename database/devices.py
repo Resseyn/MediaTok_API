@@ -1,3 +1,4 @@
+import copy
 import json
 
 import psycopg2
@@ -39,8 +40,8 @@ class DevicesDB:
             print(f"Error creating devices table: {e}")
 
     @classmethod
-    def add_device(cls, phone,desktop,tablet, creator_id):
-        if phone + desktop + tablet != 100:
+    def add_device(cls, phone, desktop, tablet, creator_id):
+        if int(phone) + int(desktop) + int(tablet) != 100:
             return "0xn"
         try:
             with cls.connection.cursor() as cursor:
@@ -49,7 +50,7 @@ class DevicesDB:
                 device_data = cursor.fetchone()
                 if device_data:
                     if DevicesDB.change_device(creator_id, phone, desktop, tablet) != "0xdb":
-                        return Device(phone, int(phone) + int(desktop), 100, creator_id).__dict__
+                        return Device(phone, desktop, tablet, creator_id).__dict__
                     return "0xdb"
                 insert_query = (
                     "INSERT INTO devices (phone,desktop,tablet,creator_id) "
@@ -58,7 +59,7 @@ class DevicesDB:
                 cursor.execute(insert_query, (phone, int(phone) + int(desktop), 100, creator_id)
                                )
                 cls.connection.commit()
-                return Device(phone, phone + desktop, 100, creator_id).__dict__
+                return Device(phone, desktop, tablet, creator_id).__dict__
         except psycopg2.Error as e:
             print(f"Error adding device: {e}")
             return "0xdb"
@@ -100,8 +101,11 @@ class DevicesDB:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM devices WHERE creator_id = %s"
                 cursor.execute(select_query, (creator_id,))
-                devices_data = cursor.fetchall()
-                devices = [Device(*device_data).__dict__ for device_data in devices_data]
+                devices_data = cursor.fetchone()
+                devices_data = list(copy.copy(devices_data))
+                devices_data[1] = devices_data[1] - devices_data[0]
+                devices_data[2] = devices_data[2] - devices_data[1] - devices_data[0]
+                devices = Device(*devices_data).__dict__
                 return devices if len(devices) else "0xst"
         except psycopg2.Error as e:
             cls.connection.rollback()

@@ -41,6 +41,9 @@ def show_proxies(jwt=None):
               creator_id:
                 type: integer
                 description: Creator of the proxy record ID
+              created_at:
+                type: integer
+                description: time of creation
             example:
               - proxy_id: 3
                 server_id: 4
@@ -48,12 +51,14 @@ def show_proxies(jwt=None):
                 address: "1935153.18080"
                 status: true
                 creator_id: 228
+                created_at: 0
               - proxy_id: 1
                 server_id: 4
                 name: "dark proxy"
                 address: "192.168.1.1:8080"
                 status: false
                 creator_id: 228
+                created_at: 0
       404:
         description: Data not found in proxies
     """
@@ -118,7 +123,7 @@ def add_proxy(jwt=None):
         jwt.get("client_id"))
     if proxy_id == "0xc": return err.create("Too many proxies!", 400)
     if proxy_id == "0xdb": return err.db_add("proxy")
-    return json.dumps({"proxy_id":proxy_id}), 201
+    return json.dumps(proxy_id), 201
 
 
 @app.get("/api/proxy/changeActivity")
@@ -186,6 +191,9 @@ def change_proxy_address(jwt=None):
             address:
               type: string
               description: New address for the proxy
+            status:
+              type: string
+              description: New status for the proxy
           example:
             proxy_id: 7
             address: "new.address.com"
@@ -227,7 +235,7 @@ def change_proxy_address(jwt=None):
     """
 
     data = json.loads(request.data)
-    new_proxy = ProxyDB.change_proxy(data["proxy_id"], data.get("name"), data.get("address"), jwt.get("client_id"))
+    new_proxy = ProxyDB.change_proxy(data["proxy_id"], data.get("name"), data.get("address"),data.get("status"), jwt.get("client_id"))
     if new_proxy == "0xdb": return err.not_found("proxy")
     if new_proxy == "0xperm": return err.perm("change", "proxy")
     return json.dumps(new_proxy), 200

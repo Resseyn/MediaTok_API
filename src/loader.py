@@ -4,5 +4,6 @@ from flasgger import Swagger
 from flask_jwt_extended import JWTManager
 
 app = Flask(__name__)
+blacklist = []
 CORS(app, supports_credentials=True)
 swagger = Swagger(app)  # docs hosted on localhost:5000/apidocs

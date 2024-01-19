@@ -12,7 +12,6 @@ from database.users import UserDB
 from src.loader import app
 
 app.secret_key = api_secret_key
-#app.config["JWT_SECRET_KEY"] = api_secret_key
 
 # Decorator for protecting routes with JWT
 def auth_required(f):
@@ -21,7 +20,7 @@ def auth_required(f):
         token = request.headers.get('Authorization')
         print(token)
         print(request.headers)
-        if token is None:
+        if token is None or len(token) < 15:
             return jsonify({'message': 'Token is missing'}), 401
         try:
             kwargs["jwt"] = jwt.decode(token.split(" ")[1], app.secret_key, ["HS256", ])
@@ -76,25 +75,12 @@ def login():
     if client is None:
         return jsonify({'message': "Wrong auth data"}), 400
 
-    acsstoken = jwt.encode({'client_id': client["user_id"], 'exp': datetime.now() + timedelta(days=30)},
+    acsstoken = jwt.encode({'client_id': client["user_id"], 'exp': datetime.now() + timedelta(days=90)},
                        app.secret_key)
-    access_token = create_access_token(identity={"id": client["user_id"]}, fresh=True)
-    refresh_token = create_refresh_token(client["user_id"])
-    return jsonify({"access_token": access_token, "refresh_token": refresh_token}), 200
+    return jsonify({"access_token": acsstoken}), 200
 
-@app.route("/refresh")
-class TokenRefresh(MethodView):
-    @jwt_required(refresh=True)
-    def post(self):
-        current_user = get_jwt_identity()
-        new_token = create_access_token(identity=current_user, fresh=False)
-        # jti = get_jwt()["jti"]
-        # BLOCKLIST.add(jti)
-        return {"access_token": new_token}, 200
-
-
-@app.get('/api/auth/logout')
-@auth_required
-def logout(jwt=None):
-    request.cookies.clear()
-    return jsonify({'message': "Success"}), 200
+# @app.get('/api/auth/logout')
+# @auth_required
+# def logout(jwt=None):
+#     request.cookies.clear()
+#     return jsonify({'message': "Success"}), 200

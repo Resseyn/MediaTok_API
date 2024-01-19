@@ -10,9 +10,9 @@ class User:
     def __init__(self, user_id, login, password, name, surname, activity, created_at):
         self.user_id = user_id
         self.login = login
+        self.password = password
         self.name = name
         self.surname = surname
-        self.password = password
         self.activity = activity
         self.created_at = created_at
 
@@ -51,12 +51,12 @@ class UserDB:
         try:
             with cls.connection.cursor() as cursor:
                 insert_query = ("INSERT INTO users (login, password, name, surname, activity, created_at) "
-                                "VALUES (%s, %s, %s, %s, True, %s) RETURNING user_id")
+                                "VALUES (%s, %s, %s, %s, True, %s) RETURNING *")
                 cursor.execute(insert_query, (login, password, name, surname, time.time()))
-                user_id = cursor.fetchone()[0]
+                user = cursor.fetchone()
                 cls.connection.commit()
                 cursor.close()
-                return user_id
+                return User(*user).__dict__
         except psycopg2.Error as e:
             print("Error adding user:", e)
             cls.connection.rollback()
@@ -146,7 +146,7 @@ class UserDB:
     def show_users(cls, client_id):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM users WHERE user_id <> $s"
+                select_query = "SELECT * FROM users WHERE user_id <> %s"
                 cursor.execute(select_query, (client_id,))
                 users_data = cursor.fetchall()
                 users = [User(*user_data).__dict__ for user_data in users_data]

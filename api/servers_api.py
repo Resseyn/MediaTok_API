@@ -124,7 +124,7 @@ def show_servers(jwt=None):
         description: Data not found in servers
     """
 
-    servers = ServersDB.show_servers(jwt.get('client_id'))
+    servers = ServersDB.show_servers()
     if servers == "0xdb": err.not_found("servers")
     return json.dumps(servers, indent=2), 200
 
@@ -322,7 +322,7 @@ def set_server_activity(jwt=None):
     """
 
     args = request.args
-    act = ServersDB.change_server_activity(args.get("server_id"), jwt.get("client_id"))
+    act = ServersDB.change_server_activity(args.get("server_id"))
     if act == "0xdb": return err.db_update("servers")
     if act == "0xperm": return err.perm("set activity", "servers")
     return json.dumps({"changed_to": act}), 200
@@ -362,8 +362,7 @@ def delete_server(jwt=None):
 
     args = request.args
     is_deleted = ServersDB.delete_server(
-        args.get("server_id"),
-        jwt.get("client_id")
+        args.get("server_id")
     )
     if is_deleted == "0xdb": return err.db_update("servers")
     if is_deleted == "0xperm": return err.perm("set activity", "servers")
@@ -535,7 +534,7 @@ def change_server(jwt=None):
         data.get("login"),
         data.get("password"),
         data.get("activity"),
-        jwt.get("client_id"))
+        )
     if changed_server == "0xdb": return err.db_update("servers")
     if changed_server == "0xperm": return err.perm("set activity", "servers")
     return json.dumps(changed_server), 200

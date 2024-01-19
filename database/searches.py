@@ -54,11 +54,11 @@ class SearchesDB:
             with cls.connection.cursor() as cursor:
                 insert_query = (
                     "INSERT INTO searches (search_for, link, properties, list_seti, activity, created_at,creator_id) "
-                    "VALUES (%s, %s, %s, %s,%s, %s, %s) RETURNING search_id")
+                    "VALUES (%s, %s, %s, %s,%s, %s, %s) RETURNING *")
                 cursor.execute(insert_query, (search_for, link, properties, (False if properties == "" else True), True,
                                               time.time(),
                                               creator_id,))
-                server_id = cursor.fetchone()[0]
+                server_id = cursor.fetchone()
                 cls.connection.commit()
                 return server_id
         except psycopg2.Error as e:

@@ -38,14 +38,17 @@ def show_searches(jwt=None):
             example:
               - search_id: 1
                 search: "<link_1234>;True;<properties_1488>"
+                type: "Google"
                 activity: true
                 created_at: 1704571530
               - search_id: 3
                 search: "<li4542241;True;<35ops13411"
+                type: "Google"
                 activity: true
                 created_at: 1704572256
               - search_id: 4
                 search: "<li4hghgdshds1;True;True"
+                type: "Google"
                 activity: false
                 created_at: 1704572266
       404:
@@ -55,7 +58,7 @@ def show_searches(jwt=None):
     searches = SearchesDB.show_searches(jwt.get('client_id'))
     if searches == "0xdb": return err.not_found("searches")
     result_map = [
-        dict(search_id=search["search_id"], search=";".join([search["link"],
+        dict(search_id=search["search_id"], type=search["search_for"], search=";".join([search["link"],
                                                              str(True),
                                                              str(search["properties"]),
                                                              ]), activity=search["activity"],
@@ -89,12 +92,12 @@ def add_search(jwt=None):
               type: string
               description: Link associated with the search
             props:
-              type: string
+              type: boolean
               description: Properties of the search
           example:
-            type: "<tsdfsafs3"
-            link: "<li4hghgdshds1"
-            props: "True"
+            type: "Google"
+            link: "<link_1234>;True;<properties_1488>"
+            props: True
     responses:
       200:
         description: Search added successfully
@@ -117,7 +120,7 @@ def add_search(jwt=None):
         data.get("props"),
         jwt.get("client_id"))
     if search_id == "0xdb": return err.db_add("searches")
-    return json.dumps({"search_id":search_id}), 200
+    return json.dumps(search_id), 200
 
 
 @app.get("/api/searches/changeActivity")

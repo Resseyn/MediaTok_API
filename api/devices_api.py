@@ -36,7 +36,6 @@ def show_devices(jwt=None):
         description: Devices is not configured
       404:
         description: Database error
-
     """
     servers = DevicesDB.show_devices(jwt.get("client_id"))
     if servers == "0xst":
@@ -90,8 +89,10 @@ responses:
     data = json.loads(request.data)
     phone, desktop, tablet = list(map(int, data.get("device").split(";")))
     device = DevicesDB.add_device(
-        phone,desktop-phone,tablet-desktop,
-        data.get("client_id"))
+        phone, desktop, tablet,
+        jwt.get("client_id"))
+    if device == "0xn":
+        return err.create("Invalid input", 400)
     if device == "0xdb":
         return err.not_found("devices")
     return json.dumps(device), 200

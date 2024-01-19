@@ -63,17 +63,8 @@ def show_links(jwt=None):
     """
     links = LinksDB.show_links(jwt.get('client_id'))
     if links == "0xdb": return err.not_found("links")
-    result_map = [
-        dict(link_id=link["link_id"], link=";".join([link["link"],
-                                                     str(link["leads_to_post"]),
-                                                     str(link["to_a_specific_link"]),
-                                                     link["spec_links"],
-                                                     str(link["time"]),
-                                                     str(link["traffic"]), ]), activity=link["activity"],
-             created_at=link["created_at"])
-        for link in links
-    ]
-    return json.dumps(result_map, indent=2), 200
+
+    return json.dumps(links, indent=2), 200
 
 
 @app.post("/api/links/add")
@@ -136,12 +127,11 @@ def add_link(jwt=None):
         data.get("link"),
         data.get("leads_to_post"),
         data.get("spec_links"),
-        data.get("link_time"),
         data.get("traffic"),
         jwt.get('client_id'))
     if link_id == "0xdb":
         return err.db_add("links")
-    return json.dumps({"link_id":link_id}), 201
+    return json.dumps(link_id), 201
 
 
 @app.get("/api/links/changeActivity")
@@ -313,7 +303,6 @@ def change_link(jwt=None):
         data.get("link"),
         data.get("leads_to_post"),
         data.get("spec_links"),
-        data.get("link_time"),
         data.get("traffic"),
         jwt.get("client_id"))
     if link_id == "0xperm":

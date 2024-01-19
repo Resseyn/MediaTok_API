@@ -114,11 +114,11 @@ class ServersDB:
             return "0xdb"
 
     @classmethod
-    def show_servers(cls, creator_id):
+    def show_servers(cls):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM servers WHERE creator_id = %s"
-                cursor.execute(select_query, (creator_id,))
+                select_query = "SELECT * FROM servers"
+                cursor.execute(select_query)
                 servers_data = cursor.fetchall()
                 servers = [Server(*server_data).__dict__ for server_data in servers_data]
                 return servers
@@ -133,18 +133,16 @@ class ServersDB:
             return "0xdb"
 
     @classmethod
-    def change_server_activity(cls, server_id, creator_id):
+    def change_server_activity(cls, server_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
-                if server_data[-1] == creator_id:
-                    update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
-                    cursor.execute(update_query, (not server_data[11], server_id,))
-                    cls.connection.commit()
-                    return not server_data[11]
-                return "0xperm"
+                update_query = "UPDATE servers SET activity = %s WHERE server_id = %s"
+                cursor.execute(update_query, (not server_data[11], server_id,))
+                cls.connection.commit()
+                return not server_data[11]
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing server activity(servers.py):", e)
@@ -181,7 +179,7 @@ class ServersDB:
             return "0xdb"
 
     @classmethod
-    def delete_server(cls, server_id, creator_id):
+    def delete_server(cls, server_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM servers WHERE server_id = %s"
@@ -189,9 +187,6 @@ class ServersDB:
                 fetch_data = cursor.fetchone()
                 if fetch_data is None:
                     return "0xdb"
-                creator_id_from_db = fetch_data[0]
-                if creator_id_from_db != creator_id:
-                    return "0xperm"
                 delete_query = "DELETE FROM servers WHERE server_id = %s"
                 cursor.execute(delete_query, (server_id,))
                 cls.connection.commit()
@@ -206,36 +201,34 @@ class ServersDB:
             return "0xdb"
 
     @classmethod
-    def change_server(cls, server_id, name,type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password, activity, creator_id):
+    def change_server(cls, server_id, name,type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password, activity):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM servers WHERE server_id = %s"
                 cursor.execute(select_query, (server_id,))
                 server_data = cursor.fetchone()
-                if server_data[-1] == creator_id:
-                    update_query = """
-                    UPDATE servers SET 
-                    name = %s, 
-                    type = %s,
-                    login_anyd = %s, 
-                    password_anyd = %s, 
-                    link = %s,
-                    cpu = %s, 
-                    ram = %s, 
-                    storage = %s,
-                    ip = %s, 
-                    login = %s,
-                    password = %s,
-                    activity = %s
-                    WHERE server_id = %s;"""
-                    cursor.execute(update_query, (
-                        name, type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password, activity, server_id
-                    ))
-                    cls.connection.commit()
-                    return Server(server_id, name,type,
-                                  login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password,
-                                  activity, server_data[13], server_data[14], creator_id).__dict__
-                return "0xperm"
+                update_query = """
+                UPDATE servers SET 
+                name = %s, 
+                type = %s,
+                login_anyd = %s, 
+                password_anyd = %s, 
+                link = %s,
+                cpu = %s, 
+                ram = %s, 
+                storage = %s,
+                ip = %s, 
+                login = %s,
+                password = %s,
+                activity = %s
+                WHERE server_id = %s;"""
+                cursor.execute(update_query, (
+                    name, type, login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password, activity, server_id
+                ))
+                cls.connection.commit()
+                return Server(server_id, name,type,
+                              login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password,
+                              activity, server_data[13], server_data[14], creator_id).__dict__
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
             cls.connection.rollback()

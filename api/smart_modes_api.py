@@ -49,7 +49,7 @@ def show_mode(jwt=None):
     """
 
     servers = SmartModeDB.show_smart_mode(jwt.get('client_id'))
-    if servers == "0xst": return err.create("Not configured", 404)
+    if servers == "0xst": return err.create("Not configured", 400)
     if servers == "0xdb": return err.not_found("smart_modes")
     return json.dumps(servers, indent=2), 200
 
