@@ -63,7 +63,7 @@ def show_proxies(jwt=None):
         description: Data not found in proxies
     """
 
-    servers = ProxyDB.show_proxies(jwt.get("client_id"))
+    servers = ProxyDB.show_proxies()
     if servers == "0xdb": return err.not_found("servers")
     return json.dumps(servers, indent=2), 200
 
@@ -274,7 +274,7 @@ def delete_proxy(jwt=None):
     """
 
     args = request.args
-    is_deleted = ProxyDB.delete_proxy(args.get("proxy_id"), jwt.get("client_id"))
+    is_deleted = ProxyDB.delete_proxy(args.get("proxy_id"))
     if is_deleted == "0xdb": return err.not_found("proxy")
     if is_deleted == "0xperm": return err.perm("delete", "proxy")
     return json.dumps({"is_deleted":is_deleted}), 200

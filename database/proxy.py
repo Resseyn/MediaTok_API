@@ -136,11 +136,11 @@ class ProxyDB:
             return "0xdb"
 
     @classmethod
-    def show_proxies(cls, creator_id):
+    def show_proxies(cls):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM proxy WHERE creator_id = %s"
-                cursor.execute(select_query, (creator_id,))
+                select_query = "SELECT * FROM proxy"
+                cursor.execute(select_query)
                 proxies_data = cursor.fetchall()
                 proxies = [Proxy(*proxy_data).__dict__ for proxy_data in proxies_data]
                 return proxies

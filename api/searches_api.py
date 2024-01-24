@@ -55,7 +55,7 @@ def show_searches(jwt=None):
         description: Data not found in searches
     """
 
-    searches = SearchesDB.show_searches(jwt.get('client_id'))
+    searches = SearchesDB.show_searches()
     if searches == "0xdb": return err.not_found("searches")
     result_map = [
         dict(search_id=search["search_id"], type=search["search_for"], search=";".join([search["link"],
@@ -156,7 +156,7 @@ def set_search_activity(jwt=None):
     """
 
     args = request.args
-    act = SearchesDB.change_search_activity(args.get("search_id"), jwt.get("client_id"))
+    act = SearchesDB.change_search_activity(args.get("search_id"))
     if act == "0xdb": return err.db_update("searches")
     if act == "0xperm": return err.perm("set activity", "searches")
     return json.dumps({"changed_to":act}), 200
@@ -246,8 +246,7 @@ def change_search(jwt=None):
         data.get("search_id"),
         data.get("search_for"),
         data.get("link"),
-        data.get("properties"),
-        jwt.get("client_id")
+        data.get("properties")
     )
     if changed_search == "0xdb": return err.db_update("searches")
     if changed_search == "0xperm": return err.perm("change", "searches")
@@ -288,8 +287,7 @@ def delete_search(jwt=None):
 
     args = request.args
     is_deleted = SearchesDB.delete_search(
-        args.get("search_id"),
-        jwt.get("client_id")
+        args.get("search_id")
     )
     if is_deleted == "0xdb": return err.db_update("searches")
     if is_deleted == "0xperm": return err.perm("change", "searches")
