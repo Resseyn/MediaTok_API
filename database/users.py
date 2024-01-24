@@ -143,11 +143,11 @@ class UserDB:
             return "0xdb"
 
     @classmethod
-    def show_users(cls, client_id):
+    def show_users(cls):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM users WHERE user_id <> %s"
-                cursor.execute(select_query, (client_id,))
+                select_query = "SELECT * FROM users"
+                cursor.execute(select_query)
                 users_data = cursor.fetchall()
                 users = [User(*user_data).__dict__ for user_data in users_data]
                 cursor.close()
