@@ -75,14 +75,12 @@ class ProxyDB:
             return "0xdb"
 
     @classmethod
-    def delete_proxy(cls, proxy_id,creator_id):
+    def delete_proxy(cls, proxy_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM proxy where proxy_id = %s"
                 cursor.execute(select_query, (proxy_id,))
                 creator_id_from_db = cursor.fetchone()[0]
-                if creator_id_from_db != creator_id:
-                    return "0xperm"
                 delete_query = "DELETE FROM proxy WHERE proxy_id = %s RETURNING server_id"
                 cursor.execute(delete_query, (proxy_id,))
                 server_id = cursor.fetchone()[0]
@@ -91,7 +89,7 @@ class ProxyDB:
                 cursor.execute(check_query, (server_id,))
 
                 if not len(cursor.fetchall()):
-                    ServersDB.change_proxy_flag(server_id, False,creator_id)
+                    ServersDB.change_proxy_flag(server_id, False, creator_id_from_db)
                 cls.connection.commit()
                 return True
         except psycopg2.Error as e:

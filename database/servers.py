@@ -155,7 +155,7 @@ class ServersDB:
 
     @classmethod
     def change_proxy_flag(cls, server_id, flag,
-                          creator_id):
+                          ):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM servers WHERE server_id = %s"
@@ -163,12 +163,10 @@ class ServersDB:
                 server_data = cursor.fetchone()
                 if server_data is None:
                     return None
-                if server_data[-1] == creator_id:
-                    update_query = "UPDATE servers SET to_a_specific_proxy = %s WHERE server_id = %s"
-                    cursor.execute(update_query, (flag, server_id,))
-                    cls.connection.commit()
-                    return True
-                return None
+                update_query = "UPDATE servers SET to_a_specific_proxy = %s WHERE server_id = %s"
+                cursor.execute(update_query, (flag, server_id,))
+                cls.connection.commit()
+                return True
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error changing proxy flag (servers.py):", e)
@@ -228,7 +226,7 @@ class ServersDB:
                 cls.connection.commit()
                 return Server(server_id, name,type,
                               login_anyd, password_anyd, link, cpu, ram, storage, ip, login, password,
-                              activity, server_data[13], server_data[14], creator_id).__dict__
+                              activity, server_data[13], server_data[14], server_data[15]).__dict__
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
             cls.connection.rollback()

@@ -61,7 +61,7 @@ def show_links(jwt=None):
       404:
         description: Data not found in links
     """
-    links = LinksDB.show_links(jwt.get('client_id'))
+    links = LinksDB.show_links()
     if links == "0xdb": return err.not_found("links")
 
     return json.dumps(links, indent=2), 200
@@ -165,7 +165,7 @@ def set_link_activity(jwt=None):
         description: Failed to add data in links
     """
     args = request.args
-    act = LinksDB.change_link_activity(args.get("link_id"), jwt.get('client_id'))
+    act = LinksDB.change_link_activity(args.get("link_id"))
     if act == "0xperm":
         return err.perm("set activity", "links")
     if act == "0xdb":
@@ -205,7 +205,7 @@ def delete_link(jwt=None):
     """
     args = request.args
     is_deleted = LinksDB.delete_link(
-        args.get("link_id"), jwt.get("client_id")
+        args.get("link_id")
     )
     if is_deleted == "0xdb":
         return err.db_update("links")
@@ -304,7 +304,7 @@ def change_link(jwt=None):
         data.get("leads_to_post"),
         data.get("spec_links"),
         data.get("traffic"),
-        jwt.get("client_id"))
+        )
     if link_id == "0xperm":
         return err.perm("change", "links")
     return json.dumps(data), 201

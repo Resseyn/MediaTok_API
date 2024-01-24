@@ -91,11 +91,11 @@ class SearchesDB:
             return "0xdb"
 
     @classmethod
-    def show_searches(cls, creator_id):
+    def show_searches(cls):
         try:
             with cls.connection.cursor() as cursor:
-                select_query = "SELECT * FROM searches WHERE creator_id = %s"
-                cursor.execute(select_query, (creator_id,))
+                select_query = "SELECT * FROM searches"
+                cursor.execute(select_query)
                 searches_data = cursor.fetchall()
                 searches = [Search(*search_data).__dict__ for search_data in searches_data]
                 return searches
@@ -108,19 +108,17 @@ class SearchesDB:
             return "0xdb"
 
     @classmethod
-    def change_search_activity(cls, search_id,creator_id):
+    def change_search_activity(cls, search_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM searches WHERE search_id = %s"
                 cursor.execute(select_query, (search_id,))
                 search_data = cursor.fetchone()
-                if search_data[-1] == creator_id:
-                    update_query = "UPDATE searches SET activity = %s WHERE search_id = %s"
-                    cursor.execute(update_query, (not search_data[5], search_id))
-                    cls.connection.commit()
-                    return not search_data[5]
-                else:
-                    return "0xperm"
+                update_query = "UPDATE searches SET activity = %s WHERE search_id = %s"
+                cursor.execute(update_query, (not search_data[5], search_id))
+                cls.connection.commit()
+                return not search_data[5]
+
         except psycopg2.Error as e:
             print(f"Error changing search activity: {e}")
             cls.connection.rollback()
@@ -131,7 +129,7 @@ class SearchesDB:
             return "0xdb"
 
     @classmethod
-    def delete_search(cls, search_id,creator_id):
+    def delete_search(cls, search_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM searches WHERE search_id = %s"
@@ -139,9 +137,6 @@ class SearchesDB:
                 fetch_data = cursor.fetchone()
                 if fetch_data is None:
                     return "0xdb"
-                creator_id_from_db = fetch_data[0]
-                if creator_id_from_db != creator_id:
-                    return "0xperm"
                 delete_query = "DELETE FROM searches WHERE search_id = %s"
                 cursor.execute(delete_query, (search_id,))
                 cls.connection.commit()
@@ -156,28 +151,25 @@ class SearchesDB:
             return "0xdb"
 
     @classmethod
-    def change_search(cls, search_id, search_for, link, properties, creator_id):
+    def change_search(cls, search_id, search_for, link, properties):
         try:
             with cls.connection.cursor() as cursor:
                 search_query = "SELECT * FROM searches WHERE search_id = %s"
                 cursor.execute(search_query, (search_id,))
                 search_data = cursor.fetchone()
-                print(search_data[-1],creator_id)
-                if search_data[-1] == creator_id:
-                    update_query = """
-                                        UPDATE searches SET 
-                                        search_for = %s, 
-                                        link = %s, 
-                                        properties = %s,
-                                        list_seti = %s
-                                        WHERE search_id = %s;"""
-                    cursor.execute(update_query, (
-                        search_for, link, properties, (False if properties == "" else True), search_id
-                    ))
-                    cls.connection.commit()
-                    return Search(search_id, search_for, link, properties, (False if properties == "" else True),
-                                  search_data[5], search_data[6], creator_id).__dict__
-                return "0xperm"
+                update_query = """
+                                    UPDATE searches SET 
+                                    search_for = %s, 
+                                    link = %s, 
+                                    properties = %s,
+                                    list_seti = %s
+                                    WHERE search_id = %s;"""
+                cursor.execute(update_query, (
+                    search_for, link, properties, (False if properties == "" else True), search_id
+                ))
+                cls.connection.commit()
+                return Search(search_id, search_for, link, properties, (False if properties == "" else True),
+                              search_data[5], search_data[6], search_data[7]).__dict__
         except psycopg2.Error as e:
             print("Error changing search:", e)
             cls.connection.rollback()
