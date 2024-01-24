@@ -56,7 +56,7 @@ def show_users(jwt=None):
         description: No users found
     """
 
-    users = UserDB.show_users(jwt.get("client_id"))
+    users = UserDB.show_users()
     if users == "0xdb": return err.not_found("users")
     return json.dumps(users, indent=2), 200
 
