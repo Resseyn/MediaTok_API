@@ -60,7 +60,7 @@ class LinksDB:
                                               spec_links, traffic, True, time.time(), creator_id,))
                 link_id = cursor.fetchone()
                 cls.connection.commit()
-                return link_id.__dict__
+                return Link(*link_id).__dict__
         except psycopg2.Error as e:
             cls.connection.rollback()
             print("Error adding link:", e)
