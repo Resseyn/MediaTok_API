@@ -149,7 +149,7 @@ class LinksDB:
                     link_id))
                 cls.connection.commit()
                 return Link(link_id, link, leads_to_post, (False if spec_links == "" else True), spec_links,
-                            traffic, link_data[7], link_data[8], link_data[9]).__dict__
+                            traffic, link_data[6], link_data[7], link_data[8]).__dict__
 
         except psycopg2.Error as e:
             print(f"Error changing link:", e)
