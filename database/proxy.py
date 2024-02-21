@@ -62,7 +62,7 @@ class ProxyDB:
                 )
                 cursor.execute(insert_query, (server_id, name, address, True, creator_id, time.time()))
                 proxy_id = cursor.fetchone()
-                ServersDB.change_proxy_flag(server_id, True, creator_id)
+                ServersDB.change_proxy_flag(server_id, True)
                 cls.connection.commit()
                 return Proxy(*proxy_id).__dict__
         except psycopg2.Error as e:
@@ -89,7 +89,7 @@ class ProxyDB:
                 cursor.execute(check_query, (server_id,))
 
                 if not len(cursor.fetchall()):
-                    ServersDB.change_proxy_flag(server_id, False, creator_id_from_db)
+                    ServersDB.change_proxy_flag(server_id, False)
                 cls.connection.commit()
                 return True
         except psycopg2.Error as e:

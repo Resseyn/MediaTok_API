@@ -154,8 +154,7 @@ class ServersDB:
             return "0xdb"
 
     @classmethod
-    def change_proxy_flag(cls, server_id, flag,
-                          ):
+    def change_proxy_flag(cls, server_id, flag,):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM servers WHERE server_id = %s"
