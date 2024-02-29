@@ -8,11 +8,12 @@ from database.servers import ServersDB
 
 
 class Proxy:
-    def __init__(self, proxy_id, server_id, name, address, status, creator_id, created_at):
+    def __init__(self, proxy_id, server_id, name, address,city, status, creator_id, created_at):
         self.proxy_id = proxy_id
         self.server_id = server_id
         self.name = name
         self.address = address
+        self.city = city
         self.status = status
         self.creator_id = creator_id
         self.created_at = created_at
@@ -34,6 +35,7 @@ class ProxyDB:
                     server_id INT NOT NULL,
                     name VARCHAR(255) NOT NULL,
                     address TEXT NOT NULL,
+                    city VARCHAR(255),
                     activity BOOLEAN NOT NULL,
                     creator_id INTEGER NOT NULL,
                     created_at INTEGER NOT NULL
@@ -47,7 +49,7 @@ class ProxyDB:
             cursor.close()
 
     @classmethod
-    def add_proxy(cls, server_id, name, address, creator_id):
+    def add_proxy(cls, server_id, name, address, city, creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 count_query = "SELECT COUNT(*) FROM proxy WHERE server_id = %s"
@@ -57,10 +59,10 @@ class ProxyDB:
                     return "0xc"
 
                 insert_query = (
-                    "INSERT INTO proxy (server_id, name, address, activity, creator_id, created_at) "
-                    "VALUES (%s, %s, %s, %s, %s, %s) RETURNING *"
+                    "INSERT INTO proxy (server_id, name, address, city, activity, creator_id, created_at) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING *"
                 )
-                cursor.execute(insert_query, (server_id, name, address, True, creator_id, time.time()))
+                cursor.execute(insert_query, (server_id, name, address, city, True, creator_id, time.time()))
                 proxy_id = cursor.fetchone()
                 ServersDB.change_proxy_flag(server_id, True)
                 cls.connection.commit()
@@ -154,7 +156,7 @@ class ProxyDB:
             return "0xdb"
 
     @classmethod
-    def change_proxy(cls, proxy_id, name, address,activity,creator_id):
+    def change_proxy(cls, proxy_id, name, address,city, activity,creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT creator_id FROM proxy WHERE proxy_id = %s"
@@ -166,8 +168,8 @@ class ProxyDB:
 
                 if creator_id_from_db != creator_id:
                     return "0xperm"
-                update_query = "UPDATE proxy SET name = %s, address = %s, activity = %s WHERE proxy_id = %s RETURNING *"
-                cursor.execute(update_query, (name, address, activity,  proxy_id))
+                update_query = "UPDATE proxy SET name = %s, address = %s, city = %s, activity = %s WHERE proxy_id = %s RETURNING *"
+                cursor.execute(update_query, (name, address, city, activity, proxy_id))
                 proxy_data = cursor.fetchone()
                 return Proxy(*proxy_data).__dict__
         except psycopg2.Error as e:

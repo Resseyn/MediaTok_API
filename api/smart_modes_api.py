@@ -35,7 +35,7 @@ def show_mode(jwt=None):
             update_time:
               type: integer
               description: Update time interval in minutes
-            creator_id:
+            server_id:
               type: integer
               description: Creator of the smart mode record ID
           example:
@@ -43,12 +43,11 @@ def show_mode(jwt=None):
             sleep_time: "10000"
             promotion_time_and_percentage: "22-8"
             update_time: 2
-            creator_id: 228
+            server_id: 228
       404:
         description: Data not found in smart_modes
     """
-
-    servers = SmartModeDB.show_smart_mode(jwt.get('client_id'))
+    servers = SmartModeDB.show_smart_mode()
     if servers == "0xst": return err.create("Not configured", 400)
     if servers == "0xdb": return err.not_found("smart_modes")
     return json.dumps(servers, indent=2), 200
@@ -98,7 +97,7 @@ def add_mode(jwt=None):
             update_time:
               type: integer
               description: Update time interval in minutes
-            creator_id:
+            server_id:
               type: integer
               description: Creator of the smart mode record ID
           example:
@@ -106,7 +105,7 @@ def add_mode(jwt=None):
             sleep_time: "60000"
             promotion_time_and_percentage: "0:30;3:50;6:90;9:100;12:100;15:100;18:100;21:80»"
             update_time: 17
-            creator_id: 228
+            server_id: 228
       404:
         description: Data not found in smart_modes
     """
@@ -116,7 +115,7 @@ def add_mode(jwt=None):
         data["toggle"],
         data["sleep_time"],
         data["promotion_time_and_percentage"],
-        jwt.get('client_id'))
+        data['server_id'])
     if server_id == "0xdb": return err.db_update("smart_modes")
     return json.dumps(server_id), 200
 
@@ -129,5 +128,5 @@ def add_mode(jwt=None):
 #         data["toggle"],
 #         data["sleep_time"],
 #         data["promotion_time_and_percentage"],
-#         session.get("client_id"))
+#         session.get("server_id"))
 #     return json.dumps(server_id), 200

@@ -5,12 +5,12 @@ from database import postgres
 
 
 class SmartMode:
-    def __init__(self, toggle, sleep_time, promotion_time_and_percentage, update_time, creator_id):
+    def __init__(self, toggle, sleep_time, promotion_time_and_percentage, update_time, server_id):
         self.toggle = toggle
         self.sleep_time = sleep_time
         self.promotion_time_and_percentage = promotion_time_and_percentage
         self.update_time = update_time
-        self.creator_id = creator_id
+        self.server_id = server_id
 
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
@@ -29,7 +29,7 @@ class SmartModeDB:
                 sleep_time TEXT NOT NULL,
                 promotion_time_and_percentage TEXT,
                 update_time BIGINT NOT NULL,
-                creator_id INTEGER PRIMARY KEY NOT NULL
+                server_id INTEGER PRIMARY KEY NOT NULL
             );
             """
             try:
@@ -57,28 +57,28 @@ class SmartModeDB:
             return "Changed update time (smart_mode) to ", new_update_time
 
     @classmethod
-    def add_property(cls, toggle, sleep_time, promotion_time_and_percentage, creator_id):
+    def add_property(cls, toggle, sleep_time, promotion_time_and_percentage, server_id):
 
         sleep_time += "000"
 
         with cls.connection.cursor() as cursor:
-            select_query = "SELECT * FROM smart_mode WHERE creator_id = %s"
-            cursor.execute(select_query, (creator_id,))
+            select_query = "SELECT * FROM smart_mode WHERE server_id = %s"
+            cursor.execute(select_query, (server_id,))
             server_data = cursor.fetchone()
             if server_data is not None:
-                SmartModeDB.change_smart_mode_property(toggle, sleep_time, promotion_time_and_percentage, creator_id)
+                SmartModeDB.change_smart_mode_property(toggle, sleep_time, promotion_time_and_percentage, server_id)
                 return SmartMode(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour,
-                                 creator_id).__dict__
+                                 server_id).__dict__
             insert_query = (
-                "INSERT INTO smart_mode (toggle,sleep_time,promotion_time_and_percentage,update_time,creator_id) "
-                "VALUES (%s, %s, %s, %s, %s) RETURNING creator_id")
+                "INSERT INTO smart_mode (toggle,sleep_time,promotion_time_and_percentage,update_time,server_id) "
+                "VALUES (%s, %s, %s, %s, %s) RETURNING server_id")
             try:
                 cursor.execute(insert_query,
-                               (toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, creator_id,))
+                               (toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, server_id,))
                 cls.connection.commit()
                 cursor.close()
                 return SmartMode(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour,
-                                 creator_id).__dict__
+                                 server_id).__dict__
             except Exception as e:
                 print(f"Error adding property: {e}")
                 cls.connection.rollback()
@@ -86,20 +86,22 @@ class SmartModeDB:
                 return "0xdb"
 
     @classmethod
-    def show_smart_mode(cls, creator_id):
+    def show_smart_mode(cls):
         with cls.connection.cursor() as cursor:
-            select_query = "SELECT * FROM smart_mode WHERE creator_id = %s"
+            select_query = "SELECT * FROM smart_mode"
             try:
-                cursor.execute(select_query, (creator_id,))
-                smart_mode_data = cursor.fetchone()
-                return SmartMode(*smart_mode_data).__dict__ if smart_mode_data else "0xst"
+                cursor.execute(select_query,)
+                smart_mode_data = cursor.fetchall()
+                if not(smart_mode_data):
+                    return "0xst"
+                return [SmartMode(*smart).__dict__ for smart in smart_mode_data]
             except Exception as e:
                 print(f"Error showing smart_modes: {e}")
                 cls.connection.rollback()
                 return "0xdb"
 
     @classmethod
-    def change_smart_mode_property(cls, toggle, sleep_time, promotion_time_and_percentage, creator_id):
+    def change_smart_mode_property(cls, toggle, sleep_time, promotion_time_and_percentage, server_id):
         with cls.connection.cursor() as cursor:
             try:
                 update_query = """
@@ -108,13 +110,13 @@ class SmartModeDB:
                     sleep_time = %s, 
                     promotion_time_and_percentage = %s, 
                     update_time = %s
-                WHERE creator_id = %s
+                WHERE server_id = %s
                 """
                 cursor.execute(update_query,
-                               (toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, creator_id))
+                               (toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour, server_id))
                 cls.connection.commit()
                 smart_mode = SmartMode(toggle, sleep_time, promotion_time_and_percentage, datetime.now().hour,
-                                       creator_id)
+                                       server_id)
                 return smart_mode.__dict__
             except Exception as e:
                 print(f"Error changing smart_mode property: {e}")

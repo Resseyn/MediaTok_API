@@ -125,6 +125,7 @@ def add_link(jwt=None):
     data = json.loads(request.data)
     link_id = LinksDB.add_link(
         data.get("link"),
+        data.get("server_id"),
         data.get("leads_to_post"),
         data.get("spec_links"),
         data.get("traffic"),
@@ -300,6 +301,7 @@ def change_link(jwt=None):
     data = json.loads(request.data)
     link_id = LinksDB.change_link(
         data.get("link_id"),
+        data.get("server_id"),
         data.get("link"),
         data.get("leads_to_post"),
         data.get("spec_links"),

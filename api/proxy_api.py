@@ -120,6 +120,7 @@ def add_proxy(jwt=None):
         data.get("server_id"),
         data.get("name"),
         data.get("address"),
+        data.get("city"),
         jwt.get("client_id"))
     if proxy_id == "0xc": return err.create("Too many proxies!", 400)
     if proxy_id == "0xdb": return err.db_add("proxy")
@@ -235,7 +236,7 @@ def change_proxy_address(jwt=None):
     """
 
     data = json.loads(request.data)
-    new_proxy = ProxyDB.change_proxy(data["proxy_id"], data.get("name"), data.get("address"),data.get("status"), jwt.get("client_id"))
+    new_proxy = ProxyDB.change_proxy(data["proxy_id"], data.get("name"), data.get("address"),data.get("city"),data.get("status"), jwt.get("client_id"))
     if new_proxy == "0xdb": return err.not_found("proxy")
     if new_proxy == "0xperm": return err.perm("change", "proxy")
     return json.dumps(new_proxy), 200

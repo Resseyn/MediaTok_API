@@ -45,7 +45,7 @@ def show_times(jwt=None):
             number_of_transitions_max:
               type: integer
               description: Maximum number of transitions between articles
-            creator_id:
+            server_id:
               type: integer
               description: Creator of the site time record ID
           example:
@@ -56,12 +56,11 @@ def show_times(jwt=None):
             emulation_of_inactivity_between_articles_max: 15
             number_of_transitions_min: 4
             number_of_transitions_max: 6
-            creator_id: 228
+            server_id: 100
       404:
         description: Data not found in site_time
     """
-
-    site_time_curr = SiteTimeDB.show_times(jwt.get("client_id"))
+    site_time_curr = SiteTimeDB.show_times()
     if site_time_curr == "0xst": return err.create("Not configured", 400)
     if site_time_curr == "0xdb": return err.not_found("times")
     return json.dumps(site_time_curr, indent=2), 200
@@ -123,7 +122,7 @@ def add_time(jwt=None):
             number_of_transitions_max:
               type: string
               description: Maximum number of transitions between articles
-            creator_id:
+            server_id:
               type: integer
               description: Creator of the site time record ID
           example:
@@ -134,7 +133,7 @@ def add_time(jwt=None):
             emulation_of_inactivity_between_articles_max: "8"
             number_of_transitions_min: "9"
             number_of_transitions_max: "10"
-            creator_id: 228
+            server_id: 100
       404:
         description: Data not found in site_time
     """
@@ -151,7 +150,7 @@ def add_time(jwt=None):
         emul_between_art[1],
         number_of_transactions[0],
         number_of_transactions[1],
-        jwt.get("client_id"))
+        data["server_id"])
     if new_time == "0xdb": return err.not_found("times")
     return json.dumps(new_time), 200
 

@@ -7,9 +7,10 @@ from database import postgres
 
 
 class Link:
-    def __init__(self, link_id, link, leads_to_post, to_a_specific_link, spec_links, traffic, activity,
+    def __init__(self, link_id, server_id, link, leads_to_post, to_a_specific_link, spec_links, traffic, activity,
                  created_at, creator_id):
         self.link_id = link_id
+        self.server_id = server_id
         self.link = link
         self.leads_to_post = leads_to_post
         self.to_a_specific_link = to_a_specific_link
@@ -33,6 +34,7 @@ class LinksDB:
                 create_table_query = """
                 CREATE TABLE IF NOT EXISTS links (
                     link_id SERIAL PRIMARY KEY,
+                    server_id INT NOT NULL,
                     link TEXT NOT NULL,
                     leads_to_post BOOLEAN NOT NULL,
                     to_a_specific_link BOOLEAN NOT NULL,
@@ -50,13 +52,13 @@ class LinksDB:
             print("Error creating link table:", e)
 
     @classmethod
-    def add_link(cls, link, leads_to_post, spec_links, traffic, creator_id):
+    def add_link(cls, link,server_id, leads_to_post, spec_links, traffic, creator_id):
         try:
             with cls.connection.cursor() as cursor:
                 insert_query = (
-                    "INSERT INTO links (link, leads_to_post, to_a_specific_link, spec_links, traffic, activity, created_at, creator_id) "
-                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s) RETURNING *")
-                cursor.execute(insert_query, (link, leads_to_post, (False if spec_links == "" else True),
+                    "INSERT INTO links (link, server_id, leads_to_post, to_a_specific_link, spec_links, traffic, activity, created_at, creator_id) "
+                    "VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s) RETURNING *")
+                cursor.execute(insert_query, (link, server_id, leads_to_post, (False if spec_links == "" else True),
                                               spec_links, traffic, True, time.time(), creator_id,))
                 link_id = cursor.fetchone()
                 cls.connection.commit()
@@ -131,24 +133,25 @@ class LinksDB:
             return "0xdb"
 
     @classmethod
-    def change_link(cls, link_id, link, leads_to_post, spec_links, traffic):
+    def change_link(cls, link_id, server_id, link, leads_to_post, spec_links, traffic):
         try:
             with cls.connection.cursor() as cursor:
                 select_query = "SELECT * FROM links WHERE link_id = %s"
                 cursor.execute(select_query, (link_id,))
                 link_data = cursor.fetchone()
                 update_query = '''UPDATE links 
-                SET link = %s, 
+                SET server_id = %s,
+                    link = %s, 
                     leads_to_post = %s, 
                     to_a_specific_link = %s,
                     spec_links = %s,
                     traffic = %s
                 WHERE link_id = %s'''
                 cursor.execute(update_query, (
-                    link, leads_to_post, (False if spec_links == "" else True), spec_links, traffic,
+                    server_id, link, leads_to_post, (False if spec_links == "" else True), spec_links, traffic,
                     link_id))
                 cls.connection.commit()
-                return Link(link_id, link, leads_to_post, (False if spec_links == "" else True), spec_links,
+                return Link(link_id, server_id, link, leads_to_post, (False if spec_links == "" else True), spec_links,
                             traffic, link_data[6], link_data[7], link_data[8]).__dict__
 
         except psycopg2.Error as e:
