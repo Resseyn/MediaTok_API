@@ -34,7 +34,7 @@ class LinksDB:
                 create_table_query = """
                 CREATE TABLE IF NOT EXISTS links (
                     link_id SERIAL PRIMARY KEY,
-                    server_id INT NOT NULL,
+                    server_id TEXT NOT NULL,
                     link TEXT NOT NULL,
                     leads_to_post BOOLEAN NOT NULL,
                     to_a_specific_link BOOLEAN NOT NULL,
